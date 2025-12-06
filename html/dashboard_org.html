@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>대시보드 - We One</title>
+    <link rel="stylesheet" href="../css/k-pumasi-modern.css">
+    <script src="../js/auth-check.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            min-height: 100vh;
+            padding: 0;
+        }
+
+        /* 고정 헤더 */
+        .dashboard-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: var(--we1-bg-card);
+            padding: 20px 40px;
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.2);
+            border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-small {
+            width: 50px;
+            height: 50px;
+            position: relative;
+        }
+
+        .logo-small .logo-circle {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px solid rgba(212, 175, 55, 0.5);
+        }
+
+        .logo-small .logo-circle-1 {
+            width: 100%;
+            height: 100%;
+            animation: rotate 8s linear infinite;
+        }
+
+        .logo-small .logo-circle-2 {
+            width: 70%;
+            height: 70%;
+            top: 15%;
+            left: 15%;
+            animation: rotate 6s linear infinite reverse;
+        }
+
+        .logo-small .logo-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 25px;
+            height: 25px;
+            background: var(--we1-gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--we1-navy-deep);
+        }
+
+        .brand-text {
+            color: var(--we1-text-primary);
+            font-size: 24px;
+            font-weight: 800;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-link {
+            padding: 10px 24px;
+            background: transparent;
+            border-radius: 100px;
+            color: var(--we1-text-primary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            transition: var(--we1-transition);
+            border: 1px solid transparent;
+        }
+
+        .nav-link:hover {
+            background: rgba(212, 175, 55, 0.1);
+            border-color: rgba(212, 175, 55, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .nav-link.active {
+            background: var(--we1-gradient-primary);
+            color: var(--we1-navy-deep);
+            border-color: var(--we1-gold);
+        }
+
+        /* 메인 컨테이너 */
+        .main-container {
+            position: relative;
+            z-index: 10;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 60px 40px;
+        }
+
+        /* 웰컴 섹션 */
+        .welcome-section {
+            background: var(--we1-bg-card);
+            border-radius: 24px;
+            padding: 50px;
+            margin-bottom: 40px;
+            box-shadow: var(--we1-shadow-gold);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--we1-gradient-primary);
+        }
+
+        .welcome-title {
+            font-size: 36px;
+            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+            color: var(--we1-text-primary);
+            margin-bottom: 12px;
+        }
+
+        .welcome-subtitle {
+            font-size: 16px;
+            font-family: 'Inter', sans-serif;
+            color: var(--we1-text-secondary);
+            margin-bottom: 30px;
+        }
+
+        .user-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .user-info-item {
+            padding: 20px;
+            background: rgba(212, 175, 55, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .user-info-label {
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            color: var(--we1-text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .user-info-value {
+            font-size: 18px;
+            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+            color: var(--we1-gold);
+        }
+
+        /* 통계 그리드 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: var(--we1-bg-card);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: var(--we1-shadow-sm);
+            transition: var(--we1-transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--we1-gradient-primary);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--we1-shadow-gold);
+            border-color: var(--we1-gold);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--we1-gradient-primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 16px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            color: var(--we1-text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 800;
+            font-family: 'Playfair Display', serif;
+            background: var(--we1-gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* 빠른 액션 */
+        .quick-actions {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+            color: var(--we1-text-primary);
+            margin-bottom: 24px;
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .action-card {
+            background: var(--we1-bg-card);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            transition: var(--we1-transition);
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--we1-shadow-gold);
+            border-color: var(--we1-gold);
+        }
+
+        .action-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--we1-gradient-subtle);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin: 0 auto 16px;
+        }
+
+        .action-title {
+            font-size: 18px;
+            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+            color: var(--we1-text-primary);
+            margin-bottom: 8px;
+        }
+
+        .action-desc {
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            color: var(--we1-text-secondary);
+        }
+
+        /* 활동 피드 */
+        .activity-feed {
+            background: var(--we1-bg-card);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: var(--we1-shadow-sm);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .activity-feed::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--we1-gradient-primary);
+        }
+
+        .activity-item {
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 45px;
+            height: 45px;
+            background: var(--we1-gradient-subtle);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-size: 15px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            color: var(--we1-text-primary);
+            margin-bottom: 4px;
+        }
+
+        .activity-desc {
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            color: var(--we1-text-secondary);
+        }
+
+        .activity-time {
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            color: var(--we1-text-muted);
+        }
+
+        /* 반응형 */
+        @media (max-width: 768px) {
+            .dashboard-header {
+                padding: 15px 20px;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+
+            .main-container {
+                padding: 40px 20px;
+            }
+
+            .welcome-section {
+                padding: 35px 25px;
+            }
+
+            .welcome-title {
+                font-size: 28px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 배경 -->
+    <div class="kpumasi-background">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+        <div id="particles"></div>
+    </div>
+
+    <!-- 헤더 -->
+    <header class="dashboard-header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo-small">
+                    <div class="logo-circle logo-circle-1"></div>
+                    <div class="logo-circle logo-circle-2"></div>
+                    <div class="logo-center">W1</div>
+                </div>
+                <div class="brand-text">We One</div>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="dashboard.html" class="nav-link active">대시보드</a>
+                <a href="organization.html" class="nav-link">조직도</a>
+                <a href="referral-link-test.html" class="nav-link">🔗 추천링크</a>
+                <a href="withdrawal.html" class="nav-link">출금</a>
+                <a href="#" class="nav-link" onclick="logout()">로그아웃</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 메인 컨테이너 -->
+    <div class="main-container">
+        <!-- 웰컴 섹션 -->
+        <div class="welcome-section fade-in-up">
+            <h1 class="welcome-title">환영합니다, <span id="userName">회원</span>님</h1>
+            <p class="welcome-subtitle">We One 프리미엄 플랫폼에 오신 것을 환영합니다</p>
+
+            <div class="user-info-grid">
+                <div class="user-info-item">
+                    <div class="user-info-label">패키지</div>
+                    <div class="user-info-value" id="userPackage">-</div>
+                </div>
+                <div class="user-info-item">
+                    <div class="user-info-label">레벨</div>
+                    <div class="user-info-value" id="userLevel">-</div>
+                </div>
+                <div class="user-info-item">
+                    <div class="user-info-label">가입일</div>
+                    <div class="user-info-value" id="joinDate">-</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 통계 그리드 -->
+        <div class="stats-grid">
+            <div class="stat-card fade-in-up">
+                <div class="stat-icon">💰</div>
+                <div class="stat-label">총 누적 보너스</div>
+                <div class="stat-value" id="totalBonus">$0.00</div>
+            </div>
+
+            <div class="stat-card fade-in-up" style="animation-delay: 0.1s;">
+                <div class="stat-icon">💵</div>
+                <div class="stat-label">출금 가능 잔액</div>
+                <div class="stat-value" id="availableBonus">$0.00</div>
+            </div>
+
+            <div class="stat-card fade-in-up" style="animation-delay: 0.2s;">
+                <div class="stat-icon">👥</div>
+                <div class="stat-label">직접 추천인</div>
+                <div class="stat-value" id="directReferrals">0</div>
+            </div>
+
+            <div class="stat-card fade-in-up" style="animation-delay: 0.3s;">
+                <div class="stat-icon">🌐</div>
+                <div class="stat-label">전체 팀</div>
+                <div class="stat-value" id="totalTeam">0</div>
+            </div>
+        </div>
+
+        <!-- 빠른 액션 -->
+        <div class="quick-actions">
+            <h2 class="section-title">빠른 액션</h2>
+            <div class="actions-grid">
+                <a href="purchase.html" class="action-card">
+                    <div class="action-icon">🛒</div>
+                    <div class="action-title">패키지 구매</div>
+                    <div class="action-desc">새로운 패키지 구매</div>
+                </a>
+
+                <a href="organization.html" class="action-card">
+                    <div class="action-icon">🌳</div>
+                    <div class="action-title">조직도</div>
+                    <div class="action-desc">나의 조직 확인</div>
+                </a>
+
+                <a href="withdrawal.html" class="action-card">
+                    <div class="action-icon">💸</div>
+                    <div class="action-title">출금 신청</div>
+                    <div class="action-desc">보너스 인출</div>
+                </a>
+
+                <a href="#" class="action-card" onclick="copyReferralLink(); return false;">
+                    <div class="action-icon">🔗</div>
+                    <div class="action-title">추천 링크</div>
+                    <div class="action-desc">링크 복사</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- 최근 활동 -->
+        <div class="activity-feed">
+            <h2 class="section-title">최근 활동</h2>
+            <div id="activityList">
+                <div class="activity-item">
+                    <div class="activity-icon">📊</div>
+                    <div class="activity-content">
+                        <div class="activity-title">활동 내역을 불러오는 중...</div>
+                        <div class="activity-desc">잠시만 기다려주세요</div>
+                    </div>
+                    <div class="activity-time">-</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 파티클 생성
+        function createParticles() {
+            const container = document.getElementById('particles');
+            if (!container) return;
+
+            const particleCount = 30;
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 15) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // 대시보드 데이터 로드
+        async function loadDashboardData() {
+            try {
+                const token = localStorage.getItem('neural_token');
+
+                if (!token) {
+                    alert('로그인이 필요합니다.');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const response = await fetch('../api/dashboard/stats.php', {
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success && result.data) {
+                    const data = result.data;
+
+                    // 사용자 정보
+                    document.getElementById('userName').textContent = data.user_id || '회원';
+                    document.getElementById('userPackage').textContent = data.package || '-';
+                    document.getElementById('userLevel').textContent = data.level || '-';
+                    document.getElementById('joinDate').textContent = data.join_date ? new Date(data.join_date).toLocaleDateString() : '-';
+
+                    // 통계
+                    document.getElementById('totalBonus').textContent = '$' + (data.total_bonus || 0).toFixed(2);
+                    document.getElementById('availableBonus').textContent = '$' + (data.available_bonus || 0).toFixed(2);
+                    document.getElementById('directReferrals').textContent = data.direct_referrals || 0;
+                    document.getElementById('totalTeam').textContent = data.total_team || 0;
+
+                    // 최근 활동
+                    if (data.recent_activities && data.recent_activities.length > 0) {
+                        displayActivities(data.recent_activities);
+                    } else {
+                        displayNoActivities();
+                    }
+                } else {
+                    console.error('Failed to load dashboard data:', result);
+                }
+            } catch (error) {
+                console.error('Load dashboard data error:', error);
+            }
+        }
+
+        // 활동 표시
+        function displayActivities(activities) {
+            const container = document.getElementById('activityList');
+            container.innerHTML = '';
+
+            activities.forEach(activity => {
+                const item = document.createElement('div');
+                item.className = 'activity-item';
+
+                const icon = getActivityIcon(activity.type);
+
+                item.innerHTML = `
+                    <div class="activity-icon">${icon}</div>
+                    <div class="activity-content">
+                        <div class="activity-title">${activity.title}</div>
+                        <div class="activity-desc">${activity.description}</div>
+                    </div>
+                    <div class="activity-time">${formatTime(activity.created_at)}</div>
+                `;
+
+                container.appendChild(item);
+            });
+        }
+
+        // 활동 없음 표시
+        function displayNoActivities() {
+            const container = document.getElementById('activityList');
+            container.innerHTML = `
+                <div class="activity-item">
+                    <div class="activity-icon">📋</div>
+                    <div class="activity-content">
+                        <div class="activity-title">활동 내역이 없습니다</div>
+                        <div class="activity-desc">첫 활동을 시작해보세요</div>
+                    </div>
+                    <div class="activity-time">-</div>
+                </div>
+            `;
+        }
+
+        // 활동 아이콘
+        function getActivityIcon(type) {
+            const icons = {
+                'bonus': '💰',
+                'referral': '👥',
+                'purchase': '🛒',
+                'withdrawal': '💸',
+                'upgrade': '⬆️'
+            };
+            return icons[type] || '📊';
+        }
+
+        // 시간 포맷
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = Math.floor((now - date) / 1000);
+
+            if (diff < 60) return '방금 전';
+            if (diff < 3600) return Math.floor(diff / 60) + '분 전';
+            if (diff < 86400) return Math.floor(diff / 3600) + '시간 전';
+            if (diff < 604800) return Math.floor(diff / 86400) + '일 전';
+
+            return date.toLocaleDateString();
+        }
+
+        // 추천 링크 복사
+        function copyReferralLink() {
+            // localStorage에서 사용자 정보 가져오기
+            const userStr = localStorage.getItem('neural_user');
+            if (!userStr) {
+                alert('사용자 정보를 찾을 수 없습니다.');
+                return;
+            }
+
+            const user = JSON.parse(userStr);
+            const userId = user.user_id;
+
+            // 추천 링크 생성 (추천코드 + 후원코드 모두 포함)
+            const referralLink = `${window.location.origin}/html/signup.html?referral=${userId}&sponsor=${userId}`;
+
+            // 클립보드에 복사
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(referralLink).then(() => {
+                    alert(`✅ 추천 링크가 복사되었습니다!\n\n회원코드: ${userId}\n링크: ${referralLink}\n\n이 링크로 가입한 회원은:\n• 추천인: ${userId}\n• 후원인: ${userId}\n로 자동 등록됩니다.`);
+                }).catch(err => {
+                    console.error('복사 실패:', err);
+                    prompt('추천 링크를 복사하세요:', referralLink);
+                });
+            } else {
+                // 구형 브라우저 대응
+                prompt('추천 링크를 복사하세요:', referralLink);
+            }
+        }
+
+        // 로그아웃
+        function logout() {
+            if (confirm('로그아웃 하시겠습니까?')) {
+                localStorage.removeItem('neural_token');
+                localStorage.removeItem('neural_user');
+                window.location.href = 'login.html';
+            }
+        }
+
+        // 페이지 로드
+        window.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            loadDashboardData();
+        });
+    </script>
+</body>
+</html>

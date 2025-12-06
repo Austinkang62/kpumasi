@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입 $100 처리 검증 - K-Pumasi Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .card {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            color: #333;
+            margin-bottom: 16px;
+            font-size: 18px;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 8px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .status-excellent {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-good {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-critical {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .stat-card.success {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+        }
+
+        .stat-card.warning {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+        }
+
+        .stat-card.danger {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .stat-sub {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+
+        th {
+            background: #f8f9fa;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #dee2e6;
+            font-size: 13px;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 13px;
+            color: #495057;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #45a049;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4CAF50;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 16px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #f44336;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ff9800;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .section-empty {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-style: italic;
+        }
+
+        .timestamp {
+            text-align: right;
+            color: #999;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💰 회원가입 $100 처리 검증</h1>
+            <p class="subtitle">최근 30일 회원가입 시 패키지 구매 및 보너스 분배 검증</p>
+        </div>
+
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <div>데이터 로딩 중...</div>
+        </div>
+
+        <div id="content" style="display: none;">
+            <!-- 전체 상태 -->
+            <div class="card" id="statusCard">
+                <h2>📊 전체 상태</h2>
+                <div id="statusContent"></div>
+            </div>
+
+            <!-- 통계 -->
+            <div class="stats-grid" id="statsGrid"></div>
+
+            <!-- 최근 회원가입 -->
+            <div class="card">
+                <h2>👥 최근 회원가입 (최근 20명)</h2>
+                <div id="recentSignups"></div>
+            </div>
+
+            <!-- 누락 건 - Sales -->
+            <div class="card" id="missingSalesCard">
+                <h2>⚠️ Sales 누락 건</h2>
+                <div id="missingSales"></div>
+            </div>
+
+            <!-- 누락 건 - Bonuses -->
+            <div class="card" id="missingBonusesCard">
+                <h2>⚠️ 보너스 누락 건</h2>
+                <div id="missingBonuses"></div>
+            </div>
+
+            <!-- 정상 처리 -->
+            <div class="card">
+                <h2>✅ 정상 처리된 케이스 (최근 10건)</h2>
+                <div id="correctRecords"></div>
+            </div>
+
+            <div class="timestamp" id="timestamp"></div>
+        </div>
+    </div>
+
+    <script>
+        async function loadData() {
+            try {
+                const response = await fetch('/admin/verify-signup-package.php');
+                const data = await response.json();
+
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+
+                renderStatus(data);
+                renderStats(data.summary);
+                renderRecentSignups(data.recent_signups);
+                renderMissingSales(data.missing_sales);
+                renderMissingBonuses(data.missing_bonuses);
+                renderCorrectRecords(data.correct_records);
+
+                document.getElementById('timestamp').textContent =
+                    `마지막 업데이트: ${data.timestamp}`;
+
+            } catch (error) {
+                document.getElementById('loading').innerHTML =
+                    `<div class="alert alert-danger">오류: ${error.message}</div>`;
+            }
+        }
+
+        function renderStatus(data) {
+            const { status, success_rate } = data.summary;
+            let statusText = '알 수 없음';
+            let statusClass = '';
+
+            if (status === 'excellent') {
+                statusText = '우수';
+                statusClass = 'status-excellent';
+            } else if (status === 'good') {
+                statusText = '양호';
+                statusClass = 'status-good';
+            } else if (status === 'warning') {
+                statusText = '주의';
+                statusClass = 'status-warning';
+            } else if (status === 'critical') {
+                statusText = '심각';
+                statusClass = 'status-critical';
+            }
+
+            const content = `
+                <div style="text-align: center; padding: 20px;">
+                    <div style="font-size: 48px; font-weight: bold; color: #333; margin-bottom: 10px;">
+                        ${success_rate || 0}%
+                    </div>
+                    <div style="font-size: 18px; color: #666;">
+                        정상 처리율
+                        <span class="status-badge ${statusClass}">${statusText}</span>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('statusContent').innerHTML = content;
+        }
+
+        function renderStats(summary) {
+            const stats = [
+                {
+                    label: '총 회원가입',
+                    value: summary.signups_last_30days.total_users,
+                    sub: '최근 30일',
+                    class: ''
+                },
+                {
+                    label: '$100 패키지',
+                    value: summary.signups_last_30days.package_100_users,
+                    sub: 'package_id = 2',
+                    class: 'success'
+                },
+                {
+                    label: 'Sales 누락',
+                    value: summary.missing_sales_count,
+                    sub: '매출 기록 없음',
+                    class: summary.missing_sales_count > 0 ? 'danger' : 'success'
+                },
+                {
+                    label: '보너스 누락',
+                    value: summary.missing_bonuses_count,
+                    sub: '보너스 미분배',
+                    class: summary.missing_bonuses_count > 0 ? 'danger' : 'success'
+                }
+            ];
+
+            const html = stats.map(stat => `
+                <div class="stat-card ${stat.class}">
+                    <div class="stat-label">${stat.label}</div>
+                    <div class="stat-value">${stat.value}</div>
+                    <div class="stat-sub">${stat.sub}</div>
+                </div>
+            `).join('');
+
+            document.getElementById('statsGrid').innerHTML = html;
+        }
+
+        function renderRecentSignups(signups) {
+            if (!signups || signups.length === 0) {
+                document.getElementById('recentSignups').innerHTML =
+                    '<div class="section-empty">최근 회원가입 내역이 없습니다.</div>';
+                return;
+            }
+
+            const html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>User ID</th>
+                            <th>Email</th>
+                            <th>Package</th>
+                            <th>Sales</th>
+                            <th>Bonuses</th>
+                            <th>가입일</th>
+                            <th>상태</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${signups.map(user => {
+                            const hasSales = user.sales_count > 0;
+                            const hasBonuses = user.bonus_count > 0;
+                            const isComplete = hasSales && hasBonuses;
+
+                            let statusBadge = '';
+                            if (isComplete) {
+                                statusBadge = '<span class="badge badge-success">정상</span>';
+                            } else if (hasSales && !hasBonuses) {
+                                statusBadge = '<span class="badge badge-warning">보너스누락</span>';
+                            } else if (!hasSales) {
+                                statusBadge = '<span class="badge badge-danger">Sales누락</span>';
+                            }
+
+                            return `
+                                <tr>
+                                    <td>${user.id}</td>
+                                    <td>${user.user_id}</td>
+                                    <td>${user.email}</td>
+                                    <td>$${user.package_id === 2 ? '100' : (user.package_id || '-')}</td>
+                                    <td>${user.sales_count} ($${user.total_sales || 0})</td>
+                                    <td>${user.bonus_count} ($${user.total_bonuses || 0})</td>
+                                    <td>${user.created_at}</td>
+                                    <td>${statusBadge}</td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+            `;
+
+            document.getElementById('recentSignups').innerHTML = html;
+        }
+
+        function renderMissingSales(missing) {
+            if (!missing || missing.length === 0) {
+                document.getElementById('missingSales').innerHTML =
+                    '<div class="alert alert-success">✅ Sales 누락 건이 없습니다. 모든 회원가입이 정상 처리되었습니다.</div>';
+                return;
+            }
+
+            const html = `
+                <div class="alert alert-danger">
+                    ⚠️ ${missing.length}건의 회원가입에서 매출 기록이 누락되었습니다!
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>User ID</th>
+                            <th>Email</th>
+                            <th>Package ID</th>
+                            <th>가입일</th>
+                            <th>기존 Sales</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${missing.map(user => `
+                            <tr>
+                                <td>${user.id}</td>
+                                <td>${user.user_id}</td>
+                                <td>${user.email}</td>
+                                <td>${user.package_id}</td>
+                                <td>${user.created_at}</td>
+                                <td>${user.sales_count}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+
+            document.getElementById('missingSales').innerHTML = html;
+        }
+
+        function renderMissingBonuses(missing) {
+            if (!missing || missing.length === 0) {
+                document.getElementById('missingBonuses').innerHTML =
+                    '<div class="alert alert-success">✅ 보너스 누락 건이 없습니다. 모든 매출에 대해 보너스가 정상 분배되었습니다.</div>';
+                return;
+            }
+
+            const html = `
+                <div class="alert alert-warning">
+                    ⚠️ ${missing.length}건의 매출에서 보너스 분배가 누락되었습니다!
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>User ID</th>
+                            <th>Sale ID</th>
+                            <th>금액</th>
+                            <th>매출일</th>
+                            <th>보너스 수</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${missing.map(record => `
+                            <tr>
+                                <td>${record.id}</td>
+                                <td>${record.user_id}</td>
+                                <td>${record.sale_id}</td>
+                                <td>$${record.amount}</td>
+                                <td>${record.sale_date}</td>
+                                <td>${record.bonus_count}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+
+            document.getElementById('missingBonuses').innerHTML = html;
+        }
+
+        function renderCorrectRecords(records) {
+            if (!records || records.length === 0) {
+                document.getElementById('correctRecords').innerHTML =
+                    '<div class="section-empty">정상 처리된 케이스가 없습니다.</div>';
+                return;
+            }
+
+            const html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>User ID</th>
+                            <th>Email</th>
+                            <th>Sale ID</th>
+                            <th>금액</th>
+                            <th>보너스 수</th>
+                            <th>보너스 총액</th>
+                            <th>가입일</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${records.map(record => `
+                            <tr>
+                                <td>${record.id}</td>
+                                <td>${record.user_id}</td>
+                                <td>${record.email}</td>
+                                <td>${record.sale_id}</td>
+                                <td>$${record.amount}</td>
+                                <td>${record.bonus_count}</td>
+                                <td>$${record.total_bonus_amount || 0}</td>
+                                <td>${record.created_at}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+
+            document.getElementById('correctRecords').innerHTML = html;
+        }
+
+        // 페이지 로드 시 데이터 로드
+        window.addEventListener('load', loadData);
+
+        // 5분마다 자동 새로고침
+        setInterval(loadData, 5 * 60 * 1000);
+    </script>
+</body>
+</html>

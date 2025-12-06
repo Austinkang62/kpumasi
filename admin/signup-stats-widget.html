@@ -1,0 +1,694 @@
+<!-- 회원가입 $100 검증 통계 카드 (Admin Dashboard에 임베드용) -->
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+}
+
+.signup-stats-section {
+    margin: 0;
+    padding: 0;
+}
+
+.signup-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.signup-stat-card {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px -8px rgba(0,0,0,0.3);
+    border: 1px solid rgba(148, 163, 184, 0.1);
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.signup-stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px -8px rgba(0,0,0,0.4);
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.signup-stat-card h3 {
+    color: #94a3b8;
+    font-size: 0.85em;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.signup-stat-card .value {
+    font-size: 2.25em;
+    font-weight: 700;
+    background: linear-gradient(135deg, #60a5fa, #3b82f6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 7px;
+    line-height: 1;
+}
+
+.signup-stat-card .description {
+    color: #34d399;
+    font-size: 0.9em;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1;
+}
+
+.detail-section {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    border-radius: 16px;
+    margin-top: 20px;
+    padding: 30px;
+    border: 1px solid rgba(148, 163, 184, 0.1);
+    display: none;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.detail-section.active {
+    display: block;
+}
+
+.detail-section h3 {
+    color: #f8fafc;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid rgba(148, 163, 184, 0.1);
+    font-size: 1.3em;
+    font-weight: 700;
+}
+
+.detail-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 16px;
+}
+
+.detail-table th {
+    background: rgba(15, 23, 42, 0.5);
+    padding: 14px;
+    text-align: left;
+    font-weight: 600;
+    color: #94a3b8;
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.detail-table td {
+    padding: 14px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+    color: #e2e8f0;
+    font-size: 0.9em;
+}
+
+.detail-table tr:hover {
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.75em;
+    font-weight: 600;
+}
+
+.badge-success {
+    background: rgba(16, 185, 129, 0.2);
+    color: #34d399;
+}
+
+.badge-warning {
+    background: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+}
+
+.badge-danger {
+    background: rgba(239, 68, 68, 0.2);
+    color: #f87171;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #64748b;
+    font-style: italic;
+}
+</style>
+
+<div class="signup-stats-section">
+    <!-- 상세 섹션들 -->
+    <div id="totalSignupsDetail" class="detail-section">
+        <h3>📋 최근 회원가입 목록</h3>
+        <div id="totalSignupsTable"></div>
+    </div>
+
+    <div id="package100Detail" class="detail-section">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="margin: 0; border: none; padding: 0;">✅ $100 패키지 회원</h3>
+        </div>
+        <div id="package100Table"></div>
+
+        <!-- 패키지 누락 섹션 -->
+        <div style="margin-top: 40px; padding-top: 30px; border-top: 2px solid rgba(148, 163, 184, 0.1);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin: 0; border: none; padding: 0;">⚠️ 패키지 누락 (package_id = NULL)</h3>
+                <button onclick="fixAllMissingPackages()" style="padding: 10px 20px; background: #8b5cf6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s;">
+                    🔧 일괄 처리
+                </button>
+            </div>
+            <div id="missingPackagesTable"></div>
+        </div>
+
+        <!-- 보너스 과다배정 섹션 -->
+        <div style="margin-top: 40px; padding-top: 30px; border-top: 2px solid rgba(148, 163, 184, 0.1);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin: 0; border: none; padding: 0;">🔴 보너스 과다배정 (≥100%)</h3>
+                <span style="color: #ef4444; font-size: 0.9em; font-weight: 600;">검증 필요</span>
+            </div>
+            <div id="overAllocatedTable"></div>
+        </div>
+    </div>
+
+    <div id="missingSalesDetail" class="detail-section">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="margin: 0; border: none; padding: 0;">⚠️ Sales 누락 건</h3>
+            <button onclick="fixAllMissingSales()" style="padding: 10px 20px; background: #10b981; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s;">
+                🔧 일괄 처리
+            </button>
+        </div>
+        <div id="missingSalesTable"></div>
+    </div>
+
+    <div id="missingBonusesDetail" class="detail-section">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="margin: 0; border: none; padding: 0;">⚠️ 보너스 누락 건</h3>
+            <button onclick="fixAllMissingBonuses()" style="padding: 10px 20px; background: #f59e0b; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s;">
+                🔧 일괄 처리
+            </button>
+        </div>
+        <div id="missingBonusesTable"></div>
+    </div>
+</div>
+
+<script>
+let signupData = null;
+
+// 상세 토글
+function toggleDetail(section) {
+    const detailId = section + 'Detail';
+    const detailSection = document.getElementById(detailId);
+
+    // 모든 detail-section 닫기
+    document.querySelectorAll('.detail-section').forEach(el => {
+        if (el.id !== detailId) {
+            el.classList.remove('active');
+        }
+    });
+
+    // 클릭한 섹션 토글
+    if (detailSection.classList.contains('active')) {
+        detailSection.classList.remove('active');
+    } else {
+        detailSection.classList.add('active');
+        // 스크롤 이동
+        setTimeout(() => {
+            detailSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
+    }
+}
+
+// 데이터 로드
+async function loadSignupStats() {
+    try {
+        const response = await fetch('/admin/verify-signup-package.php');
+        signupData = await response.json();
+
+        // 테이블 렌더링
+        renderTotalSignupsTable();
+        renderPackage100Table();
+        renderMissingPackagesTable();
+        renderOverAllocatedTable();
+        renderMissingSalesTable();
+        renderMissingBonusesTable();
+
+    } catch (error) {
+        console.error('Failed to load signup stats:', error);
+    }
+}
+
+function renderTotalSignupsTable() {
+    if (!signupData || !signupData.recent_signups || signupData.recent_signups.length === 0) {
+        document.getElementById('totalSignupsTable').innerHTML =
+            '<div class="empty-state">최근 회원가입 내역이 없습니다.</div>';
+        return;
+    }
+
+    const html = `
+        <table class="detail-table">
+            <thead>
+                <tr>
+                    <th>User ID</th>
+                    <th>Email</th>
+                    <th>Package</th>
+                    <th>Sales</th>
+                    <th>Bonuses</th>
+                    <th>가입일</th>
+                    <th>상태</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${signupData.recent_signups.map(user => {
+                    const hasSales = user.sales_count > 0;
+                    const hasBonuses = user.bonus_count > 0;
+                    let statusBadge = '';
+
+                    if (hasSales && hasBonuses) {
+                        statusBadge = '<span class="badge badge-success">정상</span>';
+                    } else if (hasSales && !hasBonuses) {
+                        statusBadge = '<span class="badge badge-warning">보너스누락</span>';
+                    } else {
+                        statusBadge = '<span class="badge badge-danger">Sales누락</span>';
+                    }
+
+                    return `
+                        <tr>
+                            <td>${user.user_id}</td>
+                            <td>${user.email}</td>
+                            <td>$${user.package_id === 2 ? '100' : (user.package_id || '-')}</td>
+                            <td>${user.sales_count} ($${user.total_sales || 0})</td>
+                            <td>${user.bonus_count} ($${user.total_bonuses || 0})</td>
+                            <td>${user.created_at}</td>
+                            <td>${statusBadge}</td>
+                        </tr>
+                    `;
+                }).join('')}
+            </tbody>
+        </table>
+    `;
+
+    document.getElementById('totalSignupsTable').innerHTML = html;
+}
+
+function renderPackage100Table() {
+    if (!signupData || !signupData.recent_signups) return;
+
+    const package100Users = signupData.recent_signups.filter(u => u.package_id === 2);
+
+    if (package100Users.length === 0) {
+        document.getElementById('package100Table').innerHTML =
+            '<div class="empty-state">$100 패키지 회원이 없습니다.</div>';
+        return;
+    }
+
+    const html = `
+        <table class="detail-table">
+            <thead>
+                <tr>
+                    <th>User ID</th>
+                    <th>Email</th>
+                    <th>Sales</th>
+                    <th>Bonuses</th>
+                    <th>가입일</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${package100Users.map(user => `
+                    <tr>
+                        <td>${user.user_id}</td>
+                        <td>${user.email}</td>
+                        <td>${user.sales_count} ($${user.total_sales || 0})</td>
+                        <td>${user.bonus_count} ($${user.total_bonuses || 0})</td>
+                        <td>${user.created_at}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+
+    document.getElementById('package100Table').innerHTML = html;
+}
+
+function renderMissingPackagesTable() {
+    if (!signupData || !signupData.recent_signups) return;
+
+    const missingPackageUsers = signupData.recent_signups.filter(u => u.package_id === null || u.package_id === undefined);
+
+    if (missingPackageUsers.length === 0) {
+        document.getElementById('missingPackagesTable').innerHTML =
+            '<div class="empty-state">✅ 패키지 누락 건이 없습니다.</div>';
+        return;
+    }
+
+    const html = `
+        <table class="detail-table">
+            <thead>
+                <tr>
+                    <th>User ID</th>
+                    <th>Email</th>
+                    <th>Sales</th>
+                    <th>Bonuses</th>
+                    <th>가입일</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${missingPackageUsers.map(user => `
+                    <tr>
+                        <td>${user.user_id}</td>
+                        <td>${user.email}</td>
+                        <td>${user.sales_count} ($${user.total_sales || 0})</td>
+                        <td>${user.bonus_count} ($${user.total_bonuses || 0})</td>
+                        <td>${user.created_at}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+
+    document.getElementById('missingPackagesTable').innerHTML = html;
+}
+
+function renderOverAllocatedTable() {
+    if (!signupData || !signupData.over_allocated_bonuses || signupData.over_allocated_bonuses.length === 0) {
+        document.getElementById('overAllocatedTable').innerHTML =
+            '<div class="empty-state">✅ 보너스 과다배정 건이 없습니다.</div>';
+        return;
+    }
+
+    const html = `
+        <table class="detail-table">
+            <thead>
+                <tr>
+                    <th>User ID</th>
+                    <th>Email</th>
+                    <th>Sale ID</th>
+                    <th>매출 금액</th>
+                    <th>보너스 합계</th>
+                    <th>배정 비율</th>
+                    <th>매출일</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${signupData.over_allocated_bonuses.map(record => {
+                    const percentageColor = record.bonus_percentage >= 100 ? '#ef4444' : '#f59e0b';
+                    return `
+                        <tr>
+                            <td>${record.user_id}</td>
+                            <td>${record.email}</td>
+                            <td>${record.sale_id}</td>
+                            <td>$${record.sale_amount}</td>
+                            <td style="font-weight: 600; color: ${percentageColor};">$${record.total_bonuses}</td>
+                            <td style="font-weight: 700; color: ${percentageColor};">${record.bonus_percentage}%</td>
+                            <td>${record.sale_date}</td>
+                        </tr>
+                    `;
+                }).join('')}
+            </tbody>
+        </table>
+    `;
+
+    document.getElementById('overAllocatedTable').innerHTML = html;
+}
+
+function renderMissingSalesTable() {
+    if (!signupData || !signupData.missing_sales || signupData.missing_sales.length === 0) {
+        document.getElementById('missingSalesTable').innerHTML =
+            '<div class="empty-state">✅ Sales 누락 건이 없습니다.</div>';
+        return;
+    }
+
+    const html = `
+        <table class="detail-table">
+            <thead>
+                <tr>
+                    <th>User ID</th>
+                    <th>Email</th>
+                    <th>Package ID</th>
+                    <th>가입일</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${signupData.missing_sales.map(user => `
+                    <tr>
+                        <td>${user.user_id}</td>
+                        <td>${user.email}</td>
+                        <td>${user.package_id}</td>
+                        <td>${user.created_at}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+
+    document.getElementById('missingSalesTable').innerHTML = html;
+}
+
+function renderMissingBonusesTable() {
+    if (!signupData || !signupData.missing_bonuses || signupData.missing_bonuses.length === 0) {
+        document.getElementById('missingBonusesTable').innerHTML =
+            '<div class="empty-state">✅ 보너스 누락 건이 없습니다.</div>';
+        return;
+    }
+
+    const html = `
+        <table class="detail-table">
+            <thead>
+                <tr>
+                    <th>User ID</th>
+                    <th>Email</th>
+                    <th>Sale ID</th>
+                    <th>금액</th>
+                    <th>매출일</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${signupData.missing_bonuses.map(record => `
+                    <tr>
+                        <td>${record.user_id}</td>
+                        <td>${record.email}</td>
+                        <td>${record.sale_id}</td>
+                        <td>$${record.amount}</td>
+                        <td>${record.sale_date}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+
+    document.getElementById('missingBonusesTable').innerHTML = html;
+}
+
+// 페이지 로드 시 데이터 로드
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadSignupStats);
+} else {
+    loadSignupStats();
+}
+
+// 5분마다 자동 새로고침
+setInterval(loadSignupStats, 5 * 60 * 1000);
+
+// Sales 누락 일괄 처리
+async function fixAllMissingSales() {
+    if (!signupData || !signupData.missing_sales || signupData.missing_sales.length === 0) {
+        alert('처리할 Sales 누락 건이 없습니다.');
+        return;
+    }
+
+    if (!confirm(`${signupData.missing_sales.length}건의 Sales 누락 건을 처리하시겠습니까?`)) {
+        return;
+    }
+
+    let successCount = 0;
+    let failCount = 0;
+    const results = [];
+
+    console.log('=== Sales 누락 일괄 처리 시작 ===');
+
+    for (const user of signupData.missing_sales) {
+        try {
+            console.log(`처리 중: ${user.user_id} (ID: ${user.id})`);
+
+            const response = await fetch('/admin/api/fix-missing-sales.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: user.id })
+            });
+
+            const result = await response.json();
+            console.log(`응답:`, result);
+
+            if (result.success) {
+                successCount++;
+                results.push(`✅ ${user.user_id}: ${result.message}`);
+                console.log(`✅ 성공: ${user.user_id}`);
+            } else {
+                failCount++;
+                results.push(`❌ ${user.user_id}: ${result.message}`);
+                console.error(`❌ 실패: ${user.user_id} - ${result.message}`);
+            }
+        } catch (error) {
+            failCount++;
+            results.push(`❌ ${user.user_id}: ${error.message}`);
+            console.error(`❌ 에러: ${user.user_id}`, error);
+        }
+    }
+
+    console.log('=== 처리 완료 ===');
+    console.log(`성공: ${successCount}건, 실패: ${failCount}건`);
+    console.log('결과 상세:', results);
+
+    alert(`처리 완료!\n성공: ${successCount}건\n실패: ${failCount}건\n\n상세 내용은 브라우저 콘솔(F12)을 확인하세요.`);
+
+    // 데이터 새로고침
+    await loadSignupStats();
+}
+
+// 보너스 누락 일괄 처리
+async function fixAllMissingBonuses() {
+    if (!signupData || !signupData.missing_bonuses || signupData.missing_bonuses.length === 0) {
+        alert('처리할 보너스 누락 건이 없습니다.');
+        return;
+    }
+
+    if (!confirm(`${signupData.missing_bonuses.length}건의 보너스 누락 건을 처리하시겠습니까?`)) {
+        return;
+    }
+
+    let successCount = 0;
+    let failCount = 0;
+    const results = [];
+
+    console.log('=== 보너스 누락 일괄 처리 시작 ===');
+
+    for (const record of signupData.missing_bonuses) {
+        try {
+            console.log(`처리 중: ${record.user_id} (ID: ${record.id})`);
+
+            const response = await fetch('/admin/api/fix-missing-bonuses.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: record.id })
+            });
+
+            const result = await response.json();
+            console.log(`응답:`, result);
+
+            if (result.success) {
+                successCount++;
+                results.push(`✅ ${record.user_id}: ${result.data.total_distributed} 분배`);
+                console.log(`✅ 성공: ${record.user_id}`);
+            } else {
+                failCount++;
+                results.push(`❌ ${record.user_id}: ${result.message}`);
+                console.error(`❌ 실패: ${record.user_id} - ${result.message}`);
+            }
+        } catch (error) {
+            failCount++;
+            results.push(`❌ ${record.user_id}: ${error.message}`);
+            console.error(`❌ 에러: ${record.user_id}`, error);
+        }
+    }
+
+    console.log('=== 처리 완료 ===');
+    console.log(`성공: ${successCount}건, 실패: ${failCount}건`);
+    console.log('결과 상세:', results);
+
+    alert(`처리 완료!\n성공: ${successCount}건\n실패: ${failCount}건\n\n상세 내용은 브라우저 콘솔(F12)을 확인하세요.`);
+
+    // 데이터 새로고침
+    await loadSignupStats();
+}
+
+// 패키지 누락 일괄 처리
+async function fixAllMissingPackages() {
+    if (!signupData || !signupData.recent_signups) {
+        alert('데이터를 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
+        return;
+    }
+
+    const missingPackageUsers = signupData.recent_signups.filter(u => u.package_id === null || u.package_id === undefined);
+
+    if (missingPackageUsers.length === 0) {
+        alert('처리할 패키지 누락 건이 없습니다.');
+        return;
+    }
+
+    if (!confirm(`${missingPackageUsers.length}건의 패키지 누락 건을 처리하시겠습니까?\n(package_id를 2로 설정합니다)`)) {
+        return;
+    }
+
+    let successCount = 0;
+    let failCount = 0;
+    const results = [];
+
+    console.log('=== 패키지 누락 일괄 처리 시작 ===');
+
+    for (const user of missingPackageUsers) {
+        try {
+            console.log(`처리 중: ${user.user_id} (ID: ${user.id})`);
+
+            const response = await fetch('/admin/api/fix-missing-packages.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: user.id })
+            });
+
+            const result = await response.json();
+            console.log(`응답:`, result);
+
+            if (result.success) {
+                successCount++;
+                results.push(`✅ ${user.user_id}: ${result.message}`);
+                console.log(`✅ 성공: ${user.user_id}`);
+            } else {
+                failCount++;
+                results.push(`❌ ${user.user_id}: ${result.message}`);
+                console.error(`❌ 실패: ${user.user_id} - ${result.message}`);
+            }
+        } catch (error) {
+            failCount++;
+            results.push(`❌ ${user.user_id}: ${error.message}`);
+            console.error(`❌ 에러: ${user.user_id}`, error);
+        }
+    }
+
+    console.log('=== 처리 완료 ===');
+    console.log(`성공: ${successCount}건, 실패: ${failCount}건`);
+    console.log('결과 상세:', results);
+
+    alert(`처리 완료!\n성공: ${successCount}건\n실패: ${failCount}건\n\n상세 내용은 브라우저 콘솔(F12)을 확인하세요.`);
+
+    // 데이터 새로고침
+    await loadSignupStats();
+}
+</script>

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원 목록 엑셀 다운로드</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .info-box h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+            color: #555;
+            line-height: 1.8;
+        }
+
+        .download-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .download-btn:active {
+            transform: translateY(0);
+        }
+
+        .download-btn.secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+        }
+
+        .download-btn.secondary:hover {
+            box-shadow: 0 6px 20px rgba(245, 87, 108, 0.6);
+        }
+
+        .icon {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        .status {
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 회원 목록 엑셀 다운로드</h1>
+        <p class="subtitle">WeOne 회원 데이터를 엑셀 파일로 다운로드합니다</p>
+
+        <div class="info-box">
+            <h3>📋 포함되는 데이터</h3>
+            <ul>
+                <li>아이디, 추천인, 후원인, 위치</li>
+                <li>추천 개수</li>
+                <li>캐시 (잔액/인출)</li>
+                <li>아바타 (금액/개수)</li>
+                <li>4가지 수당 발생 내역</li>
+            </ul>
+        </div>
+
+        <button class="download-btn" onclick="downloadSimple()">
+            <span class="icon">📥</span>
+            간편 다운로드 (빠름)
+        </button>
+
+        <button class="download-btn secondary" onclick="downloadFull()">
+            <span class="icon">📊</span>
+            전체 다운로드 (상세)
+        </button>
+
+        <div id="status" class="status"></div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="memberCount">-</div>
+                <div class="stat-label">전체 회원</div>
+            </div>
+            <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <div class="stat-number" id="activeCount">-</div>
+                <div class="stat-label">활성 회원</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 페이지 로드 시 회원 수 조회
+        window.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // 회원 수 조회 (임시 - 실제로는 별도 API 필요)
+                // const response = await fetch('../api/admin/get-member-stats.php');
+                // const data = await response.json();
+                // document.getElementById('memberCount').textContent = data.total;
+                // document.getElementById('activeCount').textContent = data.active;
+
+                // 임시 데이터
+                document.getElementById('memberCount').textContent = '?';
+                document.getElementById('activeCount').textContent = '?';
+            } catch (error) {
+                console.error('회원 수 조회 실패:', error);
+            }
+        });
+
+        // 간편 다운로드
+        function downloadSimple() {
+            showStatus('success', '📥 다운로드를 시작합니다...');
+
+            setTimeout(() => {
+                window.location.href = '../api/admin/export-members-excel-simple.php';
+            }, 500);
+        }
+
+        // 전체 다운로드 (Simple 버전으로 변경)
+        function downloadFull() {
+            showStatus('success', '📊 상세 데이터를 다운로드합니다...');
+
+            setTimeout(() => {
+                window.location.href = '../api/admin/export-members-excel-simple.php';
+            }, 500);
+        }
+
+        // 상태 메시지 표시
+        function showStatus(type, message) {
+            const statusEl = document.getElementById('status');
+            statusEl.className = 'status ' + type;
+            statusEl.textContent = message;
+
+            if (type === 'success') {
+                setTimeout(() => {
+                    statusEl.style.display = 'none';
+                }, 3000);
+            }
+        }
+    </script>
+</body>
+</html>

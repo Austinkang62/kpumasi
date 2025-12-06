@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>조직도 - We One</title>
+    <link rel="stylesheet" href="../css/k-pumasi-modern.css">
+    <script src="../js/auth-check.js"></script>
+    <style>
+        body {
+            min-height: 100vh;
+            overflow-x: auto;
+            padding: 0;
+        }
+
+        /* 고정 헤더 */
+        .org-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: var(--we1-bg-card);
+            padding: 20px 40px;
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.2);
+            border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .header-content {
+            max-width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-link {
+            padding: 10px 24px;
+            background: transparent;
+            border-radius: 100px;
+            color: var(--we1-text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: var(--we1-transition);
+            border: 1px solid transparent;
+        }
+
+        .nav-link:hover {
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--we1-gold);
+            border-color: rgba(212, 175, 55, 0.3);
+        }
+
+        .nav-link.active {
+            background: var(--we1-gradient-primary);
+            color: var(--we1-navy-deep);
+        }
+
+        /* 조직도 컨테이너 */
+        .org-container {
+            position: relative;
+            padding: 40px 20px;
+            min-height: calc(100vh - 100px);
+        }
+
+        .org-chart {
+            position: relative;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        /* 조직도 카드 */
+        .org-card {
+            position: absolute;
+            width: 180px;
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.05), rgba(255, 0, 255, 0.05));
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 16px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 20px rgba(0, 255, 255, 0.2);
+        }
+
+        .org-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--we1-gold);
+            box-shadow: 0 8px 30px rgba(212, 175, 55, 0.4);
+        }
+
+        .card-avatar {
+            font-size: 32px;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .card-user-id {
+            font-size: 14px;
+            font-weight: 700;
+            color: #00ffff;
+            text-align: center;
+            margin-bottom: 4px;
+        }
+
+        .card-email {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.6);
+            text-align: center;
+            margin-bottom: 8px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .card-stats {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.5);
+            text-align: center;
+        }
+
+        /* SVG 연결선 */
+        .org-connections {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .connection-line {
+            stroke: rgba(0, 255, 255, 0.3);
+            stroke-width: 2;
+            fill: none;
+        }
+
+        /* 로딩 */
+        .loading {
+            text-align: center;
+            padding: 100px 20px;
+            color: #00ffff;
+            font-size: 18px;
+        }
+
+        /* 에러 메시지 */
+        .error-message {
+            text-align: center;
+            padding: 60px 20px;
+            color: #ff00ff;
+        }
+    </style>
+</head>
+<body>
+    <!-- 배경 -->
+    <div class="kpumasi-background">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+        <div id="particles"></div>
+    </div>
+
+    <!-- 헤더 -->
+    <div class="org-header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="kpumasi-logo" style="width: 50px; height: 50px;">
+                    <div class="logo-circle logo-circle-1"></div>
+                    <div class="logo-circle logo-circle-2"></div>
+                    <div class="logo-center" style="width: 25px; height: 25px; font-size: 12px;">W1</div>
+                </div>
+                <span style="font-size: 24px; font-weight: 800; color: var(--we1-text-primary); font-family: 'Playfair Display', serif; margin-left: 15px;">조직도</span>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="dashboard.html" class="nav-link">대시보드</a>
+                <a href="organization.html" class="nav-link active">조직도</a>
+                <a href="purchase.html" class="nav-link">패키지</a>
+                <a href="withdrawal.html" class="nav-link">출금</a>
+                <a href="#" class="nav-link" onclick="logout()">로그아웃</a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- 조직도 -->
+    <div class="org-container">
+        <div id="orgChart" class="org-chart">
+            <div class="loading">조직도를 불러오는 중...</div>
+        </div>
+    </div>
+
+    <script>
+        // 파티클 생성
+        function createParticles() {
+            const container = document.getElementById('particles');
+            if (!container) return;
+
+            const particleCount = 30;
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 15) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // 조직도 로드
+        async function loadOrganizationTree() {
+            const token = localStorage.getItem('neural_token');
+
+            if (!token) {
+                alert('로그인이 필요합니다.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const response = await fetch('../api/organization/get-tree.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ session_token: token })
+                });
+
+                const result = await response.json();
+
+                console.log('조직도 데이터:', result);
+
+                if (result.success && result.data) {
+                    renderOrganizationChart(result.data);
+                } else {
+                    document.getElementById('orgChart').innerHTML =
+                        '<div class="error-message">' + (result.message || '조직도를 불러올 수 없습니다.') + '</div>';
+                }
+            } catch (error) {
+                console.error('조직도 로드 오류:', error);
+                document.getElementById('orgChart').innerHTML =
+                    '<div class="error-message">네트워크 오류가 발생했습니다.</div>';
+            }
+        }
+
+        // 조직도 렌더링
+        function renderOrganizationChart(data) {
+            console.log('렌더링 시작:', data);
+            console.log('Children:', data.children);
+
+            const orgChart = document.getElementById('orgChart');
+            orgChart.innerHTML = '';
+
+            if (!data) {
+                orgChart.innerHTML = '<div class="error-message">데이터가 없습니다.</div>';
+                return;
+            }
+
+            // 레이아웃 설정
+            const nodeWidth = 180;
+            const nodeHeight = 150;
+            const horizontalGap = 30;
+            const verticalGap = 200;
+
+            const nodePositions = new Map();
+            const connections = [];
+            let nextX = 0;
+
+            // 좌표 계산
+            function calculatePositions(node, depth = 0, parent = null) {
+                if (parent) {
+                    connections.push({ parent, child: node });
+                }
+
+                if (node.children && node.children.length > 0) {
+                    node.children.forEach(child => {
+                        calculatePositions(child, depth + 1, node);
+                    });
+
+                    const childPositions = node.children.map(child => nodePositions.get(child.id).x);
+                    const x = (Math.min(...childPositions) + Math.max(...childPositions)) / 2;
+                    const y = depth * verticalGap;
+
+                    nodePositions.set(node.id, { x, y, node });
+                } else {
+                    const x = nextX;
+                    nextX += nodeWidth + horizontalGap;
+                    const y = depth * verticalGap;
+
+                    nodePositions.set(node.id, { x, y, node });
+                }
+            }
+
+            calculatePositions(data, 0);
+
+            // X 좌표 오프셋
+            const allX = Array.from(nodePositions.values()).map(p => p.x);
+            const minX = Math.min(...allX);
+            const offsetX = -minX + 50;
+
+            // 노드 렌더링
+            nodePositions.forEach((pos, nodeId) => {
+                const node = pos.node;
+                const depth = Math.round(pos.y / verticalGap);
+
+                const card = document.createElement('div');
+                card.className = 'org-card';
+                card.style.left = (pos.x + offsetX) + 'px';
+                card.style.top = pos.y + 'px';
+
+                const emoji = depth === 0 ? '👑' : '👤';
+
+                card.innerHTML = `
+                    <div class="card-avatar">${emoji}</div>
+                    <div class="card-user-id">${node.user_id || 'Unknown'}</div>
+                    <div class="card-email">${node.email || '-'}</div>
+                    <div class="card-stats">직추천: ${node.direct_referrals_count || 0}명</div>
+                `;
+
+                orgChart.appendChild(card);
+            });
+
+            // SVG 연결선
+            if (connections.length > 0) {
+                const maxX = Math.max(...allX) + offsetX + nodeWidth;
+                const maxY = Math.max(...Array.from(nodePositions.values()).map(p => p.y)) + nodeHeight;
+
+                const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                svg.setAttribute('class', 'org-connections');
+                svg.setAttribute('width', maxX);
+                svg.setAttribute('height', maxY);
+                svg.style.position = 'absolute';
+                svg.style.top = '0';
+                svg.style.left = '0';
+
+                connections.forEach(conn => {
+                    const parentPos = nodePositions.get(conn.parent.id);
+                    const childPos = nodePositions.get(conn.child.id);
+
+                    const x1 = parentPos.x + offsetX + nodeWidth / 2;
+                    const y1 = parentPos.y + nodeHeight;
+                    const x2 = childPos.x + offsetX + nodeWidth / 2;
+                    const y2 = childPos.y;
+
+                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    const d = `M ${x1} ${y1} L ${x2} ${y2}`;
+                    path.setAttribute('d', d);
+                    path.setAttribute('class', 'connection-line');
+
+                    svg.appendChild(path);
+                });
+
+                orgChart.insertBefore(svg, orgChart.firstChild);
+            }
+
+            console.log('렌더링 완료');
+        }
+
+        // 로그아웃
+        function logout() {
+            if (confirm('로그아웃 하시겠습니까?')) {
+                localStorage.removeItem('neural_token');
+                localStorage.removeItem('neural_user');
+                window.location.href = 'login.html';
+            }
+        }
+
+        // 초기화
+        window.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            loadOrganizationTree();
+        });
+    </script>
+</body>
+</html>

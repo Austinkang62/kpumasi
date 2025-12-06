@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>추천 링크 테스트 - We One</title>
+    <link rel="stylesheet" href="../css/k-pumasi-modern.css">
+    <style>
+        body {
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        .test-card {
+            background: var(--we1-bg-card);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 50px;
+            box-shadow: var(--we1-shadow-gold);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            margin-bottom: 30px;
+        }
+
+        .test-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--we1-gold);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .referral-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 25px;
+            border-radius: 16px;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            margin: 20px 0;
+        }
+
+        .user-code-label {
+            font-size: 14px;
+            color: var(--we1-text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .user-code-input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            color: var(--we1-text-primary);
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .link-display {
+            background: rgba(212, 175, 55, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--we1-gold);
+            margin: 15px 0;
+            word-break: break-all;
+            color: var(--we1-gold);
+            font-size: 14px;
+            font-family: monospace;
+        }
+
+        .copy-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--we1-gradient-primary);
+            color: var(--we1-navy-deep);
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+        }
+
+        .copy-btn.copied {
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: white;
+        }
+
+        .example-links {
+            margin-top: 30px;
+        }
+
+        .example-link {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            border-radius: 8px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .example-link:hover {
+            background: rgba(212, 175, 55, 0.1);
+            transform: translateX(5px);
+        }
+
+        .example-link a {
+            color: var(--we1-gold);
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .info-text {
+            color: var(--we1-text-secondary);
+            font-size: 13px;
+            margin-top: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- 배경 -->
+    <div class="kpumasi-background">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <div class="test-container">
+        <!-- 링크 생성기 -->
+        <div class="test-card">
+            <h1 class="test-title">🔗 추천 링크 생성기</h1>
+
+            <div class="referral-box">
+                <div class="user-code-label">회원 코드 입력</div>
+                <input type="text"
+                       id="userCodeInput"
+                       class="user-code-input"
+                       placeholder="예: ABCD1234"
+                       maxlength="8">
+
+                <div class="user-code-label">생성된 추천 링크</div>
+                <div id="generatedLink" class="link-display">
+                    코드를 입력하면 자동으로 생성됩니다
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button id="copyButton" class="copy-btn" style="flex: 1;">
+                        📋 링크 복사하기
+                    </button>
+                    <button id="openButton" class="copy-btn" style="flex: 1; background: linear-gradient(135deg, #10B981, #059669);">
+                        🚀 추천링크 열기
+                    </button>
+                </div>
+
+                <div class="info-text">
+                    이 링크를 공유하면 자동으로 추천코드가 입력됩니다
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const userCodeInput = document.getElementById('userCodeInput');
+        const generatedLink = document.getElementById('generatedLink');
+        const copyButton = document.getElementById('copyButton');
+
+        let currentLink = '';
+
+        // =====================================================================
+        // 로그인 세션에서 사용자 정보 가져오기
+        // =====================================================================
+        function loadUserSession() {
+            try {
+                // localStorage에서 사용자 정보 직접 읽기
+                const userStr = localStorage.getItem('neural_user');
+
+                if (!userStr) {
+                    console.log('로그인 정보 없음');
+                    return null;
+                }
+
+                const user = JSON.parse(userStr);
+
+                if (user && user.user_id) {
+                    return user;
+                }
+
+                return null;
+            } catch (error) {
+                console.error('세션 로드 오류:', error);
+                return null;
+            }
+        }
+
+        // 페이지 로드 시 자동으로 사용자 코드 설정
+        window.addEventListener('DOMContentLoaded', () => {
+            const user = loadUserSession();
+
+            if (user && user.user_id) {
+                // 자동으로 로그인한 사용자 코드 입력
+                userCodeInput.value = user.user_id;
+                userCodeInput.style.background = 'rgba(212, 175, 55, 0.15)';
+                userCodeInput.style.borderColor = 'var(--we1-gold)';
+                userCodeInput.readOnly = true; // 수정 불가
+
+                // 링크 자동 생성 (추천코드만 포함)
+                const baseUrl = window.location.origin + window.location.pathname.replace('referral-link-test.html', 'signup.html');
+                currentLink = `${baseUrl}?referral=${user.user_id}`;
+                generatedLink.textContent = currentLink;
+                generatedLink.style.color = 'var(--we1-gold)';
+
+                // 환영 메시지
+                const infoDiv = document.createElement('div');
+                infoDiv.className = 'info-text';
+                infoDiv.style.marginTop = '15px';
+                infoDiv.style.color = 'var(--we1-gold)';
+                infoDiv.innerHTML = `✨ <strong>${user.user_id}</strong> 님의 추천 링크입니다<br><small style="font-size: 12px; color: var(--we1-text-secondary);">(추천코드 자동 입력)</small>`;
+                userCodeInput.parentElement.insertBefore(infoDiv, userCodeInput.nextSibling);
+            } else {
+                // 로그인하지 않은 경우 안내
+                const warningDiv = document.createElement('div');
+                warningDiv.style.padding = '12px';
+                warningDiv.style.background = 'rgba(239, 68, 68, 0.1)';
+                warningDiv.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+                warningDiv.style.borderRadius = '8px';
+                warningDiv.style.color = '#FCA5A5';
+                warningDiv.style.fontSize = '13px';
+                warningDiv.style.marginBottom = '15px';
+                warningDiv.innerHTML = '⚠️ 로그인 후 자동으로 회원코드가 입력됩니다.<br><a href="login.html" style="color: var(--we1-gold); text-decoration: underline;">로그인하기 →</a>';
+                userCodeInput.parentElement.insertBefore(warningDiv, userCodeInput);
+            }
+        });
+
+        // 코드 입력 시 링크 생성
+        userCodeInput.addEventListener('input', (e) => {
+            const code = e.target.value.trim().toUpperCase();
+
+            if (code) {
+                // 현재 도메인 기준으로 링크 생성 (추천코드만 포함)
+                const baseUrl = window.location.origin + window.location.pathname.replace('referral-link-test.html', 'signup.html');
+                currentLink = `${baseUrl}?referral=${code}`;
+                generatedLink.textContent = currentLink;
+                generatedLink.style.color = 'var(--we1-gold)';
+            } else {
+                currentLink = '';
+                generatedLink.textContent = '코드를 입력하면 자동으로 생성됩니다';
+                generatedLink.style.color = 'var(--we1-text-secondary)';
+            }
+
+            // 복사 버튼 상태 리셋
+            copyButton.textContent = '📋 링크 복사하기';
+            copyButton.classList.remove('copied');
+        });
+
+        // 링크 복사
+        copyButton.addEventListener('click', async () => {
+            if (!currentLink) {
+                alert('❌ 먼저 회원 코드를 입력해주세요');
+                return;
+            }
+
+            try {
+                await navigator.clipboard.writeText(currentLink);
+
+                // 버튼 상태 변경
+                copyButton.textContent = '✅ 복사 완료!';
+                copyButton.classList.add('copied');
+
+                // 복사 완료 알림 메시지
+                alert('✅ 추천 링크가 복사되었습니다!\n\n' + currentLink + '\n\n이제 원하는 곳에 붙여넣기(Ctrl+V) 하세요.');
+
+                setTimeout(() => {
+                    copyButton.textContent = '📋 링크 복사하기';
+                    copyButton.classList.remove('copied');
+                }, 3000);
+            } catch (err) {
+                console.error('Clipboard API 실패, 폴백 시도:', err);
+
+                // 폴백: 임시 input 생성하여 복사
+                const tempInput = document.createElement('input');
+                tempInput.value = currentLink;
+                tempInput.style.position = 'fixed';
+                tempInput.style.left = '-9999px';
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                tempInput.setSelectionRange(0, 99999); // 모바일 지원
+
+                let success = false;
+                try {
+                    success = document.execCommand('copy');
+                } catch (e) {
+                    console.error('execCommand 실패:', e);
+                }
+
+                document.body.removeChild(tempInput);
+
+                if (success) {
+                    copyButton.textContent = '✅ 복사 완료!';
+                    copyButton.classList.add('copied');
+                    alert('✅ 추천 링크가 복사되었습니다!\n\n' + currentLink + '\n\n이제 원하는 곳에 붙여넣기(Ctrl+V) 하세요.');
+
+                    setTimeout(() => {
+                        copyButton.textContent = '📋 링크 복사하기';
+                        copyButton.classList.remove('copied');
+                    }, 3000);
+                } else {
+                    alert('❌ 복사에 실패했습니다.\n\n수동으로 복사해주세요:\n\n' + currentLink);
+                }
+            }
+        });
+
+        // 추천링크 열기
+        const openButton = document.getElementById('openButton');
+        openButton.addEventListener('click', () => {
+            if (!currentLink) {
+                alert('❌ 먼저 회원 코드를 입력해주세요');
+                return;
+            }
+
+            // 새 창에서 추천링크 열기
+            window.open(currentLink, '_blank');
+        });
+
+        // 대문자 변환
+        userCodeInput.addEventListener('blur', (e) => {
+            e.target.value = e.target.value.toUpperCase();
+        });
+    </script>
+</body>
+</html>

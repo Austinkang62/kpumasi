@@ -1,0 +1,1848 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Organization Chart - AI BTC BOT</title>
+    <script src="../js/auth-check.js"></script>
+    <script src="js/language.js"></script>
+    <link rel="stylesheet" href="organization-modal.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #000;
+            color: #fff;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        /* 신경망 배경 애니메이션 */
+        .neural-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background: radial-gradient(ellipse at center, #0a0a1f 0%, #000000 100%);
+        }
+
+        .neural-grid {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes gridPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+
+        /* 펄스 노드들 */
+        .pulse-node {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #00ffff;
+            box-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff;
+            animation: nodePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes nodePulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(2);
+                opacity: 0.5;
+            }
+        }
+
+        /* 신경망 연결선 */
+        .neural-connections {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .connection-line {
+            position: absolute;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #00ffff, transparent);
+            animation: lineFlow 3s linear infinite;
+            opacity: 0.3;
+        }
+
+        @keyframes lineFlow {
+            0% { transform: scaleX(0); opacity: 0; }
+            50% { opacity: 0.5; }
+            100% { transform: scaleX(1); opacity: 0; }
+        }
+
+        /* 컨테이너 */
+        .container {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 헤더 - 플로팅 네비게이션 */
+        .floating-nav {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        /* 페이지 타이틀 */
+        .page-header-title {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            pointer-events: none;
+            text-align: center;
+        }
+
+        .page-title-main {
+            display: block;
+            font-size: 36px;
+            font-weight: 300;
+            letter-spacing: 8px;
+            background: linear-gradient(45deg, #00ffff, #ff00ff, #ffff00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: titleGlow 3s ease-in-out infinite;
+            position: relative;
+        }
+
+        .page-title-main::after {
+            content: attr(data-text);
+            position: absolute;
+            left: 2px;
+            top: 2px;
+            background: linear-gradient(45deg, #00ffff, #ff00ff, #ffff00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            opacity: 0.5;
+            mix-blend-mode: screen;
+            animation: glitch 3s infinite;
+            z-index: -1;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(-1px, 1px); }
+            40% { transform: translate(1px, -1px); }
+            60% { transform: translate(-1px, -1px); }
+            80% { transform: translate(1px, 1px); }
+        }
+
+        /* 백 버튼 */
+        .back-button {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: #00ffff;
+            animation: floatButton 3s ease-in-out infinite;
+        }
+
+        .back-button:hover {
+            background: rgba(0, 255, 255, 0.2);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+            transform: translateY(-2px) scale(1.05);
+            border-color: #00ffff;
+        }
+
+        @keyframes floatButton {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        
+
+        /* 홈 버튼 */
+        .home-button {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: #00ffff;
+            position: relative;
+            animation: floatButton 3s ease-in-out infinite 0.5s;
+        }
+
+        .home-button:hover {
+            background: rgba(0, 255, 255, 0.2);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+            transform: translateY(-2px) scale(1.05);
+            border-color: #00ffff;
+        }
+
+        .home-button:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        /* 미니 펄스 로고 */
+        .mini-pulse {
+            position: relative;
+            width: 30px;
+            height: 30px;
+        }
+
+        .mini-ring {
+            position: absolute;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: miniRingRotate 3s linear infinite;
+        }
+
+        .mini-ring:nth-child(1) {
+            width: 100%;
+            height: 100%;
+            border-top-color: #00ffff;
+            animation-duration: 2s;
+        }
+
+        .mini-ring:nth-child(2) {
+            width: 70%;
+            height: 70%;
+            top: 15%;
+            left: 15%;
+            border-right-color: #ff00ff;
+            animation-duration: 3s;
+            animation-direction: reverse;
+        }
+
+        .mini-core {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, #00ffff 0%, transparent 70%);
+            border-radius: 50%;
+            animation: miniCorePulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes miniRingRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes miniCorePulse {
+            0%, 100% {
+                box-shadow: 0 0 10px #00ffff;
+            }
+            50% {
+                box-shadow: 0 0 20px #00ffff, 0 0 30px #00ffff;
+            }
+        }
+
+        
+
+        /* 메뉴 타이틀 */
+        
+
+        
+
+        
+
+        /* 서브메뉴 */
+        
+
+        
+
+        
+
+        
+
+        /* 콘텐츠 영역 */
+        .content-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 100px 20px 100px;
+            min-height: 100vh;
+        }
+
+        .content {
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        .content-title {
+            font-size: 48px;
+            font-weight: 300;
+            letter-spacing: 8px;
+            margin-bottom: 60px;
+            background: linear-gradient(45deg, #00ffff, #ff00ff, #ffff00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            animation: titleGlow 3s ease-in-out infinite;
+        }
+
+        /* 조직도 트리 */
+        .org-chart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 60px;
+            padding-bottom: 60px;
+            position: relative;
+        }
+
+        /* SVG 연결선 컨테이너 */
+        .org-connections {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+            overflow: visible;
+        }
+
+        /* 모든 연결선 스타일 통일 */
+        .org-connection-line,
+        .org-connection-vertical,
+        .org-connection-horizontal {
+            stroke: rgba(0, 255, 255, 0.6);
+            stroke-width: 1;
+            fill: none;
+        }
+
+        /* 연결 지점 마커 - 비어있는 원 */
+        .connection-junction {
+            fill: rgba(0, 255, 255, 0.3);
+            stroke: rgba(0, 255, 255, 1);
+            stroke-width: 1.5;
+            filter: drop-shadow(0 0 5px rgba(0, 255, 255, 0.8));
+        }
+
+        .org-level {
+            position: relative;
+            width: 100%;
+            height: 0;
+        }
+
+        .org-card {
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.05), rgba(255, 0, 255, 0.05));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 15px;
+            width: 180px;
+            transition: all 0.4s;
+            position: absolute;
+            animation: cardFadeIn 0.6s ease-out backwards;
+            z-index: 1;
+        }
+
+        @keyframes cardFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 2가지 컬러로 번갈아가며 표시 */
+        .org-card:nth-child(odd) {
+            border-color: rgba(0, 255, 255, 0.5);
+        }
+
+        .org-card:nth-child(even) {
+            border-color: rgba(255, 0, 255, 0.5);
+        }
+
+        /* 매출 상태에 따른 카드 배경색 및 테두리 */
+        .org-card.sales-100 {
+            background: linear-gradient(135deg, rgba(255, 100, 100, 0.12), rgba(220, 80, 80, 0.08)) !important;
+            border: 2px solid rgba(255, 100, 100, 0.6) !important;
+            box-shadow: 0 0 20px rgba(255, 100, 100, 0.2);
+        }
+
+        .org-card.sales-50 {
+            background: linear-gradient(135deg, rgba(255, 220, 0, 0.12), rgba(240, 200, 0, 0.08)) !important;
+            border: 2px solid rgba(255, 220, 0, 0.6) !important;
+            box-shadow: 0 0 20px rgba(255, 220, 0, 0.2);
+        }
+
+        .org-card.has-avatar {
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.12), rgba(0, 153, 255, 0.08)) !important;
+            border: 2px solid rgba(0, 255, 255, 0.6) !important;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+        }
+
+        .org-card.no-sales {
+            background: linear-gradient(135deg, rgba(40, 40, 40, 0.15), rgba(30, 30, 30, 0.1)) !important;
+            border: 2px solid rgba(80, 80, 80, 0.4) !important;
+            box-shadow: 0 0 10px rgba(60, 60, 60, 0.1);
+        }
+
+        .org-card:hover {
+            box-shadow: 0 20px 60px rgba(0, 255, 255, 0.2);
+            transform: translateY(-5px);
+        }
+
+        /* 상태별 hover 효과 강화 */
+        .org-card.sales-100:hover {
+            box-shadow: 0 20px 60px rgba(255, 100, 100, 0.4) !important;
+        }
+
+        .org-card.sales-50:hover {
+            box-shadow: 0 20px 60px rgba(255, 220, 0, 0.4) !important;
+        }
+
+        .org-card.has-avatar:hover {
+            box-shadow: 0 20px 60px rgba(0, 255, 255, 0.4) !important;
+        }
+
+        .org-card.no-sales:hover {
+            box-shadow: 0 20px 60px rgba(80, 80, 80, 0.3) !important;
+        }
+
+        .org-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .org-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00ffff, #ff00ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+            transition: all 0.3s;
+        }
+
+        /* 매출액에 따른 아바타 색상 */
+        .org-avatar.no-sales {
+            background: linear-gradient(135deg, rgba(20, 20, 20, 0.3), rgba(30, 30, 30, 0.3));
+            border: 2px solid rgba(80, 80, 80, 0.5);
+        }
+
+        .org-avatar.has-avatar {
+            background: linear-gradient(135deg, #00ffff, #0099ff);
+            border: 2px solid #00ffff;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        .org-avatar.sales-50 {
+            background: linear-gradient(135deg, #ffdc00, #f0c800);
+            border: 2px solid #ffdc00;
+            box-shadow: 0 0 10px rgba(255, 220, 0, 0.5);
+        }
+
+        .org-avatar.sales-100 {
+            background: linear-gradient(135deg, #ff6464, #dc5050);
+            border: 2px solid #ff6464;
+            box-shadow: 0 0 15px rgba(255, 100, 100, 0.6);
+        }
+
+        .org-name {
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            color: #fff;
+            text-align: left;
+        }
+
+        .org-title {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .org-info {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .org-dept {
+            font-size: 10px;
+            color: #00ffff;
+            background: rgba(0, 255, 255, 0.1);
+            padding: 3px 8px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+
+        .org-stats {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .org-stat-item {
+            font-size: 10px;
+            color: rgba(0, 255, 255, 0.8);
+            background: rgba(0, 255, 255, 0.1);
+            padding: 4px 8px;
+            border-radius: 6px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+        }
+
+        .stat-action-btn {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: rgba(0, 255, 255, 0.2);
+            border: 1px solid rgba(0, 255, 255, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            color: #00ffff;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+
+        .stat-action-btn:hover {
+            background: rgba(0, 255, 255, 0.4);
+            border-color: #00ffff;
+            box-shadow: 0 0 8px rgba(0, 255, 255, 0.6);
+            transform: scale(1.15);
+        }
+
+        .stat-action-btn:active {
+            transform: scale(0.9);
+        }
+
+        .stat-value {
+            flex: 1;
+            text-align: center;
+        }
+
+        .level-indicator {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(0, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            font-weight: 600;
+            color: #00ffff;
+        }
+
+        .node-actions {
+            position: absolute;
+            top: 32px;
+            right: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .node-action-btn {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(0, 255, 255, 0.15);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #00ffff;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .node-action-btn:hover {
+            background: rgba(0, 255, 255, 0.3);
+            border-color: #00ffff;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            transform: scale(1.1);
+        }
+
+        .node-action-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* 매출 범례 */
+        .sales-legend {
+            position: fixed;
+            top: 100px;
+            right: 30px;
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(255, 0, 255, 0.1));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 15px;
+            z-index: 50;
+        }
+
+        .legend-title {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.7);
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .legend-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .legend-icon.no-sales {
+            background: linear-gradient(135deg, rgba(20, 20, 20, 0.3), rgba(30, 30, 30, 0.3));
+            border: 2px solid rgba(80, 80, 80, 0.5);
+        }
+
+        .legend-icon.has-avatar {
+            background: linear-gradient(135deg, #00ffff, #0099ff);
+            border: 2px solid #00ffff;
+        }
+
+        .legend-icon.sales-50 {
+            background: linear-gradient(135deg, #ffdc00, #f0c800);
+            border: 2px solid #ffdc00;
+        }
+
+        .legend-icon.sales-100 {
+            background: linear-gradient(135deg, #ff6464, #dc5050);
+            border: 2px solid #ff6464;
+        }
+
+        /* 하단 영역 */
+        .footer-section {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            background: linear-gradient(180deg, transparent, rgba(0, 10, 31, 0.9));
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(0, 255, 255, 0.1);
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .footer-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .pulse-indicator {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #00ffff;
+            box-shadow: 0 0 10px #00ffff;
+            animation: pulseIndicator 2s ease-in-out infinite;
+        }
+
+        @keyframes pulseIndicator {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.5);
+                opacity: 0.5;
+            }
+        }
+
+        .footer-text {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 2px;
+            font-weight: 300;
+        }
+
+        /* 반응형 */
+        @media (max-width: 768px) {
+            .content-title {
+                font-size: 32px;
+                letter-spacing: 4px;
+            }
+
+            .page-title-main {
+                font-size: 24px;
+                letter-spacing: 4px;
+            }
+
+            .org-level {
+                gap: 20px;
+            }
+
+            .org-card {
+                min-width: 150px;
+                padding: 12px;
+            }
+
+            .sales-legend {
+                top: auto;
+                bottom: 80px;
+                right: 20px;
+                padding: 12px;
+            }
+
+            .legend-title {
+                font-size: 10px;
+            }
+
+            .legend-item {
+                font-size: 9px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-title-main {
+                font-size: 18px;
+                letter-spacing: 3px;
+            }
+        }
+
+        /* 미니 프로그레스 바 (팝업용) */
+        .bonus-progress-container {
+            padding: 15px 0;
+        }
+
+        .bonus-amount {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00ffff, #ffff00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+
+        .mini-progress-wrapper {
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        .mini-progress-bar {
+            display: flex;
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+        }
+
+        .mini-progress-zone {
+            height: 100%;
+        }
+
+        .mini-progress-zone-1 {
+            flex: 1;
+            background: linear-gradient(90deg,
+                rgba(0, 255, 136, 0.3) 0%,
+                rgba(0, 255, 200, 0.4) 100%);
+        }
+
+        .mini-progress-zone-2 {
+            flex: 1;
+            background: linear-gradient(90deg,
+                rgba(0, 255, 200, 0.3) 0%,
+                rgba(0, 255, 255, 0.4) 100%);
+        }
+
+        .mini-progress-zone-3 {
+            flex: 1;
+            background: linear-gradient(90deg,
+                rgba(255, 100, 100, 0.3) 0%,
+                rgba(255, 0, 255, 0.4) 100%);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mini-progress-zone-3::after {
+            content: '아바타 존';
+            font-size: 8px;
+            color: rgba(255, 100, 100, 0.8);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .mini-progress-indicator {
+            position: absolute;
+            top: -2px;
+            bottom: -2px;
+            width: 2px;
+            transition: left 0.5s ease;
+        }
+
+        .mini-progress-marker {
+            width: 2px;
+            height: 100%;
+            background: linear-gradient(180deg, #ffff00, #ff00ff);
+            box-shadow: 0 0 10px rgba(255, 255, 0, 0.8);
+            border-radius: 1px;
+        }
+
+        .mini-progress-divider {
+            position: absolute;
+            top: 0;
+            width: 1px;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.3);
+            z-index: 2;
+        }
+
+        .mini-progress-labels {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            color: #9fa3b8;
+            margin-top: 5px;
+            height: 14px;
+        }
+
+        .mini-label:nth-child(1) {
+            position: absolute;
+            left: 0;
+        }
+
+        .mini-label:nth-child(2) {
+            position: absolute;
+            left: 33.33%;
+            transform: translateX(-50%);
+            color: #00ffff;
+        }
+
+        .mini-label:nth-child(3) {
+            position: absolute;
+            left: 66.67%;
+            transform: translateX(-50%);
+            color: #ff00ff;
+        }
+
+        .mini-label:nth-child(4) {
+            position: absolute;
+            right: 0;
+            color: #ffff00;
+        }
+
+        /* Spinner animation */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 신경망 배경 -->
+    <div class="neural-background">
+        <div class="neural-grid"></div>
+    </div>
+
+    <!-- 펄스 노드들 -->
+    <div class="neural-connections" id="neuralConnections"></div>
+
+    <!-- 플로팅 네비게이션 -->
+    <nav class="floating-nav">
+        <!-- 백 버튼 -->
+        <a href="javascript:history.back()" class="back-button">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+        </a>
+
+        <!-- 페이지 타이틀 (중앙) -->
+        <div class="page-header-title">
+            <span class="page-title-main" data-text="TEAM STRUCTURE">TEAM STRUCTURE</span>
+        </div>
+
+        <!-- 우측 버튼 그룹 -->
+        <div style="display: flex; align-items: center;">
+            <!-- 홈 버튼 (미니 펄스 로고) -->
+            <div class="home-button" id="homeButton">
+                <div class="mini-pulse">
+                    <div class="mini-ring"></div>
+                    <div class="mini-ring"></div>
+                    <div class="mini-core"></div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    
+    <!-- 매출 범례 -->
+    <div class="sales-legend">
+        <div class="legend-title" data-lang="organization.legend">상태</div>
+        <div class="legend-item">
+            <div class="legend-icon sales-100"></div>
+            <span data-lang="organization.over100">Over 100</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-icon sales-50"></div>
+            <span data-lang="organization.over50">Over 50</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-icon has-avatar"></div>
+            <span data-lang="organization.avatar">Avatar</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-icon no-sales"></div>
+            <span data-lang="organization.none">None</span>
+        </div>
+    </div>
+
+    <!-- 네비게이션 팝업 메뉴 -->
+    <!-- 네비게이션 팝업 메뉴 (popup-menu.js에서 동적으로 로드됨) -->
+    <!-- 메인 컨테이너 -->
+    <div class="container">
+        <!-- 콘텐츠 섹션 -->
+        <section class="content-section">
+            <div class="content">
+                <div class="org-chart">
+                    <!-- Level 1: CEO -->
+                    <div class="org-level">
+                        <div class="org-card ceo">
+                            <div class="org-avatar">👑</div>
+                            <div class="org-name">Sarah Chen</div>
+                            <div class="org-title">Chief Executive Officer</div>
+                            <div class="org-dept">EXECUTIVE</div>
+                        </div>
+                    </div>
+
+                    <!-- Level 2: C-Suite -->
+                    <div class="org-level">
+                        <div class="org-card">
+                            <div class="org-avatar">💼</div>
+                            <div class="org-name">Michael Park</div>
+                            <div class="org-title">Chief Technology Officer</div>
+                            <div class="org-dept">TECHNOLOGY</div>
+                        </div>
+
+                        <div class="org-card">
+                            <div class="org-avatar">📊</div>
+                            <div class="org-name">Lisa Wang</div>
+                            <div class="org-title">Chief Operating Officer</div>
+                            <div class="org-dept">OPERATIONS</div>
+                        </div>
+
+                        <div class="org-card">
+                            <div class="org-avatar">💰</div>
+                            <div class="org-name">David Kim</div>
+                            <div class="org-title">Chief Financial Officer</div>
+                            <div class="org-dept">FINANCE</div>
+                        </div>
+                    </div>
+
+                    <!-- Level 3: Department Heads -->
+                    <div class="org-level">
+                        <div class="org-card">
+                            <div class="org-avatar">⚡</div>
+                            <div class="org-name">Emma Rodriguez</div>
+                            <div class="org-title">Engineering Lead</div>
+                            <div class="org-dept">DEVELOPMENT</div>
+                        </div>
+
+                        <div class="org-card">
+                            <div class="org-avatar">🎨</div>
+                            <div class="org-name">Alex Turner</div>
+                            <div class="org-title">Design Director</div>
+                            <div class="org-dept">CREATIVE</div>
+                        </div>
+
+                        <div class="org-card">
+                            <div class="org-avatar">📈</div>
+                            <div class="org-name">Jessica Lee</div>
+                            <div class="org-title">Marketing Director</div>
+                            <div class="org-dept">MARKETING</div>
+                        </div>
+
+                        <div class="org-card">
+                            <div class="org-avatar">🎯</div>
+                            <div class="org-name">Ryan Cooper</div>
+                            <div class="org-title">Sales Manager</div>
+                            <div class="org-dept">SALES</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 하단 영역 -->
+    <footer class="footer-section">
+        <div class="footer-content">
+            <div class="pulse-indicator"></div>
+            <span class="footer-text">NEURAL PULSE NETWORK</span>
+        </div>
+    </footer>
+
+    <!-- 회원 정보 모달 -->
+    <div class="user-profile-modal" id="userProfileModal">
+        <div class="modal-content">
+            <div class="modal-close" id="modalClose">×</div>
+
+            <div class="modal-header">
+                <div class="modal-avatar" id="modalAvatar">👤</div>
+                <div class="modal-user-id" id="modalUserId">User ID</div>
+                <div class="modal-user-level" id="modalUserLevel">Level 0</div>
+            </div>
+
+            <div class="modal-body">
+                <!-- 보너스 진행 상태 -->
+                <div class="profile-section">
+                    <div class="profile-section-title" id="modalBonusTitle">💰 보너스 진행 상태</div>
+                    <div class="bonus-progress-container" id="modalBonusProgress">
+                        <div class="bonus-amount" id="modalBonusAmount" style="text-align: center; margin-top: 4px; margin-bottom: 24px; font-size: 20px; font-weight: 700; color: #00ffff;">$0.00</div>
+                        <div class="mini-progress-wrapper">
+                            <div class="mini-progress-bar">
+                                <div class="mini-progress-zone mini-progress-zone-1"></div>
+                                <div class="mini-progress-zone mini-progress-zone-2"></div>
+                                <div class="mini-progress-zone mini-progress-zone-3"></div>
+                            </div>
+                            <div class="mini-progress-divider" style="left: 33.33%;"></div>
+                            <div class="mini-progress-divider" style="left: 66.67%;"></div>
+                            <!-- 다이아몬드 마커 (프로그레스 바를 따라다님) -->
+                            <div class="diamond-marker" id="modalDiamondMarker">
+                                <div class="diamond-shape">
+                                    <span class="diamond-number" id="modalCycleNumber">0</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mini-progress-labels">
+                            <span class="mini-label">0</span>
+                            <span class="mini-label">100%</span>
+                            <span class="mini-label" id="modalMiddleLabel">200%</span>
+                            <span class="mini-label" id="modalEndLabel">300%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 팀 정보 -->
+                <div class="profile-section" style="position: relative;">
+                    <!-- 아바타 구매 알림 오버레이 -->
+                    <div class="avatar-purchase-alert" id="avatarPurchaseAlert" style="display: none;">
+                        <div class="alert-glow"></div>
+                        <div class="alert-content">
+                            <div class="alert-icon">🎭</div>
+                            <div class="alert-title">아바타 구매 가능!</div>
+                            <div class="alert-message">1회차 완료! 이제 아바타를 구매하실 수 있습니다</div>
+                            <button class="alert-button" id="goToAvatarPurchase">
+                                <span>✨</span>
+                                <span>아바타 구매하기</span>
+                                <span>→</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="profile-section-title">👥 팀 정보</div>
+                    <div class="profile-item">
+                        <span class="profile-label">나의 추천</span>
+                        <span class="profile-value highlight" id="modalDirectReferrals">0</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">나의 단계</span>
+                        <span class="profile-value highlight" id="modalMyLevel">0</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">나의 팀원</span>
+                        <span class="profile-value highlight" id="modalCurrentLevelTeam">0</span>
+                    </div>
+                </div>
+
+                <!-- 수익 정보 -->
+                <div class="profile-section">
+                    <div class="profile-section-title">💰 수익 정보</div>
+                    <div class="profile-item">
+                        <span class="profile-label">아바타 합계</span>
+                        <span class="profile-value highlight" id="modalAvatarTotal">$0.00</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">보너스 합계</span>
+                        <span class="profile-value highlight" id="modalBonusTotal">$0.00</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label">출금 합계</span>
+                        <span class="profile-value highlight" id="modalWithdrawalTotal">$0.00</span>
+                    </div>
+                    <div class="profile-item" style="border-top: 1px solid rgba(0, 255, 255, 0.2); padding-top: 10px; margin-top: 10px;">
+                        <span class="profile-label" style="font-weight: 700; color: #00ffff;">현재 잔액</span>
+                        <span class="profile-value highlight" id="modalCurrentBalance" style="font-size: 18px; font-weight: 700; color: #00ff88;">$0.00</span>
+                    </div>
+                </div>
+
+                <!-- 액션 버튼 -->
+                <div class="modal-actions">
+                    <a class="modal-action-btn" id="modalSignupBtn" href="#">
+                        <span>👤</span>
+                        <span>회원가입</span>
+                    </a>
+                    <a class="modal-action-btn" id="modalPurchaseBtn" href="#">
+                        <span>🛒</span>
+                        <span>패키지 구매</span>
+                    </a>
+                    <a class="modal-action-btn" id="modalEditBtn" href="#">
+                        <span>✏️</span>
+                        <span>정보수정</span>
+                    </a>
+                </div>
+
+                <!-- 관리자 전용: 매출/회원 삭제 버튼 -->
+                <div id="adminDeleteSection" style="display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255, 0, 0, 0.2);">
+                    <div class="admin-delete-buttons">
+                        <button class="modal-delete-btn sales" id="modalDeleteSalesBtn" onclick="deleteSalesFromModal()">
+                            <span>💰</span>
+                            <span>매출 삭제</span>
+                        </button>
+                        <button class="modal-delete-btn user" id="modalDeleteUserBtn" onclick="deleteUserFromModal()">
+                            <span>🗑️</span>
+                            <span>회원 삭제</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 신경망 노드 생성
+        function createNeuralNodes() {
+            const container = document.getElementById('neuralConnections');
+            const nodeCount = 20;
+
+            for (let i = 0; i < nodeCount; i++) {
+                const node = document.createElement('div');
+                node.className = 'pulse-node';
+                node.style.left = Math.random() * 100 + '%';
+                node.style.top = Math.random() * 100 + '%';
+                node.style.animationDelay = Math.random() * 2 + 's';
+                container.appendChild(node);
+
+                // 연결선 생성
+                if (i % 3 === 0) {
+                    const line = document.createElement('div');
+                    line.className = 'connection-line';
+                    line.style.left = Math.random() * 100 + '%';
+                    line.style.top = Math.random() * 100 + '%';
+                    line.style.width = Math.random() * 200 + 100 + 'px';
+                    line.style.transform = `rotate(${Math.random() * 360}deg)`;
+                    line.style.animationDelay = Math.random() * 3 + 's';
+                    container.appendChild(line);
+                }
+            }
+        }
+
+
+        // Admin 세션 정보 저장
+        let adminSession = null;
+        let isAdminMode = false;
+
+        // postMessage로 admin 세션 받기
+        window.addEventListener('message', (event) => {
+            console.log('[Organization] Message received:', event.data);
+
+            if (event.data && event.data.type === 'admin_session') {
+                adminSession = event.data;
+                isAdminMode = true;
+                console.log('[Organization] Admin session received:', {
+                    hasToken: !!adminSession.token,
+                    hasNeuralToken: !!adminSession.neural_token
+                });
+
+                // 타임아웃 취소
+                if (window.adminSessionTimeout) {
+                    clearTimeout(window.adminSessionTimeout);
+                    console.log('[Organization] Timeout cleared');
+                }
+
+                // Admin 세션 정보를 전역으로 저장 (모달에서 사용)
+                loadAdminInfo();
+
+                // Admin 세션 받으면 조직도 로드
+                loadOrganizationTree();
+            }
+        });
+
+        // 관리자 정보 로드 (삭제 권한 확인용)
+        async function loadAdminInfo() {
+            const adminToken = localStorage.getItem('admin_token');
+            if (!adminToken) return;
+
+            try {
+                const response = await fetch('../api/admin/validate.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token: adminToken })
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.admin) {
+                    // organization-modal.js의 전역 변수에 저장
+                    window.adminSessionData = data.admin;
+                    console.log('[Organization] Admin info loaded:', data.admin.role);
+                }
+            } catch (error) {
+                console.error('Failed to load admin info:', error);
+            }
+        }
+
+        // 조직도 데이터 로드
+        async function loadOrganizationTree() {
+            console.log('[Organization] loadOrganizationTree called. isAdminMode:', isAdminMode);
+
+            try {
+                let response;
+
+                // 관리자 모드인 경우
+                if (isAdminMode && adminSession && adminSession.token) {
+                    console.log('[Organization] Using admin API');
+                    response = await fetch('../api/admin/get-organization-tree.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            token: adminSession.token
+                        })
+                    });
+                } else {
+                    console.log('[Organization] Using regular user API');
+                    // 일반 사용자 모드
+                    let sessionToken = localStorage.getItem('neural_token');
+
+                    if (!sessionToken) {
+                        alert('로그인이 필요합니다.');
+                        window.location.href = 'login.html';
+                        return;
+                    }
+
+                    response = await fetch('../api/organization/get-tree.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            session_token: sessionToken
+                        })
+                    });
+                }
+
+                // 먼저 텍스트로 확인
+                const responseText = await response.text();
+                console.log('API Response Text:', responseText);
+
+                let result;
+                try {
+                    result = JSON.parse(responseText);
+                } catch (parseError) {
+                    console.error('JSON Parse Error:', parseError);
+                    console.error('Response text:', responseText);
+                    throw new Error('서버 응답을 파싱할 수 없습니다: ' + responseText.substring(0, 200));
+                }
+
+                console.log('API Response:', result); // 디버깅용
+
+                if (result.success && result.data) {
+                    window.originalTreeData = result.data; // 원본 트리 데이터 저장 (전역)
+                    originalRootNodeId = result.data.id; // 원본 루트 ID 저장
+                    currentRootNodeId = result.data.id; // 현재 루트 ID 초기화
+                    renderOrganizationChart(result.data);
+                } else {
+                    console.error('Failed to load organization tree:', result.message);
+
+                    // 세션 만료 시 - 관리자 모드가 아닐 때만 리다이렉트
+                    if (!isAdminMode && result.message && result.message.includes('세션')) {
+                        alert('세션이 만료되었습니다. 다시 로그인해주세요.');
+                        localStorage.removeItem('neural_token');
+                        localStorage.removeItem('neural_user');
+                        window.location.href = 'login.html';
+                        return;
+                    }
+
+                    const errorMsg = result.message || '조직도를 불러올 수 없습니다.';
+                    document.querySelector('.org-chart').innerHTML = `
+                        <div style="text-align:center; padding: 40px;">
+                            <p style="color:#ff00ff; margin-bottom: 15px;">조직도를 불러올 수 없습니다.</p>
+                            <p style="color:rgba(255,255,255,0.5); font-size: 12px;">${errorMsg}</p>
+                            ${isAdminMode ? '<p style="color:rgba(255,255,255,0.3); font-size: 11px; margin-top: 10px;">관리자 세션을 확인하거나 브라우저를 새로고침 해보세요.</p>' : ''}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading organization tree:', error);
+                document.querySelector('.org-chart').innerHTML = `
+                    <div style="text-align:center; padding: 40px;">
+                        <p style="color:#ff00ff; margin-bottom: 15px;">네트워크 오류가 발생했습니다.</p>
+                        <p style="color:rgba(255,255,255,0.5); font-size: 12px;">${error.message}</p>
+                        <p style="color:rgba(255,255,255,0.3); font-size: 11px; margin-top: 10px;">브라우저 콘솔을 확인하세요.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // 조직도 렌더링 (트리 레이아웃)
+        function renderOrganizationChart(data) {
+            console.log('🎨 renderOrganizationChart called with data:', data);
+            console.log('🎨 Children count:', data.children ? data.children.length : 0);
+            console.log('🎨 Children:', data.children);
+
+            const orgChart = document.querySelector('.org-chart');
+            orgChart.innerHTML = ''; // 기존 내용 삭제
+
+            if (!data) {
+                orgChart.innerHTML = '<p style="text-align:center; color:#ff00ff;">데이터를 불러올 수 없습니다.</p>';
+                return;
+            }
+
+            // SVG는 나중에 생성 (노드 렌더링 후)
+
+            // 트리 레이아웃 설정
+            const nodeWidth = 180;
+            const nodeHeight = 150; // 카드 실제 높이에 맞춤
+            const horizontalGap = 30;
+            const verticalGap = 220;
+
+            // 노드에 좌표 할당 (후위 순회)
+            let nextX = 0;
+            const nodePositions = new Map(); // 노드 ID -> {x, y}
+            const connections = []; // {parent, child} 배열
+
+            function calculatePositions(node, depth = 0, parent = null) {
+                // 부모-자식 관계 저장
+                if (parent) {
+                    connections.push({ parent: parent, child: node });
+                }
+
+                // 자식 노드 먼저 처리 (후위 순회)
+                if (node.children && node.children.length > 0) {
+                    node.children.forEach(child => {
+                        calculatePositions(child, depth + 1, node);
+                    });
+
+                    // 자식들의 X 좌표 평균으로 부모 위치 결정
+                    const childPositions = node.children.map(child => nodePositions.get(child.id).x);
+                    const minX = Math.min(...childPositions);
+                    const maxX = Math.max(...childPositions);
+                    const x = (minX + maxX) / 2;
+                    const y = depth * verticalGap;
+
+                    nodePositions.set(node.id, { x, y, node });
+                } else {
+                    // 리프 노드: 순차적으로 배치
+                    const x = nextX;
+                    nextX += nodeWidth + horizontalGap;
+                    const y = depth * verticalGap;
+
+                    nodePositions.set(node.id, { x, y, node });
+                }
+            }
+
+            // 루트부터 좌표 계산
+            calculatePositions(data, 0);
+
+            console.log('📊 Connections array:', connections);
+            console.log('📊 Total connections created:', connections.length);
+
+            // 아바타 이모지 매핑
+            const avatarEmojis = ['👑', '💼', '👤', '👥', '🔷', '🔸', '⭐', '✨'];
+
+            // 최소 X 좌표를 0 이상으로 조정
+            const allX = Array.from(nodePositions.values()).map(p => p.x);
+            const minXPos = Math.min(...allX);
+            const maxXPos = Math.max(...allX);
+            const totalWidth = maxXPos - minXPos + nodeWidth;
+
+            // offsetX: 가장 왼쪽 노드가 50px에 오도록
+            const offsetX = -minXPos + 50;
+
+            console.log('📐 Layout calc:', { minXPos, maxXPos, totalWidth, offsetX, finalMaxX: maxXPos + offsetX + nodeWidth });
+
+            // depth별로 노드 그룹화
+            const depthMap = new Map();
+            nodePositions.forEach((pos, id) => {
+                const depth = Math.round(pos.y / verticalGap);
+                if (!depthMap.has(depth)) {
+                    depthMap.set(depth, []);
+                }
+                depthMap.get(depth).push({ id, ...pos });
+            });
+
+            // 노드를 DOM에 추가
+            nodePositions.forEach((pos, nodeId) => {
+                const node = pos.node;
+                const depth = Math.round(pos.y / verticalGap);
+
+                const card = document.createElement('div');
+                card.className = `org-card level-${depth}`;
+                card.setAttribute('data-node-id', node.id);
+                card.style.left = (pos.x + offsetX) + 'px';
+                card.style.top = pos.y + 'px';
+
+                // 이모지 선택 (레벨에 따라)
+                const emoji = avatarEmojis[Math.min(depth, avatarEmojis.length - 1)];
+
+                // 가입일 포맷팅
+                const joinDate = node.joined_date ? new Date(node.joined_date).toLocaleDateString('ko-KR') : '-';
+
+                // 직접 추천 수 (referral_org 기준 - 보너스 계산용)
+                const directReferrals = node.direct_referrals_count || 0;
+
+                // 직접 배치 수 (referral_id 기준 - 바이너리 트리, 최대 2명)
+                const directPlacement = node.direct_placement_count || 0;
+
+                // referral_org 수에 따른 단계 제한
+                let maxDepth = 0; // 기본 0단계
+                if (directReferrals === 1) {
+                    maxDepth = 5;  // 1명 → 5단계
+                } else if (directReferrals === 2) {
+                    maxDepth = 10; // 2명 → 10단계
+                } else if (directReferrals >= 3) {
+                    maxDepth = 15; // 3명 이상 → 15단계
+                }
+
+                // 팀원 수 (단계 제한 적용)
+                const totalTeam = window.countTeamMembers(node, maxDepth);
+
+                // 직추천 매출합
+                const directReferralsSales = node.direct_referrals_sales || 0;
+
+                // 팀원 매출합
+                const teamSales = node.team_sales || 0;
+
+                // 매출액에 따른 아바타 클래스
+                const earnings = node.total_earnings || 0;
+                let avatarClass = 'no-sales';
+                if (earnings >= 100) {
+                    avatarClass = 'sales-100';
+                } else if (earnings >= 50) {
+                    avatarClass = 'sales-50';
+                } else if (earnings > 0) {
+                    avatarClass = 'has-avatar';
+                }
+
+                // 토글 버튼 아이콘 결정 (현재 루트가 자신이면 ^, 아니면 v)
+                const toggleIcon = (currentRootNodeId === node.id) ? '^' : 'v';
+                const toggleTitle = (currentRootNodeId === node.id) ?
+                    (window.LanguageManager ? window.LanguageManager.get('organization.showFullTree') : '전체 트리 보기') :
+                    (window.LanguageManager ? window.LanguageManager.get('organization.toggleTree') : '하위 트리 보기');
+
+                // 카드에 상태 클래스 추가
+                card.classList.add(avatarClass);
+
+                card.innerHTML = `
+                    <div class="level-indicator">L${depth}</div>
+                    <div class="node-actions">
+                        <div class="node-action-btn toggle-btn" data-node-id="${node.id}" title="${toggleTitle}">${toggleIcon}</div>
+                    </div>
+                    <div class="org-header">
+                        <div class="org-avatar ${avatarClass}">${emoji}</div>
+                        <div class="org-name">${node.user_id || '아이디없음'}</div>
+                    </div>
+                    <div class="org-info">${joinDate}</div>
+                    <div class="org-stats">
+                        <!-- 배치 정보 주석처리
+                        <div class="org-stat-item" title="바이너리 트리 배치 (최대 2명)" style="background: rgba(0, 200, 255, 0.08);">
+                            <div class="stat-value" style="width: 100%; font-size: 11px;">🔹 배치: ${directPlacement}/2</div>
+                        </div>
+                        -->
+                        <div class="org-stat-item" title="추천인 수 / 직추천 매출 (referral_org 기준)" style="background: rgba(255, 100, 255, 0.08);">
+                            <div class="stat-value" style="width: 100%; font-size: 11px;">💎 추천: ${directReferrals} / ${directReferralsSales}</div>
+                        </div>
+                        <div class="org-stat-item" title="팀원 수 / 팀 매출 (referral_org에 따라 제한: 0명=0단계, 1명=5단계, 2명=10단계, 3명=15단계)">
+                            <div class="stat-value" style="width: 100%; font-size: 10px;">👥 팀(${maxDepth}): ${totalTeam} / ${teamSales.toFixed(0)}</div>
+                        </div>
+                    </div>
+                `;
+                orgChart.appendChild(card);
+            });
+
+            // org-chart 컨테이너 크기 설정
+            const maxY = Math.max(...Array.from(nodePositions.values()).map(p => p.y));
+            const treeWidth = maxXPos + offsetX + nodeWidth + 50;
+
+            orgChart.style.minHeight = (maxY + nodeHeight + 200) + 'px';
+            orgChart.style.minWidth = treeWidth + 'px';
+            orgChart.style.position = 'relative';
+
+            console.log('📏 Tree dimensions:', { width: treeWidth, height: maxY + nodeHeight + 200 });
+
+            // SVG 연결선 컨테이너 생성 (노드 렌더링 후)
+            const svgNS = "http://www.w3.org/2000/svg";
+            const svg = document.createElementNS(svgNS, "svg");
+            svg.setAttribute("class", "org-connections");
+
+            // SVG 크기 설정 - 실제 트리 크기에 맞춤
+            const svgWidth = Math.max(window.innerWidth, maxXPos + offsetX + nodeWidth + 50);
+            const svgHeight = maxY + nodeHeight + 200;
+            svg.setAttribute("width", svgWidth);
+            svg.setAttribute("height", svgHeight);
+            // viewBox 제거하고 직접 좌표 사용
+            svg.style.position = 'absolute';
+            svg.style.top = '0';
+            svg.style.left = '0';
+            svg.style.pointerEvents = 'none';
+            svg.style.zIndex = '10';
+            svg.style.overflow = 'visible';
+
+            // SVG를 orgChart에 추가
+            orgChart.appendChild(svg);
+
+            console.log('SVG dimensions:', svgWidth, 'x', svgHeight);
+            console.log('SVG created and appended to orgChart');
+
+            // 추천인이 없는 경우 메시지
+            if (!data.children || data.children.length === 0) {
+                const emptyMsg = document.createElement('p');
+                emptyMsg.style.textAlign = 'center';
+                emptyMsg.style.color = 'rgba(0, 255, 255, 0.6)';
+                emptyMsg.style.position = 'absolute';
+                emptyMsg.style.top = (nodeHeight + 40) + 'px';
+                emptyMsg.style.width = '100%';
+                emptyMsg.style.fontSize = '14px';
+                emptyMsg.style.letterSpacing = '1px';
+                emptyMsg.textContent = '아직 추천한 사람이 없습니다. 네트워크를 확장해보세요!';
+                orgChart.appendChild(emptyMsg);
+            }
+
+            // 총 통계 표시
+            const totalNodes = nodePositions.size;
+            const maxDepth = Math.max(...Array.from(nodePositions.values()).map(p => Math.round(p.y / verticalGap))) + 1;
+            const statsDiv = document.createElement('div');
+            statsDiv.style.textAlign = 'center';
+            statsDiv.style.position = 'absolute';
+            statsDiv.style.top = (maxY + nodeHeight + 40) + 'px';
+            statsDiv.style.width = '100%';
+            statsDiv.style.padding = '20px';
+            statsDiv.style.background = 'rgba(0, 255, 255, 0.05)';
+            statsDiv.style.borderRadius = '15px';
+            statsDiv.style.border = '1px solid rgba(0, 255, 255, 0.2)';
+            const totalMembersLabel = window.LanguageManager ? window.LanguageManager.get('organization.totalMembers') : '총 인원';
+            const orgDepthLabel = window.LanguageManager ? window.LanguageManager.get('organization.orgDepth') : '조직 깊이';
+            const directReferralsLabel = window.LanguageManager ? window.LanguageManager.get('organization.directReferrals') : '직접 추천';
+
+            statsDiv.innerHTML = `
+                <div style="font-size: 12px; color: rgba(255, 255, 255, 0.5); letter-spacing: 2px; margin-bottom: 10px;">NETWORK STATISTICS</div>
+                <div style="display: flex; justify-content: center; gap: 40px; flex-wrap: wrap;">
+                    <div>
+                        <div style="font-size: 24px; font-weight: 600; color: #00ffff;">${totalNodes}</div>
+                        <div style="font-size: 11px; color: rgba(255, 255, 255, 0.5); margin-top: 5px;">${totalMembersLabel}</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 24px; font-weight: 600; color: #ff00ff;">${maxDepth}</div>
+                        <div style="font-size: 11px; color: rgba(255, 255, 255, 0.5); margin-top: 5px;">${orgDepthLabel}</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 24px; font-weight: 600; color: #ffff00;">${data.total_referrals || 0}</div>
+                        <div style="font-size: 11px; color: rgba(255, 255, 255, 0.5); margin-top: 5px;">${directReferralsLabel}</div>
+                    </div>
+                </div>
+            `;
+            orgChart.appendChild(statsDiv);
+
+            // 연결선 그리기 (SVG가 이미 추가되었으므로 바로 실행)
+            console.log('🎯 About to call drawConnections with:', {
+                svg: svg,
+                connectionsLength: connections.length,
+                nodePositionsSize: nodePositions.size,
+                offsetX: offsetX
+            });
+            drawConnections(svg, connections, nodePositions, offsetX);
+
+            // 버튼 이벤트 리스너 추가
+            setupNodeActions();
+        }
+
+        // 연결선 그리기 함수 (심플 버전 - 모두 직선 연결)
+        function drawConnections(svg, connections, nodePositions, offsetX) {
+            const svgNS = "http://www.w3.org/2000/svg";
+            const nodeWidth = 180;
+            const nodeHeight = 150; // 카드 실제 높이에 맞춤
+
+            console.log('=== drawConnections 시작 ===');
+            console.log('SVG element:', svg);
+            console.log('SVG parent:', svg.parentElement);
+            console.log('Total connections:', connections.length);
+            console.log('NodePositions size:', nodePositions.size);
+            console.log('OffsetX:', offsetX);
+
+            if (connections.length === 0) {
+                console.warn('⚠️ No connections to draw!');
+                return;
+            }
+
+            // 모든 연결을 단순 직선으로 처리
+            let successCount = 0;
+            connections.forEach((conn, idx) => {
+                const parentPos = nodePositions.get(conn.parent.id);
+                const childPos = nodePositions.get(conn.child.id);
+
+                if (!parentPos || !childPos) {
+                    console.warn(`❌ Position not found - Parent: ${conn.parent.id}, Child: ${conn.child.id}`);
+                    return;
+                }
+
+                // 부모 하단 중앙 (border 바깥에서 시작)
+                const parentX = parentPos.x + offsetX + nodeWidth / 2;
+                const parentY = parentPos.y + nodeHeight + 2; // border + 여유공간
+
+                // 자식 상단 중앙 (border 바깥에서 끝)
+                const childX = childPos.x + offsetX + nodeWidth / 2;
+                const childY = childPos.y - 2; // border + 여유공간
+
+                console.log(`✅ Line ${idx}: (${parentX.toFixed(1)}, ${parentY}) -> (${childX.toFixed(1)}, ${childY})`);
+
+                // 부드러운 곡선 연결 (Cubic Bezier)
+                const path = document.createElementNS(svgNS, "path");
+                const midY = (parentY + childY) / 2;
+                const pathD = `M ${parentX} ${parentY} C ${parentX} ${midY}, ${childX} ${midY}, ${childX} ${childY}`;
+                path.setAttribute("d", pathD);
+                path.setAttribute("class", "org-connection-line");
+                path.setAttribute("stroke", "rgba(0, 255, 255, 0.6)");
+                path.setAttribute("stroke-width", "1");
+                path.setAttribute("fill", "none");
+                path.setAttribute("data-parent-id", conn.parent.id);
+                path.setAttribute("data-child-id", conn.child.id);
+                svg.appendChild(path);
+
+                successCount++;
+            });
+
+            console.log(`✅ Total lines drawn: ${successCount}/${connections.length}`);
+            console.log('SVG children count:', svg.children.length);
+            console.log('=== drawConnections 완료 ===');
+        }
+
+        // 노드 액션 버튼 이벤트 설정
+        function setupNodeActions() {
+            // 토글 버튼 이벤트
+            document.querySelectorAll('.toggle-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const nodeId = parseInt(this.getAttribute('data-node-id'));
+                    toggleTreeRoot(nodeId);
+                });
+            });
+
+            // 아바타 클릭 이벤트 (회원 정보 모달)
+            document.querySelectorAll('.org-avatar').forEach(avatar => {
+                avatar.style.cursor = 'pointer';
+                avatar.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const card = this.closest('.org-card');
+                    const nodeId = parseInt(card.getAttribute('data-node-id'));
+                    console.log('👆 Avatar clicked, nodeId:', nodeId);
+                    console.log('showUserProfile exists:', typeof window.showUserProfile);
+                    if (typeof window.showUserProfile === 'function') {
+                        window.showUserProfile(nodeId);
+                    } else {
+                        console.error('❌ showUserProfile function not found!');
+                    }
+                });
+            });
+        }
+
+        // 트리 루트 토글
+        function toggleTreeRoot(nodeId) {
+            if (currentRootNodeId === nodeId) {
+                // 현재 루트가 클릭된 노드면 원래 루트로 복귀
+                currentRootNodeId = originalRootNodeId;
+                renderOrganizationChart(window.originalTreeData);
+            } else {
+                // 클릭된 노드를 새 루트로 설정
+                const newRoot = window.findNodeById(window.originalTreeData, nodeId);
+                if (newRoot) {
+                    currentRootNodeId = nodeId;
+                    renderOrganizationChart(newRoot);
+                }
+            }
+        }
+
+        // 전역 함수로 노출
+        window.findNodeById = function(node, id) {
+            if (node.id === id) return node;
+            if (node.children) {
+                for (let child of node.children) {
+                    const found = window.findNodeById(child, id);
+                    if (found) return found;
+                }
+            }
+            return null;
+        };
+
+        // 15대까지 팀원 수 계산 함수 (전역)
+        window.countTeamMembers = function(node, maxDepth = 15, currentDepth = 0) {
+            if (currentDepth >= maxDepth || !node.children || node.children.length === 0) {
+                return 0;
+            }
+
+            let count = node.children.length; // 직접 자식 수
+
+            // 재귀적으로 하위 팀원 카운트
+            node.children.forEach(child => {
+                count += window.countTeamMembers(child, maxDepth, currentDepth + 1);
+            });
+
+            return count;
+        };
+
+        // 트리 데이터 저장 (전역)
+        window.originalTreeData = null;  // 원본 트리 (로그인 사용자 기준)
+        let currentRootNodeId = null;  // 현재 표시 중인 루트 노드 ID
+        let originalRootNodeId = null; // 원본 루트 노드 ID (로그인 사용자)
+
+        // 초기화
+        window.addEventListener('DOMContentLoaded', () => {
+            createNeuralNodes();
+
+            // iframe인지 확인
+            const isIframe = window.self !== window.top;
+
+            console.log('[Organization] DOMContentLoaded. isIframe:', isIframe);
+
+            if (isIframe) {
+                console.log('[Organization] Running in iframe mode, waiting for admin session...');
+                // iframe 모드: 로딩 표시
+                document.querySelector('.org-chart').innerHTML = `
+                    <div style="text-align:center; padding: 80px 20px;">
+                        <div class="spinner" style="display: inline-block; width: 40px; height: 40px; border: 3px solid rgba(0, 255, 255, 0.1); border-top-color: #00ffff; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+                        <p style="color: rgba(255, 255, 255, 0.6); margin-top: 20px; font-size: 14px;">관리자 세션을 확인하는 중...</p>
+                    </div>
+                `;
+
+                // postMessage를 기다림 (최대 5초)
+                let timeoutId = setTimeout(() => {
+                    if (!isAdminMode) {
+                        console.warn('[Organization] No admin session received after 5s');
+                        document.querySelector('.org-chart').innerHTML = `
+                            <div style="text-align:center; padding: 60px 20px;">
+                                <p style="color:#ff00ff; font-size: 18px; margin-bottom: 20px;">관리자 세션을 받지 못했습니다.</p>
+                                <p style="color:rgba(255,255,255,0.6); font-size: 14px; margin-bottom: 20px;">페이지를 새로고침하거나 관리자 로그인을 다시 시도해주세요.</p>
+                                <button onclick="window.parent.location.reload()" style="
+                                    padding: 12px 24px;
+                                    background: linear-gradient(135deg, #00ffff, #ff00ff);
+                                    color: #000;
+                                    border: none;
+                                    border-radius: 8px;
+                                    font-weight: 600;
+                                    cursor: pointer;
+                                ">페이지 새로고침</button>
+                            </div>
+                        `;
+                    }
+                }, 5000);
+
+                // 타임아웃 ID 저장 (나중에 취소하기 위해)
+                window.adminSessionTimeout = timeoutId;
+            } else {
+                console.log('[Organization] Running in regular mode');
+                // 일반 모드: 바로 로드
+                loadOrganizationTree();
+            }
+        });
+
+    </script>
+
+    <!-- 팝업 메뉴 -->
+    <script src="popup-menu.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const homeButton = document.getElementById('homeButton');
+            if (homeButton && typeof NeuralPopupMenu !== 'undefined') {
+                NeuralPopupMenu.init(homeButton);
+            }
+        });
+    </script>
+
+    <!-- 회원 정보 모달 -->
+    <script src="organization-modal.js"></script>
+    <script src="api-client.js"></script>
+</body>
+</html>

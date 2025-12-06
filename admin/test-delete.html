@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>삭제 테스트</title>
+</head>
+<body>
+    <h1>회원 삭제 테스트</h1>
+    <button onclick="testDelete()">BYDY7570 삭제 테스트</button>
+    <pre id="result"></pre>
+
+    <script>
+        async function testDelete() {
+            console.log('테스트 시작...');
+
+            const data = {
+                user_ids: ['BYDY7570', 'WRGP3948', 'JNRT1315', 'LMVK8706']
+            };
+
+            console.log('전송 데이터:', data);
+            console.log('JSON:', JSON.stringify(data));
+
+            try {
+                const response = await fetch('delete-user-complete.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                console.log('응답 상태:', response.status);
+                console.log('응답 헤더:', response.headers.get('content-type'));
+
+                const text = await response.text();
+                console.log('응답 본문:', text);
+
+                document.getElementById('result').textContent = text;
+
+                try {
+                    const json = JSON.parse(text);
+                    console.log('파싱된 JSON:', json);
+                } catch (e) {
+                    console.error('JSON 파싱 실패:', e);
+                }
+            } catch (error) {
+                console.error('에러:', error);
+                document.getElementById('result').textContent = 'ERROR: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

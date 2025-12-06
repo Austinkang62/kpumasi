@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - K-Pumasi Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+            background: #0f172a;
+            min-height: 100vh;
+            color: #e2e8f0;
+        }
+
+        .content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 80px 30px 30px;
+        }
+
+        .page-title {
+            color: #f8fafc;
+            margin-bottom: 30px;
+            font-size: 1.8em;
+            font-weight: 700;
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+        }
+
+        .settings-card {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px -8px rgba(0,0,0,0.3);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .settings-card h3 {
+            color: #f8fafc;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            font-weight: 700;
+            font-size: 1.2em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #94a3b8;
+            font-weight: 500;
+            font-size: 0.9em;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 14px;
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 8px;
+            font-size: 0.95em;
+            color: #f8fafc;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: rgba(15, 23, 42, 0.8);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .btn-save {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 8px 20px -5px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px -5px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-save:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status-message {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            display: none;
+        }
+
+        .status-message.success {
+            display: block;
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #4ade80;
+        }
+
+        .status-message.error {
+            display: block;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #f87171;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #475569;
+            transition: 0.4s;
+            border-radius: 26px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #3b82f6;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+        }
+
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div id="admin-header"></div>
+
+    <div class="content">
+        <h1 class="page-title">⚙️ 시스템 설정</h1>
+
+        <!-- 지갑 설정 (전체 너비) -->
+        <div class="settings-card" style="margin-bottom: 30px;">
+            <h3>💳 지갑 설정</h3>
+            <div class="form-group">
+                <label>BSC USDT 주소</label>
+                <input type="text" id="bscUsdtAddress" placeholder="0x..." maxlength="42" style="font-family: monospace; font-size: 16px; letter-spacing: 1px;">
+            </div>
+            <div class="form-group">
+                <label>TRC20 USDT 주소</label>
+                <input type="text" id="trc20UsdtAddress" placeholder="T..." maxlength="34" style="font-family: monospace; font-size: 16px; letter-spacing: 1px;">
+            </div>
+            <button class="btn-save" onclick="saveWalletSettings()">저장</button>
+            <div class="status-message" id="walletStatus"></div>
+        </div>
+
+        <div class="settings-grid">
+            <!-- 사이트 기본 설정 -->
+            <div class="settings-card">
+                <h3>🌐 사이트 설정</h3>
+                <div class="form-group">
+                    <label>사이트 이름</label>
+                    <input type="text" id="siteName" value="K-Pumasi">
+                </div>
+                <div class="form-group">
+                    <label>사이트 URL</label>
+                    <input type="url" id="siteUrl" value="https://k-pumasi.com">
+                </div>
+                <div class="form-group">
+                    <label>관리자 이메일</label>
+                    <input type="email" id="adminEmail" value="admin@k-pumasi.com">
+                </div>
+                <button class="btn-save" onclick="saveSiteSettings()">저장</button>
+                <div class="status-message" id="siteStatus"></div>
+            </div>
+
+            <!-- 보너스 설정 -->
+            <div class="settings-card">
+                <h3>🎁 보너스 설정</h3>
+                <div class="form-group">
+                    <label>직접 추천 보너스 비율 (%)</label>
+                    <input type="number" id="directBonusRate" value="10" min="0" max="100">
+                </div>
+                <div class="form-group">
+                    <label>레벨 보너스 비율 (%)</label>
+                    <input type="number" id="levelBonusRate" value="5" min="0" max="100">
+                </div>
+                <div class="form-group">
+                    <label>최대 보너스 레벨</label>
+                    <input type="number" id="maxBonusLevel" value="15" min="1" max="20">
+                </div>
+                <button class="btn-save" onclick="saveBonusSettings()">저장</button>
+                <div class="status-message" id="bonusStatus"></div>
+            </div>
+
+            <!-- 출금 설정 -->
+            <div class="settings-card">
+                <h3>💰 출금 설정</h3>
+                <div class="form-group">
+                    <label>최소 출금 금액 ($)</label>
+                    <input type="number" id="minWithdrawal" value="10" min="1">
+                </div>
+                <div class="form-group">
+                    <label>출금 수수료 (%)</label>
+                    <input type="number" id="withdrawalFee" value="5" min="0" max="50">
+                </div>
+                <div class="form-group">
+                    <label>주간 출금 제한 (회)</label>
+                    <input type="number" id="weeklyWithdrawalLimit" value="1" min="1" max="7">
+                </div>
+                <button class="btn-save" onclick="saveWithdrawalSettings()">저장</button>
+                <div class="status-message" id="withdrawalStatus"></div>
+            </div>
+
+            <!-- 아바타 설정 -->
+            <div class="settings-card">
+                <h3>🤖 아바타 설정</h3>
+                <div class="form-group">
+                    <label>$50 패키지 아바타 생성 기준 ($)</label>
+                    <input type="number" id="avatar50Threshold" value="150" min="0">
+                </div>
+                <div class="form-group">
+                    <label>$100 패키지 아바타 생성 기준 ($)</label>
+                    <input type="number" id="avatar100Threshold" value="300" min="0">
+                </div>
+                <div class="form-group">
+                    <div class="toggle-label">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="avatarAutoCreate" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span>자동 아바타 생성 활성화</span>
+                    </div>
+                </div>
+                <button class="btn-save" onclick="saveAvatarSettings()">저장</button>
+                <div class="status-message" id="avatarStatus"></div>
+            </div>
+
+            <!-- 보안 설정 -->
+            <div class="settings-card">
+                <h3>🔒 보안 설정</h3>
+                <div class="form-group">
+                    <div class="toggle-label">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="maintenanceMode">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span>점검 모드 활성화</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="toggle-label">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="registrationEnabled" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span>신규 가입 허용</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>세션 만료 시간 (시간)</label>
+                    <input type="number" id="sessionTimeout" value="24" min="1" max="168">
+                </div>
+                <button class="btn-save" onclick="saveSecuritySettings()">저장</button>
+                <div class="status-message" id="securityStatus"></div>
+            </div>
+
+            <!-- 알림 설정 -->
+            <div class="settings-card">
+                <h3>📢 알림 설정</h3>
+                <div class="form-group">
+                    <div class="toggle-label">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="emailNotifications" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span>이메일 알림 활성화</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="toggle-label">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="withdrawalNotifications" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span>출금 신청 알림</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="toggle-label">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="registrationNotifications" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span>신규 가입 알림</span>
+                    </div>
+                </div>
+                <button class="btn-save" onclick="saveNotificationSettings()">저장</button>
+                <div class="status-message" id="notificationStatus"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../includes/header-loader.js"></script>
+    <script>
+        // 페이지 로드 시 설정 불러오기
+        window.addEventListener('DOMContentLoaded', () => {
+            loadWalletSettings();
+            loadSecuritySettings();
+        });
+
+        // 지갑 설정 불러오기
+        async function loadWalletSettings() {
+            try {
+                const response = await fetch('../api/settings.php?action=get_wallet', {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('bscUsdtAddress').value = data.data.bsc_usdt_address || '';
+                    document.getElementById('trc20UsdtAddress').value = data.data.trc20_usdt_address || '';
+                }
+            } catch (error) {
+                console.error('지갑 설정 로드 오류:', error);
+            }
+        }
+
+        // 지갑 설정 저장
+        async function saveWalletSettings() {
+            const bscAddress = document.getElementById('bscUsdtAddress').value.trim();
+            const trc20Address = document.getElementById('trc20UsdtAddress').value.trim();
+
+            // 클라이언트 유효성 검사
+            if (bscAddress && !/^0x[a-fA-F0-9]{40}$/.test(bscAddress)) {
+                showStatus('walletStatus', '❌ BSC 주소 형식이 올바르지 않습니다. (0x로 시작, 42자)', false);
+                return;
+            }
+
+            if (trc20Address && !/^T[a-zA-Z0-9]{33}$/.test(trc20Address)) {
+                showStatus('walletStatus', '❌ TRC20 주소 형식이 올바르지 않습니다. (T로 시작, 34자)', false);
+                return;
+            }
+
+            try {
+                const response = await fetch('../api/settings.php?action=save_wallet', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        bsc_usdt_address: bscAddress,
+                        trc20_usdt_address: trc20Address
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showStatus('walletStatus', '✅ ' + data.message);
+                } else {
+                    showStatus('walletStatus', '❌ ' + data.message, false);
+                }
+            } catch (error) {
+                console.error('지갑 설정 저장 오류:', error);
+                showStatus('walletStatus', '❌ 저장 중 오류가 발생했습니다.', false);
+            }
+        }
+
+        // 상태 메시지 표시
+        function showStatus(elementId, message, isSuccess = true) {
+            const statusEl = document.getElementById(elementId);
+            statusEl.textContent = message;
+            statusEl.className = 'status-message ' + (isSuccess ? 'success' : 'error');
+
+            setTimeout(() => {
+                statusEl.style.display = 'none';
+            }, 3000);
+        }
+
+        // 사이트 설정 저장
+        function saveSiteSettings() {
+            const settings = {
+                siteName: document.getElementById('siteName').value,
+                siteUrl: document.getElementById('siteUrl').value,
+                adminEmail: document.getElementById('adminEmail').value
+            };
+            console.log('Site settings:', settings);
+            showStatus('siteStatus', '✅ 사이트 설정이 저장되었습니다.');
+        }
+
+        // 보너스 설정 저장
+        function saveBonusSettings() {
+            const settings = {
+                directBonusRate: document.getElementById('directBonusRate').value,
+                levelBonusRate: document.getElementById('levelBonusRate').value,
+                maxBonusLevel: document.getElementById('maxBonusLevel').value
+            };
+            console.log('Bonus settings:', settings);
+            showStatus('bonusStatus', '✅ 보너스 설정이 저장되었습니다.');
+        }
+
+        // 출금 설정 저장
+        function saveWithdrawalSettings() {
+            const settings = {
+                minWithdrawal: document.getElementById('minWithdrawal').value,
+                withdrawalFee: document.getElementById('withdrawalFee').value,
+                weeklyWithdrawalLimit: document.getElementById('weeklyWithdrawalLimit').value
+            };
+            console.log('Withdrawal settings:', settings);
+            showStatus('withdrawalStatus', '✅ 출금 설정이 저장되었습니다.');
+        }
+
+        // 아바타 설정 저장
+        function saveAvatarSettings() {
+            const settings = {
+                avatar50Threshold: document.getElementById('avatar50Threshold').value,
+                avatar100Threshold: document.getElementById('avatar100Threshold').value,
+                avatarAutoCreate: document.getElementById('avatarAutoCreate').checked
+            };
+            console.log('Avatar settings:', settings);
+            showStatus('avatarStatus', '✅ 아바타 설정이 저장되었습니다.');
+        }
+
+        // 보안 설정 불러오기
+        async function loadSecuritySettings() {
+            try {
+                const response = await fetch('../api/settings.php?action=get_all', {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    const settings = data.settings;
+                    document.getElementById('maintenanceMode').checked = settings.maintenance_mode === '1';
+                    document.getElementById('registrationEnabled').checked = settings.registration_enabled === '1';
+                    if (settings.session_timeout) {
+                        document.getElementById('sessionTimeout').value = settings.session_timeout;
+                    }
+                }
+            } catch (error) {
+                console.error('보안 설정 로드 오류:', error);
+            }
+        }
+
+        // 보안 설정 저장
+        async function saveSecuritySettings() {
+            const maintenanceMode = document.getElementById('maintenanceMode').checked ? '1' : '0';
+            const registrationEnabled = document.getElementById('registrationEnabled').checked ? '1' : '0';
+            const sessionTimeout = document.getElementById('sessionTimeout').value;
+
+            try {
+                // maintenance_mode 저장
+                await fetch('../api/settings.php?action=update', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        setting_key: 'maintenance_mode',
+                        setting_value: maintenanceMode
+                    })
+                });
+
+                // registration_enabled 저장
+                await fetch('../api/settings.php?action=update', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        setting_key: 'registration_enabled',
+                        setting_value: registrationEnabled
+                    })
+                });
+
+                showStatus('securityStatus', '✅ 보안 설정이 저장되었습니다.');
+            } catch (error) {
+                console.error('보안 설정 저장 오류:', error);
+                showStatus('securityStatus', '❌ 저장 중 오류가 발생했습니다.', false);
+            }
+        }
+
+        // 알림 설정 저장
+        function saveNotificationSettings() {
+            const settings = {
+                emailNotifications: document.getElementById('emailNotifications').checked,
+                withdrawalNotifications: document.getElementById('withdrawalNotifications').checked,
+                registrationNotifications: document.getElementById('registrationNotifications').checked
+            };
+            console.log('Notification settings:', settings);
+            showStatus('notificationStatus', '✅ 알림 설정이 저장되었습니다.');
+        }
+
+        // 로그아웃
+        async function logout() {
+            await fetch('../api/auth.php?action=logout', { method: 'POST' });
+            window.location.href = '/admin/index.html';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🤖 아바타 족보 - Avatar System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .page-header.single-row {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .page-header.single-row .page-header-left {
+            flex: 0 0 auto;
+        }
+
+        .page-header.single-row .page-header-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .page-header.double-row {
+            display: flex;
+            gap: 30px;
+            align-items: stretch;
+        }
+
+        .page-header.double-row .page-header-left {
+            flex: 0 0 300px;
+        }
+
+        .page-header.double-row .page-header-right {
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        .page-title {
+            font-size: 2em;
+            font-weight: 700;
+            color: #f8fafc;
+            margin-bottom: 10px;
+        }
+
+        .page-subtitle {
+            color: #94a3b8;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        /* 통계 카드 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            width: 100%;
+        }
+
+        .stat-card {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.15);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .page-header .stat-card {
+            padding: 16px;
+        }
+
+        .stat-icon {
+            font-size: 2em;
+            margin-bottom: 12px;
+            filter: drop-shadow(0 2px 8px rgba(212, 175, 55, 0.3));
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: 600;
+            color: #d4af37;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 0.9em;
+        }
+
+        .stat-detail {
+            font-size: 0.85em;
+            color: #64748b;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        /* 아바타 트리 */
+        .avatar-tree {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 16px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            margin-bottom: 30px;
+        }
+
+        .tree-header {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #f8fafc;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .tree-container {
+            padding: 20px 0;
+            position: relative;
+            height: 280px;
+        }
+
+        .tree-container.expanded {
+            height: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .avatar-node {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 2px solid #d4af37;
+            border-radius: 12px;
+            padding: 16px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(212, 175, 55, 0.2);
+            backdrop-filter: blur(10px);
+            width: 160px;
+            aspect-ratio: 2/3;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .tree-container:not(.expanded) .avatar-node {
+            position: absolute;
+        }
+
+        .tree-container.expanded .avatar-node {
+            position: relative;
+        }
+
+        .avatar-node:hover {
+            border-color: #f59e0b;
+            transform: translateY(-8px) !important;
+            box-shadow: 0 16px 64px rgba(212, 175, 55, 0.4), 0 8px 24px rgba(245, 158, 11, 0.3);
+            z-index: 1000 !important;
+        }
+
+        .avatar-node.root {
+            border-color: #d4af37;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(15, 23, 42, 0.9) 100%);
+            box-shadow: 0 12px 48px rgba(212, 175, 55, 0.3), 0 0 0 1px rgba(212, 175, 55, 0.5) inset;
+        }
+
+        .node-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .node-id {
+            font-size: 0.75em;
+            font-weight: 400;
+            color: #d4af37;
+            text-shadow: 0 2px 8px rgba(212, 175, 55, 0.4);
+        }
+
+        .node-badge {
+            background: linear-gradient(135deg, #d4af37, #f59e0b);
+            color: #0f172a;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.6em;
+            font-weight: 400;
+            box-shadow: 0 2px 8px rgba(212, 175, 55, 0.4);
+        }
+
+        .node-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: auto;
+            padding-top: 10px;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .node-stat {
+            background: rgba(15, 23, 42, 0.6);
+            padding: 6px;
+            border-radius: 6px;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .node-stat-value {
+            font-size: 0.75em;
+            font-weight: 400;
+            color: #34d399;
+            text-shadow: 0 2px 8px rgba(52, 211, 153, 0.3);
+        }
+
+        .node-stat-label {
+            font-size: 0.6em;
+            color: #cbd5e1;
+            font-weight: 400;
+        }
+
+        .revenue-split {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-top: 8px;
+            padding: 6px;
+            background: rgba(15, 23, 42, 0.7);
+            border-radius: 6px;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .revenue-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .revenue-label {
+            font-size: 0.6em;
+            color: #cbd5e1;
+            font-weight: 400;
+        }
+
+        .revenue-value {
+            font-weight: 400;
+            font-size: 0.65em;
+            color: #fbbf24;
+            text-shadow: 0 1px 4px rgba(251, 191, 36, 0.3);
+        }
+
+        .children-container {
+            display: none;
+        }
+
+        /* 로딩 & 에러 */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: #94a3b8;
+        }
+
+        .spinner {
+            border: 3px solid rgba(148, 163, 184, 0.2);
+            border-top-color: #d4af37;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            color: #fca5a5;
+            text-align: center;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
+            font-size: 1.1em;
+        }
+
+        /* 반응형 */
+        @media (max-width: 1400px) {
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .page-header.double-row {
+                flex-direction: column;
+            }
+
+            .page-header.double-row .page-header-left {
+                flex: 1 !important;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 1.5em;
+            }
+
+            .page-header {
+                padding: 20px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .node-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .revenue-split {
+                grid-template-columns: 1fr;
+            }
+
+            .children-container {
+                margin-left: 20px;
+                padding-left: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="admin-header"></div>
+
+    <div class="container">
+        <!-- 아바타 트리 -->
+        <div class="avatar-tree">
+            <div class="tree-header">아바타 1G</div>
+            <div id="treeContainer" class="tree-container">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <div>아바타 데이터를 불러오는 중...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/header-loader.js"></script>
+    <script>
+        let userData = null;
+
+        // 페이지 로드
+        async function loadPage() {
+            const sessionToken = localStorage.getItem('session_token');
+            if (!sessionToken) {
+                alert('로그인이 필요합니다.');
+                window.location.href = '../login.html';
+                return;
+            }
+
+            try {
+                // 통계 로드
+                await loadStatistics();
+                // 족보 트리 로드
+                await loadGenealogyTree();
+            } catch (error) {
+                console.error('페이지 로드 오류:', error);
+            }
+        }
+
+        // 통계 로드
+        async function loadStatistics() {
+            const sessionToken = localStorage.getItem('session_token');
+            try {
+                const response = await fetch(`../api/avatar/get-genealogy-stats.php?session_token=${sessionToken}`);
+                const result = await response.json();
+
+                if (result.success && result.data) {
+                    const data = result.data;
+
+                    // 전체 통계
+                    document.getElementById('totalAvatars').textContent = data.total_avatars || 0;
+                    document.getElementById('activeAvatars').textContent = data.active_avatars || 0;
+                    document.getElementById('totalRevenue').textContent = '$' + parseFloat(data.total_revenue || 0).toFixed(2);
+                    document.getElementById('ownerRevenue').textContent = '$' + parseFloat(data.owner_revenue || 0).toFixed(2);
+                    document.getElementById('aptAccumulated').textContent = '$' + parseFloat(data.apt_accumulated || 0).toFixed(2);
+
+                    // 1세대 통계 (추후 API에서 가져올 예정)
+                    const gen1Count = data.gen1_avatars || 0;
+                    const gen1Revenue = parseFloat(data.gen1_revenue || 0);
+                    const gen1Apt = gen1Revenue * 0.35;
+                    const gen1Ready = Math.floor(gen1Apt / 100);
+
+                    document.getElementById('gen1Avatars').textContent = gen1Count;
+                    document.getElementById('gen1Active').textContent = gen1Count;
+                    document.getElementById('gen1Revenue').textContent = '$' + gen1Revenue.toFixed(2);
+                    document.getElementById('gen1Apt').textContent = '$' + gen1Apt.toFixed(2);
+                    document.getElementById('gen1Ready').textContent = gen1Ready;
+                    document.getElementById('gen1TotalCount').textContent = gen1Count;
+                }
+            } catch (error) {
+                console.error('통계 로드 오류:', error);
+            }
+        }
+
+        // 족보 트리 로드
+        async function loadGenealogyTree() {
+            const sessionToken = localStorage.getItem('session_token');
+            const container = document.getElementById('treeContainer');
+
+            try {
+                const response = await fetch(`../api/avatar/get-genealogy-tree.php?session_token=${sessionToken}`);
+                const result = await response.json();
+
+                if (!result.success) {
+                    container.innerHTML = `<div class="error">${result.message}</div>`;
+                    return;
+                }
+
+                if (!result.data || result.data.length === 0) {
+                    container.innerHTML = '<div class="empty">아직 생성된 아바타가 없습니다</div>';
+                    return;
+                }
+
+                // 트리 렌더링
+                container.innerHTML = renderAvatarTree(result.data);
+            } catch (error) {
+                console.error('족보 트리 로드 오류:', error);
+                container.innerHTML = '<div class="error">족보 데이터를 불러오는 중 오류가 발생했습니다</div>';
+            }
+        }
+
+        // 아바타 트리 렌더링 (재귀)
+        function renderAvatarTree(avatars, isRoot = true) {
+            if (!avatars || avatars.length === 0) return '';
+
+            let html = '';
+
+            // 통계 계산
+            let totalRevenue = 0;
+            let totalOwnerCash = 0;
+            let totalAptPoints = 0;
+            let totalReferrals = 0;
+
+            avatars.forEach(avatar => {
+                totalRevenue += parseFloat(avatar.total_bonus || 0);
+                totalOwnerCash += parseFloat(avatar.owner_cash || 0);
+                totalAptPoints += parseFloat(avatar.apt_points || 0);
+                totalReferrals += parseInt(avatar.direct_referrals || 0);
+            });
+
+            // 대표 카드 (맨 앞)
+            html += `
+                <div class="avatar-node root" style="left: 0px; top: 0px; z-index: ${avatars.length + 1}; border-color: #f59e0b; background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(15, 23, 42, 0.9) 100%); display: flex; align-items: center; justify-content: center;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.5em; font-weight: 400; color: #d4af37; margin-bottom: 20px;">
+                            🤖
+                        </div>
+                        <div style="font-size: 1.2em; font-weight: 400; color: #f8fafc; margin-bottom: 30px;">
+                            1G 아바타
+                        </div>
+                        <div class="node-stats" style="border-top: none; padding-top: 0; margin-top: 0;">
+                            <div class="node-stat">
+                                <div class="node-stat-label">총수익</div>
+                                <div class="node-stat-value">$${totalRevenue.toFixed(2)}</div>
+                            </div>
+                            <div class="node-stat">
+                                <div class="node-stat-label">총 아바타</div>
+                                <div class="node-stat-value">${avatars.length}개</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // 개별 카드들 (통계 카드 뒤에 겹쳐진 상태)
+            avatars.forEach((avatar, index) => {
+                const ownerCash = parseFloat(avatar.owner_cash || 0);
+                const aptPoints = parseFloat(avatar.apt_points || 0);
+                const totalBonus = parseFloat(avatar.total_bonus || 0);
+
+                html += `
+                    <div class="avatar-node ${isRoot ? 'root' : ''}" style="left: ${(index + 1) * 3}px; top: ${(index + 1) * 2}px; z-index: ${avatars.length - index};" data-index="${index}">
+                        <div class="node-header">
+                            <div class="node-id">🤖 ${avatar.user_id}</div>
+                            ${isRoot ? '<div class="node-badge">1G</div>' : ''}
+                        </div>
+
+                        <div style="color: #94a3b8; font-size: 0.6em; margin-bottom: 6px;">
+                            ${avatar.created_date}
+                        </div>
+
+                        <div class="node-stats">
+                            <div class="node-stat">
+                                <div class="node-stat-label">총수익</div>
+                                <div class="node-stat-value">$${totalBonus.toFixed(2)}</div>
+                            </div>
+                            <div class="node-stat">
+                                <div class="node-stat-label">소유자 (65%)</div>
+                                <div class="node-stat-value">$${ownerCash.toFixed(2)}</div>
+                            </div>
+                            <div class="node-stat">
+                                <div class="node-stat-label">아바타 (35%)</div>
+                                <div class="node-stat-value">$${aptPoints.toFixed(2)}</div>
+                            </div>
+                        </div>
+
+                        <div class="revenue-split">
+                            <div class="revenue-item">
+                                <span class="revenue-label">📦 패키지:</span>
+                                <span class="revenue-value">$${avatar.package_name?.replace('Package ', '') || '-'}</span>
+                            </div>
+                            <div class="revenue-item">
+                                <span class="revenue-label">👥 추천인:</span>
+                                <span class="revenue-value">${avatar.direct_referrals || 0}명</span>
+                            </div>
+                        </div>
+
+                        ${avatar.children && avatar.children.length > 0 ? `
+                            <div class="children-container">
+                                ${renderAvatarTree(avatar.children, false)}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+
+            return html;
+        }
+
+        // 카드 클릭 이벤트
+        document.addEventListener('click', function(e) {
+            const card = e.target.closest('.avatar-node');
+            const container = document.getElementById('treeContainer');
+
+            if (card && container) {
+                container.classList.toggle('expanded');
+            }
+        });
+
+        // 페이지 로드 시 실행
+        document.addEventListener('DOMContentLoaded', loadPage);
+    </script>
+</body>
+</html>

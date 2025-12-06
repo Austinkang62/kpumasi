@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>바이너리 트리 - 10대</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #1a1a2e;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .tree-container {
+            display: inline-block;
+            min-width: max-content;
+            padding: 20px;
+        }
+
+        .tree-wrapper {
+            display: flex;
+            justify-content: flex-start;
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .tree-wrapper::-webkit-scrollbar {
+            height: 10px;
+        }
+
+        .tree-wrapper::-webkit-scrollbar-track {
+            background: #16213e;
+        }
+
+        .tree-wrapper::-webkit-scrollbar-thumb {
+            background: #d4af37;
+            border-radius: 5px;
+        }
+
+        .tree {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            align-items: center;
+            min-width: max-content;
+            position: relative;
+        }
+
+        .connections-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .level-container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .level {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        .level-container {
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .node {
+            width: 35px;
+            height: 35px;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #16213e, #1a1a2e);
+            color: #d4af37;
+            position: relative;
+        }
+
+        .node.root::before {
+            display: none;
+        }
+
+        .node.root {
+            background: linear-gradient(135deg, #d4af37, #b8941e);
+            color: #1a1a2e;
+            font-size: 10px;
+            border: 2px solid #d4af37;
+        }
+
+        .level-label {
+            width: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #888;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: #d4af37;
+            font-size: 20px;
+            margin-bottom: 30px;
+        }
+
+        .info {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 11px;
+            color: #888;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            font-size: 11px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+        }
+
+        .legend-root {
+            background: linear-gradient(135deg, #d4af37, #b8941e);
+            border: 1px solid #d4af37;
+        }
+
+        .legend-node {
+            background: linear-gradient(135deg, #16213e, #1a1a2e);
+            border: 1px solid #d4af37;
+        }
+    </style>
+</head>
+<body>
+    <h1>바이너리 트리 구조 - 6대 (63명)</h1>
+
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-box legend-root"></div>
+            <span>루트 (나)</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-box legend-node"></div>
+            <span>하위 노드</span>
+        </div>
+    </div>
+
+    <div class="tree-wrapper">
+        <div class="tree-container">
+            <div class="tree" id="binaryTree">
+                <svg class="connections-svg" id="connectionsSvg"></svg>
+            </div>
+        </div>
+    </div>
+
+    <div class="info">
+        <p>총 노드 수: <strong id="totalNodes">0</strong>명</p>
+        <p>좌측(A): 왼쪽 하위 | 우측(B): 오른쪽 하위</p>
+    </div>
+
+    <script>
+        function generateBinaryTree(maxLevel) {
+            const tree = document.getElementById('binaryTree');
+            let totalNodes = 0;
+
+            // 최하위 레벨의 노드 수
+            const maxNodesInLevel = Math.pow(2, maxLevel);
+            const nodeWidth = 35;
+            const minGap = 2;
+
+            for (let level = 0; level <= maxLevel; level++) {
+                const levelContainer = document.createElement('div');
+                levelContainer.className = 'level-container';
+
+                // 레벨 라벨
+                const levelLabel = document.createElement('div');
+                levelLabel.className = 'level-label';
+                levelLabel.textContent = level === 0 ? '루트' : `${level}대`;
+
+                const levelDiv = document.createElement('div');
+                levelDiv.className = 'level';
+
+                const nodesInLevel = Math.pow(2, level);
+                totalNodes += nodesInLevel;
+
+                // 대칭적 간격 계산
+                // 최하위 레벨 기준으로 각 레벨의 간격을 계산
+                const spacingMultiplier = maxNodesInLevel / nodesInLevel;
+                const gap = (nodeWidth + minGap) * spacingMultiplier - nodeWidth;
+
+                levelDiv.style.gap = `${gap}px`;
+
+                for (let i = 0; i < nodesInLevel; i++) {
+                    const node = document.createElement('div');
+
+                    // 좌측/우측 자식 구분
+                    let className = level === 0 ? 'node root' : 'node';
+                    if (level > 0) {
+                        className += i % 2 === 0 ? ' left' : ' right';
+                    }
+                    node.className = className;
+
+                    // 노드 이름 생성
+                    let nodeName = '';
+                    if (level === 0) {
+                        nodeName = '나';
+                    } else {
+                        // 바이너리 경로 생성 (0=A, 1=B)
+                        let path = '';
+                        let index = i;
+                        for (let l = 0; l < level; l++) {
+                            path = (index % 2 === 0 ? 'A' : 'B') + path;
+                            index = Math.floor(index / 2);
+                        }
+                        nodeName = path;
+                    }
+
+                    node.textContent = nodeName;
+                    levelDiv.appendChild(node);
+                }
+
+                levelContainer.appendChild(levelLabel);
+                levelContainer.appendChild(levelDiv);
+                tree.appendChild(levelContainer);
+            }
+
+            document.getElementById('totalNodes').textContent = totalNodes.toLocaleString();
+        }
+
+        // 6대까지 생성
+        generateBinaryTree(6);
+
+        // 연결선 그리기
+        function drawConnections() {
+            const svg = document.getElementById('connectionsSvg');
+            const tree = document.getElementById('binaryTree');
+            const allNodes = tree.querySelectorAll('.node');
+
+            // SVG 크기 설정
+            const treeRect = tree.getBoundingClientRect();
+            svg.setAttribute('width', treeRect.width);
+            svg.setAttribute('height', treeRect.height);
+
+            // 기존 선 제거
+            svg.innerHTML = '';
+
+            // 모든 노드를 순회하며 부모-자식 연결선 그리기
+            allNodes.forEach(node => {
+                if (node.classList.contains('root')) return;
+
+                const nodeName = node.textContent;
+                if (nodeName.length < 2) return;
+
+                // 부모 노드 이름 찾기 (마지막 문자 제거)
+                const parentName = nodeName.substring(0, nodeName.length - 1) || '나';
+
+                // 부모 노드 찾기
+                let parentNode = null;
+                allNodes.forEach(n => {
+                    if (n.textContent === parentName) {
+                        parentNode = n;
+                    }
+                });
+
+                if (!parentNode) return;
+
+                // 노드 위치 계산
+                const nodeRect = node.getBoundingClientRect();
+                const parentRect = parentNode.getBoundingClientRect();
+                const treeOffset = tree.getBoundingClientRect();
+
+                const x1 = parentRect.left + parentRect.width / 2 - treeOffset.left;
+                const y1 = parentRect.bottom - treeOffset.top;
+                const x2 = nodeRect.left + nodeRect.width / 2 - treeOffset.left;
+                const y2 = nodeRect.top - treeOffset.top;
+
+                // 연결선 그리기 (ㄴ자 형태)
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                const midY = (y1 + y2) / 2;
+
+                const d = `M ${x1} ${y1} L ${x1} ${midY} L ${x2} ${midY} L ${x2} ${y2}`;
+                path.setAttribute('d', d);
+                path.setAttribute('stroke', 'rgba(212, 175, 55, 0.4)');
+                path.setAttribute('stroke-width', '1');
+                path.setAttribute('fill', 'none');
+
+                svg.appendChild(path);
+            });
+        }
+
+        // 페이지 로드 후 루트 노드를 중앙에 배치
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const treeWrapper = document.querySelector('.tree-wrapper');
+                const treeContainer = document.querySelector('.tree-container');
+                const rootNode = document.querySelector('.node.root');
+
+                if (treeWrapper && rootNode && treeContainer) {
+                    // 컨테이너 전체 너비와 뷰포트 너비
+                    const containerWidth = treeContainer.scrollWidth;
+                    const viewportWidth = treeWrapper.clientWidth;
+
+                    // 루트 노드 위치 (컨테이너 내에서)
+                    const rootOffsetLeft = rootNode.offsetLeft;
+                    const rootWidth = rootNode.offsetWidth;
+                    const rootCenter = rootOffsetLeft + rootWidth / 2;
+
+                    // 루트를 화면 중앙에 배치
+                    const scrollPosition = rootCenter - (viewportWidth / 2);
+                    treeWrapper.scrollLeft = scrollPosition;
+
+                    console.log('중앙 정렬:', {
+                        containerWidth,
+                        viewportWidth,
+                        rootCenter,
+                        scrollPosition
+                    });
+                }
+
+                // 연결선 그리기
+                drawConnections();
+            }, 100);
+        });
+
+        // 윈도우 리사이즈 시 연결선 다시 그리기
+        window.addEventListener('resize', () => {
+            drawConnections();
+        });
+    </script>
+</body>
+</html>

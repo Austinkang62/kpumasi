@@ -1,0 +1,492 @@
+/**
+ * K-Pumasi Premium Design System
+ * 프리미엄 럭셔리 테마 - 미드나잇 블루 & 골드
+ * Version: 2.0.0
+ */
+
+/* ============================================
+   1. CSS 변수
+   ============================================ */
+:root {
+    /* Premium Colors - Midnight Blue & Gold */
+    --we1-navy-deep: #0A1128;
+    --we1-navy: #1B263B;
+    --we1-navy-light: #2E3C52;
+    --we1-gold: #D4AF37;
+    --we1-gold-light: #F0D78C;
+    --we1-gold-dark: #B8941F;
+    --we1-cream: #F5F1E8;
+    --we1-white: #FFFFFF;
+
+    /* Gradients */
+    --we1-gradient-primary: linear-gradient(135deg, #D4AF37 0%, #F0D78C 100%);
+    --we1-gradient-navy: linear-gradient(180deg, #0A1128 0%, #1B263B 50%, #2E3C52 100%);
+    --we1-gradient-gold-shine: linear-gradient(135deg, #B8941F 0%, #D4AF37 50%, #F0D78C 100%);
+    --we1-gradient-subtle: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(240, 215, 140, 0.05) 100%);
+
+    /* Background Colors */
+    --we1-bg-primary: #0A1128;
+    --we1-bg-secondary: #1B263B;
+    --we1-bg-card: #1C1C1E;
+    --we1-bg-card-alt: #2C2C2E;
+
+    /* Text Colors */
+    --we1-text-primary: #FFFFFF;
+    --we1-text-secondary: #A8A8A8;
+    --we1-text-muted: #8E8E93;
+    --we1-text-light: #FFFFFF;
+    --we1-text-gold: #D4AF37;
+
+    /* Border & Shadow */
+    --we1-shadow-sm: 0 2px 8px rgba(212, 175, 55, 0.15);
+    --we1-shadow-md: 0 4px 20px rgba(212, 175, 55, 0.2);
+    --we1-shadow-lg: 0 10px 40px rgba(212, 175, 55, 0.25);
+    --we1-shadow-gold: 0 8px 32px rgba(212, 175, 55, 0.3);
+
+    /* Border Radius */
+    --we1-radius-sm: 8px;
+    --we1-radius-md: 16px;
+    --we1-radius-lg: 24px;
+    --we1-radius-xl: 32px;
+    --we1-radius-full: 100px;
+
+    /* Spacing */
+    --we1-space-xs: 8px;
+    --we1-space-sm: 16px;
+    --we1-space-md: 24px;
+    --we1-space-lg: 40px;
+    --we1-space-xl: 60px;
+
+    /* Animation */
+    --we1-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================
+   2. 기본 스타일
+   ============================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Playfair Display', 'Noto Serif KR', Georgia, serif;
+    background: var(--we1-gradient-navy);
+    color: var(--we1-text-light);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* ============================================
+   3. 배경 시스템
+   ============================================ */
+.kpumasi-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    background: var(--we1-gradient-navy);
+    overflow: hidden;
+}
+
+/* 골드 빛 효과 */
+.blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.15;
+    animation: blobFloat 25s ease-in-out infinite;
+}
+
+.blob-1 {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, #D4AF37, transparent);
+    top: -150px;
+    left: -150px;
+    animation-delay: 0s;
+}
+
+.blob-2 {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, #F0D78C, transparent);
+    top: 50%;
+    right: -150px;
+    animation-delay: 8s;
+}
+
+.blob-3 {
+    width: 450px;
+    height: 450px;
+    background: radial-gradient(circle, #D4AF37, transparent);
+    bottom: -150px;
+    left: 30%;
+    animation-delay: 16s;
+}
+
+@keyframes blobFloat {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(40px, -60px) scale(1.1); }
+    66% { transform: translate(-30px, 30px) scale(0.9); }
+}
+
+/* 골드 파티클 */
+.particle {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background: #D4AF37;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.8);
+    animation: particleFloat 20s ease-in-out infinite;
+    opacity: 0.6;
+}
+
+@keyframes particleFloat {
+    0%, 100% { transform: translateY(0) translateX(0); opacity: 0.3; }
+    50% { transform: translateY(-120px) translateX(60px); opacity: 1; }
+}
+
+/* ============================================
+   4. 프리미엄 카드
+   ============================================ */
+.glass-card {
+    background: var(--we1-bg-card);
+    border: 2px solid rgba(212, 175, 55, 0.2);
+    border-radius: var(--we1-radius-lg);
+    box-shadow: var(--we1-shadow-md);
+    transition: var(--we1-transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.glass-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--we1-gradient-primary);
+}
+
+.glass-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--we1-shadow-gold);
+    border-color: var(--we1-gold);
+}
+
+/* ============================================
+   5. K-Pumasi 로고
+   ============================================ */
+.kpumasi-logo {
+    width: 140px;
+    height: 140px;
+    position: relative;
+    margin: 0 auto;
+}
+
+.logo-circle {
+    position: absolute;
+    border-radius: 50%;
+    border: 3px solid transparent;
+}
+
+.logo-circle-1 {
+    width: 100%;
+    height: 100%;
+    border: 3px solid rgba(212, 175, 55, 0.5);
+    animation: rotate 8s linear infinite;
+}
+
+.logo-circle-2 {
+    width: 75%;
+    height: 75%;
+    top: 12.5%;
+    left: 12.5%;
+    border: 3px solid rgba(240, 215, 140, 0.5);
+    animation: rotate 6s linear infinite reverse;
+}
+
+.logo-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px;
+    height: 60px;
+    background: var(--we1-gradient-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--we1-navy-deep);
+    font-weight: 700;
+    font-size: 24px;
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.6);
+    animation: pulse 3s ease-in-out infinite;
+}
+
+@keyframes rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 30px rgba(212, 175, 55, 0.6); }
+    50% { transform: translate(-50%, -50%) scale(1.05); box-shadow: 0 0 50px rgba(212, 175, 55, 0.8); }
+}
+
+/* ============================================
+   6. 버튼
+   ============================================ */
+.btn-kpumasi {
+    padding: 16px 40px;
+    border-radius: var(--we1-radius-full);
+    font-size: 16px;
+    font-weight: 600;
+    font-family: 'Inter', 'Pretendard', sans-serif;
+    border: none;
+    cursor: pointer;
+    transition: var(--we1-transition);
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-primary {
+    background: var(--we1-gradient-primary);
+    color: var(--we1-navy-deep);
+    box-shadow: var(--we1-shadow-md);
+}
+
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    transition: left 0.6s;
+}
+
+.btn-primary:hover::before {
+    left: 100%;
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 35px rgba(212, 175, 55, 0.5);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--we1-gold);
+    border: 2px solid var(--we1-gold);
+    box-shadow: var(--we1-shadow-sm);
+}
+
+.btn-secondary:hover {
+    background: var(--we1-gold);
+    color: var(--we1-navy-deep);
+    transform: translateY(-3px);
+}
+
+.btn-navy {
+    background: var(--we1-navy);
+    color: var(--we1-gold);
+    box-shadow: var(--we1-shadow-md);
+    border: 2px solid var(--we1-gold);
+}
+
+.btn-navy:hover {
+    background: var(--we1-navy-light);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(212, 175, 55, 0.4);
+}
+
+/* ============================================
+   7. 통계 카드
+   ============================================ */
+.stat-card-modern {
+    background: var(--we1-bg-card);
+    border: 2px solid rgba(212, 175, 55, 0.3);
+    border-radius: var(--we1-radius-lg);
+    padding: 40px 30px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: var(--we1-transition);
+}
+
+.stat-card-modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: var(--we1-gradient-primary);
+}
+
+.stat-card-modern:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 15px 50px rgba(212, 175, 55, 0.3);
+    border-color: var(--we1-gold);
+}
+
+/* ============================================
+   8. 기능 카드
+   ============================================ */
+.feature-card-modern {
+    background: var(--we1-bg-card);
+    border-radius: var(--we1-radius-lg);
+    padding: 40px;
+    box-shadow: var(--we1-shadow-sm);
+    transition: var(--we1-transition);
+    position: relative;
+    overflow: hidden;
+    border: 2px solid rgba(212, 175, 55, 0.2);
+}
+
+.feature-card-modern::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200px;
+    height: 200px;
+    background: var(--we1-gradient-subtle);
+    border-radius: 50%;
+    z-index: 0;
+    transition: var(--we1-transition);
+}
+
+.feature-card-modern:hover::before {
+    top: -25%;
+    right: -25%;
+}
+
+.feature-card-modern:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--we1-shadow-gold);
+    border-color: var(--we1-gold);
+}
+
+.feature-card-modern > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* ============================================
+   9. 입력 필드
+   ============================================ */
+.input-kpumasi {
+    width: 100%;
+    padding: 16px 20px;
+    border-radius: var(--we1-radius-md);
+    border: 2px solid #E5E7EB;
+    font-size: 16px;
+    font-family: 'Inter', 'Pretendard', sans-serif;
+    transition: var(--we1-transition);
+    background: white;
+}
+
+.input-kpumasi:focus {
+    outline: none;
+    border-color: var(--we1-gold);
+    box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15);
+}
+
+/* ============================================
+   10. 배지
+   ============================================ */
+.badge-kpumasi {
+    display: inline-block;
+    padding: 8px 20px;
+    border-radius: var(--we1-radius-full);
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Inter', 'Pretendard', sans-serif;
+    background: var(--we1-gradient-primary);
+    color: var(--we1-navy-deep);
+    box-shadow: var(--we1-shadow-sm);
+}
+
+.badge-navy {
+    background: var(--we1-navy);
+    color: var(--we1-gold);
+    border: 1px solid var(--we1-gold);
+}
+
+.badge-outline {
+    background: transparent;
+    border: 2px solid var(--we1-gold);
+    color: var(--we1-gold);
+}
+
+/* ============================================
+   11. 유틸리티
+   ============================================ */
+.text-gradient-gold {
+    background: var(--we1-gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.text-gold {
+    color: var(--we1-gold);
+}
+
+.text-navy {
+    color: var(--we1-navy);
+}
+
+/* ============================================
+   12. 애니메이션
+   ============================================ */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.8s ease-out;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+.floating {
+    animation: float 4s ease-in-out infinite;
+}
+
+/* ============================================
+   13. 반응형
+   ============================================ */
+@media (max-width: 768px) {
+    .kpumasi-logo {
+        width: 100px;
+        height: 100px;
+    }
+
+    .btn-kpumasi {
+        padding: 14px 32px;
+        font-size: 15px;
+    }
+}

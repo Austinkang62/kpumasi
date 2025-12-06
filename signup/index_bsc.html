@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입 (BSC) - We One</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../css/k-pumasi-modern.css">
+    <link rel="stylesheet" href="./css/signup.css">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- 배경 -->
+    <div class="kpumasi-background">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+        <div id="particles"></div>
+    </div>
+
+    <!-- 홈 링크 -->
+    <a href="../index.html" class="home-link">
+        ← 홈으로
+    </a>
+
+    <!-- 회원가입 컨테이너 -->
+    <div class="signup-container fade-in-up">
+        <div class="signup-card">
+            <!-- 알림 -->
+            <div class="alert alert-error" id="alertMessage"></div>
+
+            <!-- 회원가입 폼 -->
+            <form id="signupForm">
+                <h1 class="form-title">회원가입 (BSC)</h1>
+                <p class="form-hint" style="text-align: center; margin-bottom: 30px; color: var(--we1-gold);">
+                    💡 회원코드는 시스템에서 자동으로 부여됩니다
+                </p>
+
+                <!-- 이메일 -->
+                <div class="form-group">
+                    <label class="form-label" for="email">이메일</label>
+                    <input type="email" id="email" class="form-input" placeholder="이메일을 입력하세요" required>
+                    <div class="form-hint" style="color: var(--we1-gold);">💡 테스트 모드: 이메일 인증 생략됨</div>
+                </div>
+
+                <!-- 비밀번호 -->
+                <div class="form-group">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div>
+                            <label class="form-label" for="password">비밀번호</label>
+                            <input type="password" id="password" class="form-input" placeholder="8자 이상" required>
+                        </div>
+                        <div>
+                            <label class="form-label" for="passwordConfirm">비밀번호 확인</label>
+                            <input type="password" id="passwordConfirm" class="form-input" placeholder="비밀번호 재입력" required>
+                        </div>
+                    </div>
+                    <div class="form-hint">8자 이상 영문, 숫자, 특수문자 조합</div>
+                </div>
+
+                <!-- 추천코드 -->
+                <div class="form-group">
+                    <label class="form-label" for="referralCode">추천코드 <span style="color: #EF4444;">*필수</span></label>
+                    <input type="text" id="referralCode" class="form-input" placeholder="추천인의 회원코드 (예: ABCD1234)" maxlength="8" required>
+                    <div class="form-hint">추천인의 회원코드를 입력하세요 (필수 입력 및 자동 검증)</div>
+                    <div id="referralResult" style="margin-top: 10px; display: none;"></div>
+                </div>
+
+                <!-- 후원코드 -->
+                <div class="form-group">
+                    <label class="form-label" for="sponsorCode">후원코드 (선택)</label>
+                    <div class="input-group">
+                        <input type="text" id="sponsorCode" class="form-input" placeholder="후원인의 회원코드 (예: ABCD1234)" maxlength="8">
+                        <button type="button" id="selectSponsorBtn" class="check-button" style="background: linear-gradient(135deg, #6366f1, #8b5cf6);" disabled>후원목록</button>
+                    </div>
+                    <div class="form-hint">후원 가능한 회원 목록에서 선택하세요</div>
+
+                    <!-- 후원 가능 회원 리스트 -->
+                    <div id="sponsorListContainer" style="display: block; margin-top: 12px; max-height: 300px; overflow-y: auto; border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 8px; background: rgba(0, 0, 0, 0.2);">
+                        <div style="padding: 10px; background: rgba(212, 175, 55, 0.1); border-bottom: 1px solid rgba(212, 175, 55, 0.2); position: sticky; top: 0; z-index: 10;">
+                            <div style="font-size: 13px; font-weight: 600; color: var(--we1-gold);">📋 후원 가능한 회원 목록</div>
+                            <div style="font-size: 11px; color: var(--we1-text-secondary); margin-top: 4px;">아이디를 클릭하면 자동으로 입력됩니다</div>
+                        </div>
+                        <div id="sponsorListContent" style="padding: 8px;">
+                            <!-- 동적으로 생성 -->
+                        </div>
+                    </div>
+
+                    <!-- 위치 선택 그룹 -->
+                    <div id="positionGroup" style="display: none; margin-top: 12px;">
+                        <!-- 로딩 상태 -->
+                        <div id="positionLoading" style="display: none; text-align: center; padding: 12px; color: var(--we1-text-secondary); font-size: 13px;">
+                            ⏳ 조회 중...
+                        </div>
+
+                        <!-- 에러 상태 -->
+                        <div id="positionError" style="display: none; padding: 10px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 8px; color: #FCA5A5; font-size: 13px;">
+                        </div>
+
+                        <!-- 조직도 시각화 -->
+                        <div id="positionTree" style="display: none; margin-top: 8px;">
+                            <!-- 후원인 정보 -->
+                            <div style="padding: 10px 12px; background: rgba(212, 175, 55, 0.08); border-radius: 8px; border: 1px solid rgba(212, 175, 55, 0.2); margin-bottom: 10px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <span style="font-size: 12px; color: var(--we1-text-secondary);">후원인</span>
+                                        <span style="font-size: 14px; font-weight: 700; color: var(--we1-gold); margin-left: 8px;" id="sponsorName"></span>
+                                    </div>
+                                    <div style="font-size: 11px; color: var(--we1-text-secondary);" id="sponsorStats"></div>
+                                </div>
+                            </div>
+
+                            <!-- 바이너리 트리 -->
+                            <div style="display: flex; gap: 8px;">
+                                <!-- 좌측 위치 -->
+                                <div id="leftPosition" class="position-box" data-position="1" style="flex: 1; padding: 12px; border: 1.5px solid rgba(212, 175, 55, 0.25); border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.2s; background: rgba(255, 255, 255, 0.02);">
+                                    <div style="font-size: 20px; margin-bottom: 4px;">👈</div>
+                                    <div style="font-size: 13px; font-weight: 600; margin-bottom: 4px; color: var(--we1-text-primary);">좌측</div>
+                                    <div class="position-status" style="font-size: 11px; color: var(--we1-text-secondary);"></div>
+                                </div>
+
+                                <!-- 우측 위치 -->
+                                <div id="rightPosition" class="position-box" data-position="2" style="flex: 1; padding: 12px; border: 1.5px solid rgba(212, 175, 55, 0.25); border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.2s; background: rgba(255, 255, 255, 0.02);">
+                                    <div style="font-size: 20px; margin-bottom: 4px;">👉</div>
+                                    <div style="font-size: 13px; font-weight: 600; margin-bottom: 4px; color: var(--we1-text-primary);">우측</div>
+                                    <div class="position-status" style="font-size: 11px; color: var(--we1-text-secondary);"></div>
+                                </div>
+                            </div>
+
+                            <!-- 선택된 위치 표시 -->
+                            <div id="selectedPositionInfo" style="margin-top: 8px; padding: 8px 12px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 6px; color: #6EE7B7; font-size: 12px; display: none;">
+                                ✓ <span id="selectedPositionText"></span>
+                            </div>
+                        </div>
+
+                        <!-- Hidden input for selected position -->
+                        <input type="hidden" id="selectedPosition" name="position" value="">
+                    </div>
+                </div>
+
+                <!-- USDT 입금 정보 (BSC) -->
+                <div class="form-group">
+                    <label class="form-label">💰 USDT 입금 정보</label>
+
+                    <!-- 선택된 네트워크 표시 -->
+                    <div style="margin-bottom: 16px; padding: 12px; background: rgba(212, 175, 55, 0.1); border: 2px solid rgba(212, 175, 55, 0.3); border-radius: 12px;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div style="font-size: 32px;">⚡</div>
+                            <div>
+                                <div style="font-size: 16px; font-weight: 700; color: var(--we1-gold);">BSC (BNB Smart Chain)</div>
+                                <div style="font-size: 11px; color: var(--we1-text-secondary);">빠른 처리</div>
+                            </div>
+                            <a href="#" onclick="saveFormDataAndNavigate('index.html'); return false;" style="margin-left: auto; font-size: 12px; color: var(--we1-text-secondary); text-decoration: underline;">네트워크 변경</a>
+                        </div>
+                    </div>
+
+                    <!-- 2단계: 지갑 주소 표시 -->
+                    <div id="walletAddressSection" style="margin-bottom: 20px;">
+                        <div style="font-size: 14px; color: var(--we1-text-secondary); margin-bottom: 12px;">2. 아래 주소로 $100 USDT를 입금하세요</div>
+                        <div style="background: rgba(212, 175, 55, 0.1); border: 2px solid rgba(212, 175, 55, 0.3); border-radius: 12px; padding: 16px;">
+                            <div style="font-size: 12px; color: var(--we1-text-secondary); margin-bottom: 8px;">
+                                BSC (BNB Smart Chain) 입금 주소
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div id="selectedWalletAddress" style="flex: 1; font-family: monospace; font-size: 13px; color: var(--we1-gold); word-break: break-all; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px;">
+                                    주소 로딩 중...
+                                </div>
+                                <button type="button" id="copyWalletBtn" style="background: var(--we1-gold); color: #000; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; white-space: nowrap;">
+                                    📋 복사
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3단계: TXID 입력 -->
+                    <div id="txidInputSection" style="margin-bottom: 20px;">
+                        <div style="font-size: 14px; color: var(--we1-text-secondary); margin-bottom: 12px;">3. 입금 후 TXID를 입력하세요</div>
+                        <input type="text" id="txidInput" class="form-input" placeholder="트랜잭션 ID (TXID)" maxlength="100" required>
+                        <div class="form-hint" id="txidHint">
+                            <strong style="color: var(--we1-gold);">⚡ 즉시 검증</strong><br>
+                            TXID 입력 시 블록체인에서 자동으로 검증되어 즉시 가입이 완료됩니다.
+                        </div>
+                    </div>
+
+                    <!-- 안내 사항 -->
+                    <div style="padding: 14px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px;">
+                        <div style="font-size: 13px; color: var(--we1-text-secondary); line-height: 1.7;">
+                            <strong style="color: #10B981; display: block; margin-bottom: 8px;">⚡ 즉시 검증 모드</strong>
+                            <span style="color: var(--we1-text-secondary);">
+                                • 반드시 <strong style="color: var(--we1-gold);">BSC (BNB Smart Chain)</strong> 네트워크로만 입금하세요<br>
+                                • TXID 입력 시 블록체인에서 자동으로 검증됩니다<br>
+                                • 검증 완료 후 <strong>즉시 가입</strong>이 완료됩니다<br>
+                                • 잘못된 네트워크로 입금 시 복구가 불가능합니다
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Hidden fields -->
+                    <input type="hidden" id="selectedNetwork" value="BSC">
+                    <input type="hidden" id="verificationMode" value="bsc_instant">
+                    <input type="hidden" id="verifiedTxid" value="">
+                    <input type="hidden" id="verifiedAmount" value="100">
+                </div>
+
+                <!-- 제출 버튼 -->
+                <div style="display: flex; justify-content: center; margin-top: 30px;">
+                    <button type="submit" class="btn-submit" id="submitButton" style="width: 50%;" disabled>가입신청</button>
+                </div>
+            </form>
+
+            <!-- 로그인 링크 -->
+            <div class="login-link">
+                이미 계정이 있으신가요? <a href="../html/login.html">로그인</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Modules -->
+    <script type="module" src="./js/main-interactive.js?v=20251124-8"></script>
+
+    <!-- BSC 주소 자동 로드 -->
+    <script>
+        async function loadBSCAddress() {
+            try {
+                const response = await fetch('./api/get-wallet-addresses.php');
+                const data = await response.json();
+
+                const addressEl = document.getElementById('selectedWalletAddress');
+                if (data.success && data.data && data.data.bsc_usdt_address) {
+                    addressEl.textContent = data.data.bsc_usdt_address;
+                } else {
+                    addressEl.textContent = '주소를 불러올 수 없습니다';
+                }
+            } catch (error) {
+                console.error('BSC 주소 로드 실패:', error);
+                document.getElementById('selectedWalletAddress').textContent = '주소 로드 실패';
+            }
+        }
+
+        // 복사 버튼
+        document.getElementById('copyWalletBtn').onclick = function() {
+            const addr = document.getElementById('selectedWalletAddress').textContent.trim();
+
+            if (!addr || addr === '주소 로딩 중...' || addr === '주소를 불러올 수 없습니다' || addr === '주소 로드 실패') {
+                alert('복사할 주소가 없습니다.');
+                return;
+            }
+
+            navigator.clipboard.writeText(addr).then(() => {
+                const btn = document.getElementById('copyWalletBtn');
+                const orig = btn.textContent;
+                btn.textContent = '✓ 복사됨!';
+                btn.style.background = '#10b981';
+
+                setTimeout(() => {
+                    btn.textContent = orig;
+                    btn.style.background = '#d4af37';
+                }, 2000);
+            }).catch(err => {
+                console.error('복사 실패:', err);
+                alert('복사에 실패했습니다: ' + err.message);
+            });
+        };
+
+        // TXID 입력 감지 (제출 버튼 활성화)
+        document.getElementById('txidInput').addEventListener('input', function() {
+            const txidValue = this.value.trim();
+            const submitButton = document.getElementById('submitButton');
+
+            if (txidValue.length >= 30) {
+                submitButton.disabled = false;
+            } else {
+                submitButton.disabled = true;
+            }
+        });
+
+        // 페이지 로드 시 주소 로드
+        setTimeout(() => {
+            loadBSCAddress();
+        }, 500);
+
+        // 폼 데이터 저장 및 페이지 이동
+        function saveFormDataAndNavigate(url) {
+            const formData = {
+                email: document.getElementById('email')?.value || '',
+                password: document.getElementById('password')?.value || '',
+                passwordConfirm: document.getElementById('passwordConfirm')?.value || '',
+                referralCode: document.getElementById('referralCode')?.value || '',
+                sponsorCode: document.getElementById('sponsorCode')?.value || '',
+                selectedPosition: document.getElementById('selectedPosition')?.value || '',
+                selectedPositionText: document.getElementById('selectedPositionText')?.textContent || '',
+                positionInfoVisible: document.getElementById('selectedPositionInfo')?.style.display === 'block'
+            };
+
+            sessionStorage.setItem('signupFormData', JSON.stringify(formData));
+            window.location.href = url;
+        }
+
+        // 페이지 로드 시 저장된 폼 데이터 복원
+        function restoreFormData() {
+            const savedData = sessionStorage.getItem('signupFormData');
+            if (savedData) {
+                try {
+                    const formData = JSON.parse(savedData);
+
+                    if (formData.email) document.getElementById('email').value = formData.email;
+                    if (formData.password) document.getElementById('password').value = formData.password;
+                    if (formData.passwordConfirm) document.getElementById('passwordConfirm').value = formData.passwordConfirm;
+                    if (formData.referralCode) document.getElementById('referralCode').value = formData.referralCode;
+                    if (formData.sponsorCode) document.getElementById('sponsorCode').value = formData.sponsorCode;
+                    if (formData.selectedPosition) document.getElementById('selectedPosition').value = formData.selectedPosition;
+
+                    // 선택된 위치 정보 복원
+                    if (formData.selectedPositionText && formData.positionInfoVisible) {
+                        const positionInfo = document.getElementById('selectedPositionInfo');
+                        const positionText = document.getElementById('selectedPositionText');
+                        if (positionInfo && positionText) {
+                            positionText.textContent = formData.selectedPositionText;
+                            positionInfo.style.display = 'block';
+                        }
+                    }
+
+                    console.log('✅ 폼 데이터 복원 완료 (BSC)');
+                } catch (e) {
+                    console.error('폼 데이터 복원 오류:', e);
+                }
+            }
+        }
+
+        // 페이지 로드 시 복원
+        window.addEventListener('DOMContentLoaded', () => {
+            restoreFormData();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+# DirectoryIndex 설정 - index.php를 기본으로
+DirectoryIndex index.php index.html
+
+# index.html 요청을 index.php로 리다이렉트
+RewriteEngine On
+RewriteRule ^index\.html$ index.php [L]

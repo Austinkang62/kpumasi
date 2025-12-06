@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>출금 - We One</title>
+    <link rel="stylesheet" href="../css/k-pumasi-modern.css">
+    <script src="../js/auth-check.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            min-height: 100vh;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* 고정 헤더 */
+        .dashboard-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: var(--we1-bg-card);
+            backdrop-filter: blur(20px);
+            padding: 20px 40px;
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
+            border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-small {
+            width: 50px;
+            height: 50px;
+            position: relative;
+        }
+
+        .logo-small .logo-circle {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px solid transparent;
+        }
+
+        .logo-small .logo-circle-1 {
+            width: 100%;
+            height: 100%;
+            border: 2px solid rgba(212, 175, 55, 0.5);
+            animation: rotate 8s linear infinite;
+        }
+
+        .logo-small .logo-circle-2 {
+            width: 70%;
+            height: 70%;
+            top: 15%;
+            left: 15%;
+            border: 2px solid rgba(240, 215, 140, 0.5);
+            animation: rotate 6s linear infinite reverse;
+        }
+
+        .logo-small .logo-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 25px;
+            height: 25px;
+            background: var(--we1-gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--we1-navy-deep);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+        }
+
+        .brand-text {
+            color: var(--we1-text-primary);
+            font-size: 24px;
+            font-weight: 800;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-link {
+            padding: 10px 24px;
+            background: transparent;
+            border-radius: 100px;
+            color: var(--we1-text-secondary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            transition: var(--we1-transition);
+            border: 2px solid transparent;
+        }
+
+        .nav-link:hover {
+            color: var(--we1-gold);
+            border-color: rgba(212, 175, 55, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .nav-link.active {
+            background: var(--we1-gradient-primary);
+            color: var(--we1-navy-deep);
+            border-color: transparent;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        /* 메인 컨테이너 */
+        .main-container {
+            position: relative;
+            z-index: 10;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 40px;
+        }
+
+        .page-title {
+            font-size: 36px;
+            font-weight: 800;
+            font-family: 'Playfair Display', serif;
+            text-align: center;
+            margin-bottom: 15px;
+            background: var(--we1-gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .page-subtitle {
+            text-align: center;
+            font-size: 16px;
+            font-family: 'Inter', sans-serif;
+            color: var(--we1-text-secondary);
+            margin-bottom: 50px;
+        }
+
+        /* 잔액 카드 */
+        .balance-card {
+            background: var(--we1-bg-card);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: var(--we1-shadow-md);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            margin-bottom: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .balance-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--we1-gradient-primary);
+        }
+
+        .balance-label {
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            color: var(--we1-text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .balance-amount {
+            font-size: 56px;
+            font-weight: 800;
+            font-family: 'Playfair Display', serif;
+            background: var(--we1-gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+        }
+
+        /* 프로그레스 바 */
+        .progress-container {
+            margin-top: 30px;
+            padding: 25px;
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 16px;
+        }
+
+        .progress-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            color: var(--we1-text-secondary);
+        }
+
+        .progress-label-middle {
+            color: var(--we1-gold);
+        }
+
+        .progress-label-end {
+            color: var(--we1-gold-light);
+        }
+
+        .progress-bar-wrapper {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            display: flex;
+            height: 35px;
+            border-radius: 100px;
+            overflow: hidden;
+            border: 3px solid rgba(212, 175, 55, 0.4);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
+        }
+
+        .progress-zone {
+            height: 100%;
+            position: relative;
+        }
+
+        .progress-zone-safe {
+            flex: 2;
+            background: linear-gradient(90deg, #10B981 0%, #14B8A6 100%);
+            border-right: 2px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .progress-zone-blocked {
+            flex: 1;
+            background: linear-gradient(90deg, #F59E0B 0%, #EF4444 100%);
+            position: relative;
+        }
+
+        .progress-zone-blocked::before {
+            content: '⚠️ AVATAR';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 11px;
+            font-weight: 700;
+            color: white;
+            white-space: nowrap;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .progress-indicator {
+            position: absolute;
+            top: -5px;
+            bottom: -5px;
+            width: 4px;
+            transition: left 0.5s ease;
+        }
+
+        .progress-marker {
+            width: 4px;
+            height: 100%;
+            background: var(--we1-gold);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.8);
+            border-radius: 2px;
+        }
+
+        .progress-tooltip {
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--we1-gold);
+            color: var(--we1-navy-deep);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+        }
+
+        .progress-tooltip::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 6px solid var(--we1-gold);
+        }
+
+        .progress-legends {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 24px;
+            height: 14px;
+            border-radius: 4px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .legend-safe {
+            background: linear-gradient(90deg, #10B981, #14B8A6);
+        }
+
+        .legend-blocked {
+            background: linear-gradient(90deg, #F59E0B, #EF4444);
+        }
+
+        .legend-text {
+            font-size: 13px;
+            color: var(--we1-text-secondary);
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+        }
+
+        /* 플로우 다이어그램 스타일 */
+        .flow-diagram-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .flow-box {
+            background: var(--we1-bg-card);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 25px;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            box-shadow: var(--we1-shadow-gold);
+            transition: all 0.3s ease;
+        }
+
+        .flow-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(212, 175, 55, 0.4);
+        }
+
+        .cash-flow {
+            border-color: rgba(16, 185, 129, 0.4);
+        }
+
+        .avatar-flow {
+            border-color: rgba(139, 92, 246, 0.4);
+        }
+
+        .flow-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .flow-icon {
+            font-size: 32px;
+        }
+
+        .flow-title {
+            flex: 1;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--we1-gold);
+        }
+
+        .flow-percentage {
+            background: var(--we1-gradient-primary);
+            color: var(--we1-navy-deep);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .flow-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .flow-section {
+            text-align: center;
+        }
+
+        .flow-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--we1-text-secondary);
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .flow-arrow {
+            font-size: 24px;
+            color: var(--we1-gold);
+            margin: 5px 0;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(5px); }
+        }
+
+        .flow-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--we1-gold-light);
+            margin: 8px 0;
+        }
+
+        .flow-desc {
+            font-size: 13px;
+            color: var(--we1-text-secondary);
+            font-weight: 500;
+        }
+
+        .flow-center-box {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(212, 175, 55, 0.05));
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .flow-balance-label {
+            font-size: 13px;
+            color: var(--we1-text-secondary);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .flow-balance {
+            font-size: 36px;
+            font-weight: 900;
+            background: var(--we1-gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 10px 0;
+        }
+
+        .flow-formula {
+            font-size: 12px;
+            color: var(--we1-text-tertiary);
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        .flow-progress-bar {
+            width: 100%;
+            height: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            margin: 15px 0 8px 0;
+            overflow: hidden;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .flow-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #8B5CF6, #A78BFA);
+            border-radius: 20px;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+        }
+
+        .flow-progress-text {
+            font-size: 12px;
+            color: var(--we1-text-secondary);
+            font-weight: 600;
+        }
+
+        /* 알림 */
+        .alert {
+            padding: 18px 22px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+        }
+
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: #FCD34D;
+        }
+
+        .alert-info {
+            background: rgba(14, 165, 233, 0.15);
+            border: 1px solid rgba(14, 165, 233, 0.3);
+            color: #7DD3FC;
+        }
+
+        .alert-title {
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+            margin-bottom: 8px;
+        }
+
+        /* 출금 폼 */
+        .withdrawal-form {
+            background: var(--we1-bg-card);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: var(--we1-shadow-md);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .withdrawal-form::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--we1-gradient-primary);
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            color: var(--we1-text-primary);
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            transition: var(--we1-transition);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--we1-text-primary);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--we1-gold);
+            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .form-input:read-only {
+            background: rgba(0, 0, 0, 0.2);
+            font-family: monospace;
+            color: var(--we1-gold);
+        }
+
+        .form-input:disabled {
+            background: rgba(0, 0, 0, 0.3);
+            cursor: not-allowed;
+        }
+
+        .form-hint {
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            color: var(--we1-text-secondary);
+            margin-top: 8px;
+        }
+
+        .amount-suggestions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .amount-btn {
+            padding: 10px 20px;
+            background: transparent;
+            border: 2px solid var(--we1-gold);
+            border-radius: 100px;
+            color: var(--we1-gold);
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: var(--we1-transition);
+        }
+
+        .amount-btn:hover:not(:disabled) {
+            background: var(--we1-gold);
+            color: var(--we1-navy-deep);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .amount-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            border-color: #666;
+            color: #666;
+        }
+
+        /* 제출 버튼 */
+        .submit-button {
+            width: 100%;
+            padding: 18px;
+            background: var(--we1-gradient-primary);
+            color: var(--we1-navy-deep);
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: var(--we1-transition);
+            box-shadow: 0 6px 25px rgba(212, 175, 55, 0.4);
+            margin-top: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.6s;
+        }
+
+        .submit-button:hover:not(:disabled)::before {
+            left: 100%;
+        }
+
+        .submit-button:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 35px rgba(212, 175, 55, 0.5);
+        }
+
+        .submit-button:active:not(:disabled) {
+            transform: translateY(-1px);
+        }
+
+        .submit-button:disabled {
+            background: #4A4A4A;
+            color: #8E8E93;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* 규칙 섹션 */
+        .rules-section {
+            background: var(--we1-bg-card);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 35px;
+            box-shadow: var(--we1-shadow-sm);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .rules-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--we1-gradient-primary);
+        }
+
+        .rules-title {
+            font-size: 20px;
+            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+            color: var(--we1-text-primary);
+            margin-bottom: 20px;
+        }
+
+        .rules-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .rules-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            color: var(--we1-text-secondary);
+            line-height: 1.6;
+        }
+
+        .rules-list li:last-child {
+            border-bottom: none;
+        }
+
+        .rules-list li::before {
+            content: "✓ ";
+            color: var(--we1-gold);
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        /* 반응형 */
+        @media (max-width: 768px) {
+            .dashboard-header {
+                padding: 15px 20px;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+
+            .main-container {
+                padding: 40px 20px;
+            }
+
+            .balance-card {
+                padding: 30px 20px;
+            }
+
+            .balance-amount {
+                font-size: 40px;
+            }
+
+            .withdrawal-form {
+                padding: 30px 20px;
+            }
+
+            .rules-section {
+                padding: 25px 20px;
+            }
+
+            .progress-legends {
+                flex-direction: column;
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 배경 -->
+    <div class="kpumasi-background">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+        <div id="particles"></div>
+    </div>
+
+    <!-- 헤더 -->
+    <header class="dashboard-header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo-small">
+                    <div class="logo-circle logo-circle-1"></div>
+                    <div class="logo-circle logo-circle-2"></div>
+                    <div class="logo-center">W1</div>
+                </div>
+                <div class="brand-text">We One</div>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="dashboard.html" class="nav-link">대시보드</a>
+                <a href="organization.html" class="nav-link">조직도</a>
+                <a href="referral-link-test.html" class="nav-link">🔗 추천링크</a>
+                <a href="withdrawal.html" class="nav-link active">출금</a>
+                <a href="#" class="nav-link" onclick="logout()">로그아웃</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 메인 컨테이너 -->
+    <div class="main-container fade-in-up">
+        <h1 class="page-title">💰 출금</h1>
+        <p class="page-subtitle">보너스를 USDT로 출금하세요</p>
+
+        <!-- 보너스 플로우 다이어그램 -->
+        <div class="flow-diagram-container">
+            <!-- 캐시 박스 (65% USDT) -->
+            <div class="flow-box cash-flow">
+                <div class="flow-header">
+                    <div class="flow-icon">💵</div>
+                    <div class="flow-title">캐시 (USDT)</div>
+                    <div class="flow-percentage">65%</div>
+                </div>
+
+                <div class="flow-content">
+                    <!-- 인풋 -->
+                    <div class="flow-section input-section">
+                        <div class="flow-label">📥 INPUT</div>
+                        <div class="flow-arrow">▼</div>
+                        <div class="flow-value" id="cashInput">$0.00</div>
+                        <div class="flow-desc">총 보너스 65%</div>
+                    </div>
+
+                    <!-- 중앙 박스 -->
+                    <div class="flow-center-box">
+                        <div class="flow-balance-label">현재 잔액</div>
+                        <div class="flow-balance" id="currentBalance">$0.00</div>
+                        <div class="flow-formula">= INPUT - OUTPUT</div>
+                    </div>
+
+                    <!-- 아웃풋 -->
+                    <div class="flow-section output-section">
+                        <div class="flow-label">📤 OUTPUT</div>
+                        <div class="flow-arrow">▼</div>
+                        <div class="flow-value" id="cashOutput">$0.00</div>
+                        <div class="flow-desc">출금 합계</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 아바타 포인트 박스 (35%) -->
+            <div class="flow-box avatar-flow">
+                <div class="flow-header">
+                    <div class="flow-icon">🤖</div>
+                    <div class="flow-title">아바타 포인트</div>
+                    <div class="flow-percentage">35%</div>
+                </div>
+
+                <div class="flow-content">
+                    <!-- 인풋 -->
+                    <div class="flow-section input-section">
+                        <div class="flow-label">📥 INPUT</div>
+                        <div class="flow-arrow">▼</div>
+                        <div class="flow-value" id="avatarInput">$0.00</div>
+                        <div class="flow-desc">총 보너스 35%</div>
+                    </div>
+
+                    <!-- 중앙 박스 -->
+                    <div class="flow-center-box">
+                        <div class="flow-balance-label">현재 잔액</div>
+                        <div class="flow-balance" id="avatarBalance">$0.00</div>
+                        <div class="flow-progress-bar">
+                            <div class="flow-progress-fill" id="avatarProgress" style="width: 0%"></div>
+                        </div>
+                        <div class="flow-progress-text" id="avatarProgressText">0% → $100</div>
+                    </div>
+
+                    <!-- 아웃풋 -->
+                    <div class="flow-section output-section">
+                        <div class="flow-label">📤 OUTPUT</div>
+                        <div class="flow-arrow">▼</div>
+                        <div class="flow-value" id="avatarOutput">0개</div>
+                        <div class="flow-desc">생성된 아바타 ($100/개)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 경고 메시지 -->
+        <div id="warningAlert" class="alert alert-warning" style="display: none;">
+            <div class="alert-title">⚠️ 알림</div>
+            <div id="warningText"></div>
+        </div>
+
+        <!-- 출금 신청 폼 -->
+        <div class="withdrawal-form">
+            <div class="form-group">
+                <label class="form-label">출금 금액 (USD)</label>
+                <input type="number" class="form-input" id="withdrawalAmount" placeholder="금액 입력 (최소 $100, $10 단위)" min="100" step="10" oninput="calculateNetAmount()">
+                <div class="form-hint">최대 출금 가능: <span id="maxWithdrawable">$0.00</span></div>
+                <div class="form-hint" style="color: #fbbf24; margin-top: 5px;">
+                    💰 실제 수령액 (수수료 5% 차감): <span id="netAmount">$0.00</span>
+                </div>
+                <div class="amount-suggestions">
+                    <button class="amount-btn" onclick="setAmount(100)">$100</button>
+                    <button class="amount-btn" onclick="setAmount(200)">$200</button>
+                    <button class="amount-btn" onclick="setAmount(500)">$500</button>
+                    <button class="amount-btn" onclick="setMaxAmount()">Max</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">USDT 주소 (BNB Smart Chain)</label>
+                <input type="text" class="form-input" id="usdtAddress" placeholder="0x..." readonly>
+                <div class="form-hint">프로필 수정에서 변경할 수 있습니다</div>
+            </div>
+
+            <div class="alert alert-info">
+                <div class="alert-title">📋 처리 정보</div>
+                <div>출금 요청은 영업일 기준 24-48시간 이내에 처리됩니다. 승인되면 확인 이메일을 받으실 수 있습니다.</div>
+            </div>
+
+            <button class="submit-button" id="submitBtn" onclick="submitWithdrawal()">
+                출금 신청
+            </button>
+        </div>
+
+        <!-- 출금 규칙 -->
+        <div class="rules-section">
+            <div class="rules-title">📖 출금 규칙</div>
+            <ul class="rules-list">
+                <li>최소 출금 금액: $100 USD ($10 단위)</li>
+                <li>출금 수수료: 5% (실제 수령액 = 출금 금액 × 95%)</li>
+                <li>주간 출금 제한: 주 1회</li>
+                <li>결제 방식: USDT (BNB Smart Chain)</li>
+                <li>처리 시간: 영업일 기준 24-48시간</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // 파티클 생성
+        function createParticles() {
+            const container = document.getElementById('particles');
+            if (!container) return;
+
+            const particleCount = 20;
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (10 + Math.random() * 10) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // 전역 변수
+        let currentUserData = null;
+
+        // 사용자 데이터 로드
+        async function loadUserData() {
+            try {
+                const token = localStorage.getItem('session_token') || localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+                if (!token) {
+                    alert('로그인이 필요합니다.');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const response = await fetch(`../api/withdrawal/balance.php?session_token=${encodeURIComponent(token)}`);
+
+                const result = await response.json();
+
+                if (!result.success) {
+                    alert(result.message || '잔액 조회 실패');
+                    return;
+                }
+
+                const data = result.data;
+                const debug = result.debug || {};
+
+                const userData = {
+                    balance: data.current_balance,
+                    totalEarned: data.total_earned,
+                    avatarPoints: data.avatar_points || 0,
+                    usdtAddress: data.usdt_address,
+                    lastWithdrawal: data.last_withdrawal,
+                    availableBonus: debug.available_bonus || 0,
+                    withdrawalTotal: debug.withdrawal_total || 0,
+                    totalBonus: debug.total_bonus || 0
+                };
+
+                currentUserData = userData;
+
+                // 플로우 다이어그램 업데이트
+                updateFlowDiagram(userData);
+
+                // UI 업데이트
+                document.getElementById('usdtAddress').value = userData.usdtAddress || '';
+
+                // 출금 가능 여부 확인
+                checkWithdrawalEligibility(userData);
+
+            } catch (error) {
+                console.error('Load user data error:', error);
+                alert('데이터 로드 중 오류가 발생했습니다.');
+            }
+        }
+
+        // 플로우 다이어그램 업데이트
+        function updateFlowDiagram(userData) {
+            // 캐시 박스 (65%)
+            // available_bonus는 이미 65%로 누적된 값
+            const cashInput = userData.availableBonus; // 누적된 캐시 (65%)
+            const cashOutput = userData.withdrawalTotal; // 출금 합계
+            const cashBalance = userData.balance; // 현재 잔액 = INPUT - OUTPUT
+
+            document.getElementById('cashInput').textContent = '$' + cashInput.toFixed(2);
+            document.getElementById('cashOutput').textContent = '$' + cashOutput.toFixed(2);
+            document.getElementById('currentBalance').textContent = '$' + cashBalance.toFixed(2);
+
+            // 아바타 박스 (35%)
+            // avatar_points는 이미 35%로 누적된 값
+            const avatarInput = userData.totalBonus * 0.35; // 총 보너스의 35% (참고용)
+            const avatarBalance = userData.avatarPoints; // 현재 아바타 포인트
+            const avatarsCreated = Math.floor((userData.totalBonus * 0.35) / 100); // $100마다 1개 생성
+            const avatarProgress = Math.min((avatarBalance / 100) * 100, 100);
+
+            document.getElementById('avatarInput').textContent = '$' + avatarInput.toFixed(2);
+            document.getElementById('avatarBalance').textContent = '$' + avatarBalance.toFixed(2);
+            document.getElementById('avatarOutput').textContent = avatarsCreated + '개';
+            document.getElementById('avatarProgress').style.width = avatarProgress + '%';
+            document.getElementById('avatarProgressText').textContent = avatarProgress.toFixed(0) + '% → $100';
+        }
+
+        // 출금 가능 여부 확인
+        function checkWithdrawalEligibility(userData) {
+            const balance = userData.balance;
+            const today = new Date();
+
+            // 🔍 디버깅: 사용자 데이터 확인
+            console.log('=== 출금 가능 여부 확인 ===');
+            console.log('현재 잔액:', balance);
+            console.log('마지막 출금일:', userData.lastWithdrawal);
+            console.log('전체 userData:', userData);
+
+            let daysSinceLastWithdrawal = 999;
+            if (userData.lastWithdrawal) {
+                const lastWithdrawal = new Date(userData.lastWithdrawal);
+                daysSinceLastWithdrawal = Math.floor((today - lastWithdrawal) / (1000 * 60 * 60 * 24));
+                console.log('마지막 출금 이후 일수:', daysSinceLastWithdrawal);
+            }
+
+            let canWithdraw = true;
+            let warningMessage = '';
+
+            // 주 1회 제한 체크
+            if (daysSinceLastWithdrawal < 7) {
+                canWithdraw = false;
+                warningMessage = `주간 출금 제한: ${7 - daysSinceLastWithdrawal}일 후 출금 가능합니다.`;
+                console.log('❌ 주간 출금 제한:', warningMessage);
+            }
+
+            // 최소 금액 체크
+            if (balance < 100) {
+                canWithdraw = false;
+                warningMessage = '최소 출금 금액은 $100입니다. 현재 잔액: $' + balance.toFixed(2);
+                console.log('❌ 최소 금액 미달:', warningMessage);
+            }
+
+            console.log('출금 가능 여부:', canWithdraw);
+            console.log('경고 메시지:', warningMessage);
+
+            // UI 업데이트
+            const submitBtn = document.getElementById('submitBtn');
+            const warningAlert = document.getElementById('warningAlert');
+            const warningText = document.getElementById('warningText');
+            const maxWithdrawableEl = document.getElementById('maxWithdrawable');
+
+            // 최대 출금 가능 금액 = 현재 잔액
+            maxWithdrawableEl.textContent = '$' + balance.toFixed(2);
+
+            // ✅ 수정: 버튼은 항상 활성화, 경고 메시지만 표시
+            submitBtn.disabled = false;
+
+            // 경고 메시지 표시 (출금 제한이 있어도 버튼은 활성화)
+            if (warningMessage) {
+                warningAlert.style.display = 'block';
+                warningText.textContent = warningMessage;
+            } else {
+                warningAlert.style.display = 'none';
+            }
+
+            // 출금 제한 정보를 전역 변수에 저장 (제출 시 검증용)
+            window.withdrawalCheckData = {
+                canWithdraw: canWithdraw,
+                daysSinceLastWithdrawal: daysSinceLastWithdrawal,
+                warningMessage: warningMessage,
+                balance: balance
+            };
+        }
+
+        // 수수료 계산 (5%)
+        function calculateNetAmount() {
+            const amount = parseFloat(document.getElementById('withdrawalAmount').value) || 0;
+            const feeRate = 0.05;
+            const fee = amount * feeRate;
+            const netAmount = amount - fee;
+
+            document.getElementById('netAmount').textContent = '$' + netAmount.toFixed(2);
+        }
+
+        // 금액 설정
+        function setAmount(amount) {
+            const inputEl = document.getElementById('withdrawalAmount');
+            const maxWithdrawable = parseFloat(document.getElementById('maxWithdrawable').textContent.replace('$', ''));
+
+            // ✅ 수정: 금액 초과 시 경고만 하고 입력은 허용 (제출 시 검증)
+            if (amount > maxWithdrawable) {
+                inputEl.value = amount.toFixed(2);
+                calculateNetAmount();
+                alert(`⚠️ 최대 출금 가능 금액($${maxWithdrawable.toFixed(2)})을 초과했습니다.\n출금 신청이 불가능합니다.`);
+                return;
+            }
+
+            inputEl.value = amount.toFixed(2);
+            calculateNetAmount();
+        }
+
+        function setMaxAmount() {
+            const maxText = document.getElementById('maxWithdrawable').textContent;
+            const maxAmount = parseFloat(maxText.replace('$', ''));
+
+            // $10 단위로 내림
+            const roundedAmount = Math.floor(maxAmount / 10) * 10;
+
+            document.getElementById('withdrawalAmount').value = roundedAmount.toFixed(2);
+            calculateNetAmount();
+        }
+
+        // 출금 신청
+        async function submitWithdrawal() {
+            const amount = parseFloat(document.getElementById('withdrawalAmount').value);
+            const usdtAddress = document.getElementById('usdtAddress').value;
+            const maxWithdrawable = parseFloat(document.getElementById('maxWithdrawable').textContent.replace('$', ''));
+
+            // ✅ 주간 출금 제한 체크 (제출 시)
+            if (window.withdrawalCheckData) {
+                const checkData = window.withdrawalCheckData;
+
+                // 주간 출금 제한 체크
+                if (checkData.daysSinceLastWithdrawal < 7) {
+                    const daysRemaining = 7 - checkData.daysSinceLastWithdrawal;
+                    alert(`⚠️ 주 1회 출금신청이 가능합니다.\n${daysRemaining}일 후부터 출금신청이 가능합니다.`);
+                    return;
+                }
+
+                // 최소 금액 체크
+                if (checkData.balance < 100) {
+                    alert(`⚠️ 최소 출금 금액은 $100입니다.\n현재 잔액: $${checkData.balance.toFixed(2)}`);
+                    return;
+                }
+            }
+
+            if (!amount || amount < 100) {
+                alert('최소 출금 금액은 $100입니다.');
+                return;
+            }
+
+            if (amount % 10 !== 0) {
+                alert('출금 금액은 $10 단위로만 가능합니다.');
+                return;
+            }
+
+            if (amount > maxWithdrawable) {
+                alert(`최대 출금 가능 금액($${maxWithdrawable.toFixed(2)})을 초과했습니다.`);
+                return;
+            }
+
+            if (!usdtAddress) {
+                alert('USDT 주소가 필요합니다.');
+                return;
+            }
+
+            if (!confirm(`$${amount.toFixed(2)}를 ${usdtAddress}로 출금하시겠습니까?`)) {
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('session_token') || localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+                if (!token) {
+                    alert('로그인이 필요합니다.');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const response = await fetch('../api/withdrawal/request.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        session_token: token,
+                        amount: amount,
+                        usdt_address: usdtAddress
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    const data = result.data;
+                    const fee = data.fee || 0;
+                    const netAmount = data.net_amount || 0;
+                    alert(`✅ 출금 신청이 완료되었습니다!\n\n출금 금액: $${data.amount.toFixed(2)}\n수수료 (5%): -$${fee.toFixed(2)}\n실제 수령액: $${netAmount.toFixed(2)}\n\n24-48시간 이내에 처리됩니다.`);
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    alert('❌ ' + (result.message || '출금 신청에 실패했습니다.'));
+                }
+            } catch (error) {
+                console.error('Withdrawal error:', error);
+                alert('❌ 출금 신청에 실패했습니다. 다시 시도해주세요.');
+            }
+        }
+
+        // 로그아웃
+        function logout() {
+            localStorage.removeItem('session_token');
+            localStorage.removeItem('authToken');
+            sessionStorage.removeItem('authToken');
+            window.location.href = 'login.html';
+        }
+
+        // 초기화
+        window.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            loadUserData();
+        });
+    </script>
+</body>
+</html>

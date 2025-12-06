@@ -1,0 +1,521 @@
+/**
+ * Neural Pulse Design System
+ * 사이버펑크/네온 스타일의 재사용 가능한 CSS 라이브러리
+ * Version: 1.0.0
+ */
+
+/* ============================================
+   1. CSS 변수 (색상 팔레트)
+   ============================================ */
+:root {
+    /* Primary Colors */
+    --np-cyan: #00ffff;
+    --np-magenta: #ff00ff;
+    --np-yellow: #ffff00;
+    --np-white: #ffffff;
+    --np-black: #000000;
+
+    /* Background Colors */
+    --np-bg-primary: #000000;
+    --np-bg-secondary: #0a0a1f;
+    --np-bg-gradient: radial-gradient(ellipse at center, #0a0a1f 0%, #000000 100%);
+
+    /* Opacity Levels */
+    --np-opacity-low: 0.03;
+    --np-opacity-medium: 0.15;
+    --np-opacity-high: 0.3;
+
+    /* Animation Durations */
+    --np-anim-fast: 0.3s;
+    --np-anim-normal: 0.4s;
+    --np-anim-slow: 1s;
+
+    /* Border Radius */
+    --np-radius-sm: 8px;
+    --np-radius-md: 12px;
+    --np-radius-lg: 20px;
+    --np-radius-xl: 35px;
+    --np-radius-full: 50px;
+
+    /* Spacing */
+    --np-space-xs: 5px;
+    --np-space-sm: 10px;
+    --np-space-md: 20px;
+    --np-space-lg: 40px;
+}
+
+/* ============================================
+   2. 리셋 및 기본 스타일
+   ============================================ */
+.neural-pulse-reset {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.neural-pulse-body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--np-black);
+    color: var(--np-white);
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* ============================================
+   3. 신경망 배경 시스템
+   ============================================ */
+.neural-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    background: var(--np-bg-gradient);
+}
+
+.neural-grid {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image:
+        linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: gridPulse 4s ease-in-out infinite;
+}
+
+@keyframes gridPulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.6; }
+}
+
+/* ============================================
+   4. 펄스 노드
+   ============================================ */
+.pulse-node {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--np-cyan);
+    box-shadow: 0 0 20px var(--np-cyan), 0 0 40px var(--np-cyan);
+    animation: nodePulse 2s ease-in-out infinite;
+}
+
+@keyframes nodePulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(2);
+        opacity: 0.5;
+    }
+}
+
+.neural-connections {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.connection-line {
+    position: absolute;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--np-cyan), transparent);
+    animation: lineFlow 3s linear infinite;
+    opacity: 0.3;
+}
+
+@keyframes lineFlow {
+    0% { transform: scaleX(0); opacity: 0; }
+    50% { opacity: 0.5; }
+    100% { transform: scaleX(1); opacity: 0; }
+}
+
+/* ============================================
+   5. 신경망 로고
+   ============================================ */
+.neural-logo {
+    width: 120px;
+    height: 120px;
+    position: relative;
+    cursor: pointer;
+    transition: transform var(--np-anim-fast);
+}
+
+.neural-logo:hover {
+    transform: scale(1.1);
+}
+
+.logo-ring {
+    position: absolute;
+    border: 2px solid rgba(0, 255, 255, 0.3);
+    border-radius: 50%;
+    animation: ringRotate 4s linear infinite;
+}
+
+.logo-ring:nth-child(1) {
+    width: 100%;
+    height: 100%;
+    border-top-color: var(--np-cyan);
+    animation-duration: 3s;
+}
+
+.logo-ring:nth-child(2) {
+    width: 80%;
+    height: 80%;
+    top: 10%;
+    left: 10%;
+    border-right-color: var(--np-magenta);
+    animation-duration: 4s;
+    animation-direction: reverse;
+}
+
+.logo-ring:nth-child(3) {
+    width: 60%;
+    height: 60%;
+    top: 20%;
+    left: 20%;
+    border-bottom-color: var(--np-yellow);
+    animation-duration: 5s;
+}
+
+.logo-core {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, var(--np-cyan) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: corePulse 2s ease-in-out infinite;
+}
+
+@keyframes ringRotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes corePulse {
+    0%, 100% {
+        box-shadow: 0 0 20px var(--np-cyan), 0 0 40px var(--np-cyan);
+    }
+    50% {
+        box-shadow: 0 0 40px var(--np-cyan), 0 0 80px var(--np-cyan);
+    }
+}
+
+/* ============================================
+   6. 3D 카드 시스템
+   ============================================ */
+.card-stack {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    height: 320px;
+    perspective: 1500px;
+}
+
+.neural-card {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(0, 255, 255, 0.15), rgba(255, 0, 255, 0.15));
+    backdrop-filter: blur(15px);
+    border: 2px solid rgba(0, 255, 255, 0.3);
+    border-radius: var(--np-radius-xl);
+    padding: 40px 35px;
+    cursor: pointer;
+    transition: all var(--np-anim-slow) cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform-style: preserve-3d;
+    box-shadow: 0 10px 40px rgba(0, 255, 255, 0.2);
+}
+
+.neural-card:nth-child(1) {
+    z-index: 3;
+    transform: translateY(0) scale(1);
+}
+
+.neural-card:nth-child(2) {
+    z-index: 2;
+    transform: translateY(20px) scale(0.95);
+    opacity: 0.7;
+}
+
+.neural-card:nth-child(3) {
+    z-index: 1;
+    transform: translateY(40px) scale(0.9);
+    opacity: 0.4;
+}
+
+.neural-card:hover {
+    transform: translateY(-15px) scale(1.05) rotateX(3deg);
+    box-shadow: 0 40px 80px rgba(0, 255, 255, 0.4), 0 0 40px rgba(0, 255, 255, 0.2);
+    border-color: var(--np-cyan);
+}
+
+/* ============================================
+   7. 버튼 스타일
+   ============================================ */
+.pulse-button {
+    padding: 16px 50px;
+    background: transparent;
+    border: 2px solid var(--np-cyan);
+    border-radius: var(--np-radius-full);
+    color: var(--np-cyan);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    cursor: pointer;
+    transition: all var(--np-anim-fast);
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+}
+
+.pulse-button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(0, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.pulse-button:active::before {
+    width: 300px;
+    height: 300px;
+}
+
+.pulse-button:hover {
+    background: var(--np-cyan);
+    color: var(--np-black);
+    box-shadow: 0 0 50px var(--np-cyan), 0 0 100px rgba(0, 255, 255, 0.5);
+    transform: scale(1.05);
+}
+
+/* ============================================
+   8. 텍스트 스타일
+   ============================================ */
+.gradient-text {
+    background: linear-gradient(45deg, var(--np-cyan), var(--np-magenta), var(--np-yellow));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.holo-text {
+    position: relative;
+    display: inline-block;
+}
+
+.holo-text::after {
+    content: attr(data-text);
+    position: absolute;
+    left: 2px;
+    top: 2px;
+    color: var(--np-cyan);
+    opacity: 0.5;
+    mix-blend-mode: screen;
+    animation: glitch 3s infinite;
+}
+
+@keyframes glitch {
+    0%, 100% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(2px, -2px); }
+    60% { transform: translate(-2px, -2px); }
+    80% { transform: translate(2px, 2px); }
+}
+
+@keyframes titleGlow {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 1; }
+}
+
+/* ============================================
+   9. 네비게이션 메뉴
+   ============================================ */
+.nav-popup-menu {
+    background: linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(255, 0, 255, 0.1));
+    backdrop-filter: blur(30px);
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    border-radius: var(--np-radius-lg);
+    padding: 15px;
+    box-shadow: 0 20px 60px rgba(0, 255, 255, 0.2);
+}
+
+.nav-menu-item {
+    padding: 12px 20px;
+    margin: 5px 0;
+    background: rgba(0, 255, 255, 0.05);
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    border-radius: var(--np-radius-md);
+    color: var(--np-white);
+    font-size: 14px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all var(--np-anim-fast);
+    position: relative;
+}
+
+.nav-menu-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 100%;
+    background: linear-gradient(90deg, rgba(0, 255, 255, 0.2), rgba(255, 0, 255, 0.2));
+    transition: width var(--np-anim-normal);
+    z-index: -1;
+    border-radius: var(--np-radius-md);
+}
+
+.nav-menu-item:hover::before {
+    width: 100%;
+}
+
+.nav-menu-item:hover {
+    border-color: var(--np-cyan);
+    transform: translateX(5px);
+    box-shadow: 0 5px 20px rgba(0, 255, 255, 0.3);
+}
+
+/* ============================================
+   10. 인터랙션 효과
+   ============================================ */
+.touch-ripple {
+    position: fixed;
+    border: 2px solid var(--np-cyan);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: rippleEffect 1s ease-out forwards;
+    z-index: 9999;
+}
+
+@keyframes rippleEffect {
+    0% {
+        width: 0;
+        height: 0;
+        opacity: 1;
+    }
+    100% {
+        width: 100px;
+        height: 100px;
+        opacity: 0;
+    }
+}
+
+/* ============================================
+   11. 데이터 스트림 효과
+   ============================================ */
+.data-stream {
+    display: flex;
+    flex-direction: column;
+    gap: var(--np-space-sm);
+}
+
+.data-bit {
+    width: 3px;
+    height: 20px;
+    background: linear-gradient(180deg, var(--np-cyan), transparent);
+    animation: dataDrop 2s ease-in infinite;
+}
+
+.data-bit:nth-child(2) { animation-delay: 0.3s; }
+.data-bit:nth-child(3) { animation-delay: 0.6s; }
+.data-bit:nth-child(4) { animation-delay: 0.9s; }
+
+@keyframes dataDrop {
+    0% { opacity: 0; transform: translateY(-20px); }
+    50% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(20px); }
+}
+
+/* ============================================
+   12. 반응형 디자인
+   ============================================ */
+@media (max-width: 768px) {
+    .card-stack {
+        max-width: 340px;
+        height: 280px;
+    }
+
+    .neural-card {
+        padding: 32px 28px;
+    }
+
+    .neural-logo {
+        width: 100px;
+        height: 100px;
+    }
+}
+
+@media (max-width: 480px) {
+    .card-stack {
+        max-width: 300px;
+        height: 240px;
+    }
+
+    .neural-card {
+        padding: 28px 22px;
+    }
+
+    .neural-logo {
+        width: 80px;
+        height: 80px;
+    }
+}
+
+/* ============================================
+   13. 유틸리티 클래스
+   ============================================ */
+.np-blur-bg {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+.np-glow-cyan {
+    box-shadow: 0 0 20px var(--np-cyan);
+}
+
+.np-glow-magenta {
+    box-shadow: 0 0 20px var(--np-magenta);
+}
+
+.np-border-glow {
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+}
+
+.np-text-cyan {
+    color: var(--np-cyan);
+}
+
+.np-text-magenta {
+    color: var(--np-magenta);
+}
+
+.np-text-yellow {
+    color: var(--np-yellow);
+}
+
+/* Z-index 레이어 */
+.z-background { z-index: 0; }
+.z-content { z-index: 1; }
+.z-nav { z-index: 100; }
+.z-modal { z-index: 1000; }
+.z-top { z-index: 9999; }

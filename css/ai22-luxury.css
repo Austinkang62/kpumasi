@@ -1,0 +1,650 @@
+/**
+ * AI22 Luxury Design System
+ * 고급스러운 골드/화이트 테마
+ * Version: 1.0.0
+ */
+
+/* ============================================
+   1. CSS 변수 (색상 팔레트)
+   ============================================ */
+:root {
+    /* Primary Colors - Luxury Gold */
+    --ai22-gold: #D4AF37;
+    --ai22-gold-light: #FFD700;
+    --ai22-gold-dark: #B8860B;
+    --ai22-gold-metallic: linear-gradient(135deg, #D4AF37 0%, #FFD700 50%, #B8860B 100%);
+
+    /* Background Colors - White & Light */
+    --ai22-white: #FFFFFF;
+    --ai22-bg-primary: #FFFFFF;
+    --ai22-bg-secondary: #F8F8F8;
+    --ai22-bg-light: #FAFAFA;
+    --ai22-bg-cream: #FFF9F0;
+
+    /* Text Colors */
+    --ai22-text-primary: #1a1a1a;
+    --ai22-text-secondary: #4a4a4a;
+    --ai22-text-muted: #888888;
+    --ai22-text-white: #FFFFFF;
+
+    /* Accent Colors - Navy Blue */
+    --ai22-navy: #1B3A5F;
+    --ai22-navy-light: #2B4A7F;
+    --ai22-navy-dark: #0D1F3C;
+    --ai22-navy-gradient: linear-gradient(135deg, #1B3A5F 0%, #2B4A7F 100%);
+    --ai22-charcoal: #2c2c2c;
+
+    /* Border & Shadow */
+    --ai22-border-gold: 2px solid var(--ai22-gold);
+    --ai22-shadow-gold: 0 4px 20px rgba(212, 175, 55, 0.3);
+    --ai22-shadow-gold-lg: 0 8px 40px rgba(212, 175, 55, 0.4);
+    --ai22-shadow-soft: 0 2px 10px rgba(0, 0, 0, 0.1);
+
+    /* Border Radius */
+    --ai22-radius-sm: 8px;
+    --ai22-radius-md: 12px;
+    --ai22-radius-lg: 20px;
+    --ai22-radius-xl: 30px;
+    --ai22-radius-full: 50px;
+
+    /* Animation Durations */
+    --ai22-anim-fast: 0.3s;
+    --ai22-anim-normal: 0.4s;
+    --ai22-anim-slow: 0.6s;
+
+    /* Spacing */
+    --ai22-space-xs: 8px;
+    --ai22-space-sm: 16px;
+    --ai22-space-md: 24px;
+    --ai22-space-lg: 40px;
+    --ai22-space-xl: 60px;
+}
+
+/* ============================================
+   2. 리셋 및 기본 스타일
+   ============================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: 'Segoe UI', 'Noto Sans KR', system-ui, -apple-system, sans-serif;
+    background: var(--ai22-bg-primary);
+    color: var(--ai22-text-primary);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* ============================================
+   3. 고급스러운 배경 시스템
+   ============================================ */
+.luxury-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    background: linear-gradient(180deg, #FAFAFA 0%, #FFFFFF 50%, #FFF9F0 100%);
+}
+
+/* 네이비 헤더 배경 */
+.navy-header-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60vh;
+    z-index: 0;
+    background: linear-gradient(180deg, #1B3A5F 0%, #2B4A7F 50%, transparent 100%);
+}
+
+/* 섹션별 배경 */
+.section-bg-cream {
+    background: linear-gradient(135deg, #FFF9F0 0%, #FFFFFF 100%);
+    padding: 80px 0;
+}
+
+.section-bg-white {
+    background: #FFFFFF;
+    padding: 80px 0;
+}
+
+.luxury-pattern {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image:
+        linear-gradient(45deg, rgba(212, 175, 55, 0.03) 25%, transparent 25%),
+        linear-gradient(-45deg, rgba(212, 175, 55, 0.03) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, rgba(212, 175, 55, 0.03) 75%),
+        linear-gradient(-45deg, transparent 75%, rgba(212, 175, 55, 0.03) 75%);
+    background-size: 50px 50px;
+    background-position: 0 0, 0 25px, 25px -25px, -25px 0px;
+    opacity: 0.5;
+}
+
+.gold-particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.gold-particle {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--ai22-gold);
+    box-shadow: 0 0 10px var(--ai22-gold);
+    animation: floatParticle 15s ease-in-out infinite;
+    opacity: 0.3;
+}
+
+@keyframes floatParticle {
+    0%, 100% { transform: translateY(0) translateX(0); }
+    25% { transform: translateY(-30px) translateX(20px); }
+    50% { transform: translateY(-10px) translateX(-15px); }
+    75% { transform: translateY(-40px) translateX(10px); }
+}
+
+/* ============================================
+   4. AI22 로고 시스템
+   ============================================ */
+.ai22-logo {
+    width: 120px;
+    height: 120px;
+    position: relative;
+    cursor: pointer;
+    transition: transform var(--ai22-anim-fast);
+}
+
+.ai22-logo:hover {
+    transform: scale(1.05);
+}
+
+.logo-ring {
+    position: absolute;
+    border-radius: 50%;
+    animation: goldRingRotate 8s linear infinite;
+}
+
+.logo-ring:nth-child(1) {
+    width: 100%;
+    height: 100%;
+    border: 3px solid transparent;
+    border-top-color: var(--ai22-gold);
+    border-right-color: var(--ai22-gold-light);
+    animation-duration: 6s;
+    filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.6));
+}
+
+.logo-ring:nth-child(2) {
+    width: 80%;
+    height: 80%;
+    top: 10%;
+    left: 10%;
+    border: 2px solid transparent;
+    border-right-color: rgba(255, 255, 255, 0.8);
+    border-bottom-color: var(--ai22-gold);
+    animation-duration: 8s;
+    animation-direction: reverse;
+}
+
+.logo-ring:nth-child(3) {
+    width: 60%;
+    height: 60%;
+    top: 20%;
+    left: 20%;
+    border: 2px solid transparent;
+    border-left-color: var(--ai22-gold-light);
+    border-bottom-color: rgba(255, 255, 255, 0.6);
+    animation-duration: 10s;
+}
+
+.logo-core {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--ai22-gold-metallic);
+    border-radius: 50%;
+    box-shadow:
+        0 0 20px rgba(212, 175, 55, 0.6),
+        0 0 40px rgba(212, 175, 55, 0.3),
+        inset 0 0 15px rgba(255, 255, 255, 0.4);
+    animation: goldCorePulse 3s ease-in-out infinite;
+}
+
+@keyframes goldRingRotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes goldCorePulse {
+    0%, 100% {
+        box-shadow:
+            0 0 20px rgba(212, 175, 55, 0.6),
+            0 0 40px rgba(212, 175, 55, 0.3),
+            inset 0 0 15px rgba(255, 255, 255, 0.4);
+    }
+    50% {
+        box-shadow:
+            0 0 30px rgba(212, 175, 55, 0.8),
+            0 0 60px rgba(212, 175, 55, 0.5),
+            inset 0 0 20px rgba(255, 255, 255, 0.6);
+    }
+}
+
+/* ============================================
+   5. 고급스러운 카드 시스템
+   ============================================ */
+.luxury-card {
+    background: var(--ai22-white);
+    border: 2px solid var(--ai22-gold);
+    border-radius: var(--ai22-radius-lg);
+    padding: 40px;
+    box-shadow: var(--ai22-shadow-gold);
+    transition: all var(--ai22-anim-normal);
+    position: relative;
+    overflow: hidden;
+}
+
+.luxury-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: var(--ai22-gold-metallic);
+}
+
+.luxury-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--ai22-shadow-gold-lg);
+    border-color: var(--ai22-gold-light);
+}
+
+/* 카드 변형 */
+.luxury-card-outlined {
+    background: var(--ai22-bg-light);
+    border: 2px solid var(--ai22-gold);
+}
+
+.luxury-card-filled {
+    background: var(--ai22-bg-cream);
+    border: 2px solid var(--ai22-gold-dark);
+}
+
+.luxury-card-premium {
+    background: linear-gradient(135deg, #FFFFFF 0%, #FFF9F0 100%);
+    border: 3px solid var(--ai22-gold);
+    box-shadow:
+        var(--ai22-shadow-gold-lg),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+/* ============================================
+   6. 버튼 스타일
+   ============================================ */
+.btn-ai22 {
+    padding: 16px 40px;
+    background: var(--ai22-gold);
+    border: 2px solid var(--ai22-gold);
+    border-radius: var(--ai22-radius-full);
+    color: var(--ai22-white);
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all var(--ai22-anim-fast);
+    box-shadow: var(--ai22-shadow-gold);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-ai22::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+}
+
+.btn-ai22:hover::before {
+    left: 100%;
+}
+
+.btn-ai22:hover {
+    background: var(--ai22-gold-light);
+    border-color: var(--ai22-gold-light);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 30px rgba(212, 175, 55, 0.5);
+}
+
+.btn-ai22:active {
+    transform: translateY(0);
+}
+
+/* 버튼 변형 */
+.btn-ai22-outline {
+    background: transparent;
+    color: var(--ai22-gold);
+    border: 2px solid var(--ai22-gold);
+}
+
+.btn-ai22-outline:hover {
+    background: var(--ai22-gold);
+    color: var(--ai22-white);
+}
+
+.btn-ai22-navy {
+    background: var(--ai22-navy-gradient);
+    border-color: var(--ai22-navy);
+    color: var(--ai22-white);
+    box-shadow: 0 4px 20px rgba(27, 58, 95, 0.3);
+}
+
+.btn-ai22-navy:hover {
+    background: var(--ai22-navy-light);
+    border-color: var(--ai22-navy-light);
+    box-shadow: 0 6px 30px rgba(27, 58, 95, 0.5);
+}
+
+/* 화이트 버튼 */
+.btn-ai22-white {
+    background: var(--ai22-white);
+    border: 2px solid var(--ai22-gold);
+    color: var(--ai22-navy);
+}
+
+.btn-ai22-white:hover {
+    background: var(--ai22-gold);
+    color: var(--ai22-white);
+}
+
+/* ============================================
+   7. 텍스트 스타일
+   ============================================ */
+.gold-gradient-text {
+    background: var(--ai22-gold-metallic);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+}
+
+.text-gold {
+    color: var(--ai22-gold);
+}
+
+.text-navy {
+    color: var(--ai22-navy);
+}
+
+.text-muted {
+    color: var(--ai22-text-muted);
+}
+
+.luxury-title {
+    font-size: 48px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    color: var(--ai22-text-primary);
+    margin-bottom: 20px;
+}
+
+.luxury-subtitle {
+    font-size: 18px;
+    color: var(--ai22-text-secondary);
+    font-weight: 400;
+}
+
+/* ============================================
+   8. 입력 필드
+   ============================================ */
+.input-ai22 {
+    width: 100%;
+    padding: 14px 20px;
+    background: var(--ai22-white);
+    border: 2px solid #e0e0e0;
+    border-radius: var(--ai22-radius-md);
+    color: var(--ai22-text-primary);
+    font-size: 15px;
+    transition: all var(--ai22-anim-fast);
+    outline: none;
+}
+
+.input-ai22:focus {
+    border-color: var(--ai22-gold);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+}
+
+.input-ai22::placeholder {
+    color: var(--ai22-text-muted);
+}
+
+/* ============================================
+   9. 네비게이션
+   ============================================ */
+.nav-ai22 {
+    background: var(--ai22-white);
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    box-shadow: var(--ai22-shadow-soft);
+    padding: 20px 0;
+}
+
+.nav-menu-item {
+    padding: 12px 24px;
+    color: var(--ai22-text-primary);
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--ai22-anim-fast);
+    border-radius: var(--ai22-radius-md);
+    position: relative;
+}
+
+.nav-menu-item::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: var(--ai22-gold);
+    transition: all var(--ai22-anim-fast);
+    transform: translateX(-50%);
+}
+
+.nav-menu-item:hover {
+    color: var(--ai22-gold);
+}
+
+.nav-menu-item:hover::after {
+    width: 60%;
+}
+
+.nav-menu-item.active {
+    color: var(--ai22-gold);
+    font-weight: 600;
+}
+
+.nav-menu-item.active::after {
+    width: 100%;
+}
+
+/* ============================================
+   10. 배지 & 태그
+   ============================================ */
+.badge-ai22 {
+    display: inline-block;
+    padding: 6px 16px;
+    background: var(--ai22-gold);
+    color: var(--ai22-white);
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: var(--ai22-radius-full);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.badge-outline {
+    background: transparent;
+    color: var(--ai22-gold);
+    border: 1.5px solid var(--ai22-gold);
+}
+
+.badge-navy {
+    background: var(--ai22-navy);
+}
+
+/* ============================================
+   11. 테이블
+   ============================================ */
+.table-ai22 {
+    width: 100%;
+    background: var(--ai22-white);
+    border-radius: var(--ai22-radius-lg);
+    overflow: hidden;
+    box-shadow: var(--ai22-shadow-soft);
+}
+
+.table-ai22 thead {
+    background: linear-gradient(135deg, var(--ai22-gold) 0%, var(--ai22-gold-light) 100%);
+    color: var(--ai22-white);
+}
+
+.table-ai22 th {
+    padding: 16px 20px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+}
+
+.table-ai22 td {
+    padding: 14px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    color: var(--ai22-text-primary);
+}
+
+.table-ai22 tbody tr:hover {
+    background: var(--ai22-bg-light);
+}
+
+/* ============================================
+   12. 모달
+   ============================================ */
+.modal-ai22 {
+    background: var(--ai22-white);
+    border: 2px solid var(--ai22-gold);
+    border-radius: var(--ai22-radius-xl);
+    box-shadow: 0 20px 80px rgba(0, 0, 0, 0.2);
+    max-width: 600px;
+    padding: 40px;
+}
+
+.modal-header {
+    border-bottom: 2px solid var(--ai22-gold);
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+}
+
+/* ============================================
+   13. 유틸리티 클래스
+   ============================================ */
+.border-gold {
+    border: 2px solid var(--ai22-gold) !important;
+}
+
+.shadow-gold {
+    box-shadow: var(--ai22-shadow-gold) !important;
+}
+
+.bg-white {
+    background: var(--ai22-white) !important;
+}
+
+.bg-cream {
+    background: var(--ai22-bg-cream) !important;
+}
+
+.rounded-lg {
+    border-radius: var(--ai22-radius-lg) !important;
+}
+
+.rounded-xl {
+    border-radius: var(--ai22-radius-xl) !important;
+}
+
+/* ============================================
+   14. 애니메이션
+   ============================================ */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes shimmer {
+    0% { background-position: -1000px 0; }
+    100% { background-position: 1000px 0; }
+}
+
+.shimmer-effect {
+    background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.2), transparent);
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite;
+}
+
+/* ============================================
+   15. 반응형
+   ============================================ */
+@media (max-width: 768px) {
+    .luxury-card {
+        padding: 24px;
+    }
+
+    .luxury-title {
+        font-size: 32px;
+    }
+
+    .ai22-logo {
+        width: 100px;
+        height: 100px;
+    }
+}
+
+@media (max-width: 480px) {
+    .luxury-card {
+        padding: 20px;
+    }
+
+    .luxury-title {
+        font-size: 28px;
+    }
+
+    .btn-ai22 {
+        padding: 14px 32px;
+        font-size: 14px;
+    }
+}

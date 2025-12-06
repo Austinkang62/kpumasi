@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sign Up - AI BTC BOT</title>
+    <script src="js/language.js"></script>
+    <script src="js/language-selector.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #000;
+            color: #fff;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 0;
+        }
+
+        /* 신경망 배경 애니메이션 */
+        .neural-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background: radial-gradient(ellipse at center, #0a0a1f 0%, #000000 100%);
+        }
+
+        .neural-grid {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes gridPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+
+        /* 펄스 노드들 */
+        .pulse-node {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #00ffff;
+            box-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff;
+            animation: nodePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes nodePulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(2);
+                opacity: 0.5;
+            }
+        }
+
+        .neural-connections {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* 회원가입 컨테이너 */
+        .signup-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+        }
+
+        /* 로고 */
+        .signup-logo {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .neural-logo {
+            width: 80px;
+            height: 80px;
+            position: relative;
+            margin: 0 auto 20px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .neural-logo:hover {
+            transform: scale(1.1);
+        }
+
+        .logo-ring {
+            position: absolute;
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: ringRotate 4s linear infinite;
+        }
+
+        .logo-ring:nth-child(1) {
+            width: 100%;
+            height: 100%;
+            border-top-color: #00ffff;
+            animation-duration: 3s;
+        }
+
+        .logo-ring:nth-child(2) {
+            width: 80%;
+            height: 80%;
+            top: 10%;
+            left: 10%;
+            border-right-color: #ff00ff;
+            animation-duration: 4s;
+            animation-direction: reverse;
+        }
+
+        .logo-ring:nth-child(3) {
+            width: 60%;
+            height: 60%;
+            top: 20%;
+            left: 20%;
+            border-bottom-color: #ffff00;
+            animation-duration: 5s;
+        }
+
+        .logo-core {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, #00ffff 0%, transparent 70%);
+            border-radius: 50%;
+            animation: corePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes ringRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes corePulse {
+            0%, 100% {
+                box-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff;
+            }
+            50% {
+                box-shadow: 0 0 40px #00ffff, 0 0 80px #00ffff;
+            }
+        }
+
+        .signup-title {
+            font-size: 28px;
+            font-weight: 300;
+            letter-spacing: 6px;
+            background: linear-gradient(45deg, #00ffff, #ff00ff, #ffff00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .signup-subtitle {
+            font-size: 12px;
+            letter-spacing: 2px;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+        }
+
+        /* 회원가입 폼 */
+        .signup-form {
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.05), rgba(255, 0, 255, 0.05));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 255, 255, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 2px;
+            color: rgba(0, 255, 255, 0.9);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .form-label .required {
+            color: #ff00ff;
+            margin-left: 3px;
+        }
+
+        .form-input-wrapper {
+            position: relative;
+            display: flex;
+            gap: 10px;
+            flex-wrap: nowrap;
+        }
+
+        .form-input {
+            flex: 1;
+            width: 100%;
+            padding: 16px 20px;
+            background: rgba(0, 255, 255, 0.08);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            transition: all 0.3s;
+            outline: none;
+            min-width: 0;
+        }
+
+        .form-input-wrapper .form-input {
+            flex: 1;
+            width: auto;
+        }
+
+        .form-input:focus {
+            background: rgba(0, 255, 255, 0.12);
+            border-color: #00ffff;
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.3), inset 0 0 10px rgba(0, 255, 255, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+            font-weight: 300;
+        }
+
+        .form-input.success {
+            border-color: #00ff00;
+        }
+
+        .form-input.error {
+            border-color: #ff0000;
+        }
+
+        /* 중복체크 버튼 */
+        .check-button {
+            padding: 16px 24px;
+            background: transparent;
+            border: 2px solid #00ffff;
+            border-radius: 12px;
+            color: #00ffff;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
+        .check-button:hover {
+            background: #00ffff;
+            color: #000;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+
+        .check-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* 인증코드 발송 버튼 */
+        .verify-button {
+            padding: 16px 24px;
+            background: transparent;
+            border: 2px solid #ff00ff;
+            border-radius: 12px;
+            color: #ff00ff;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
+        .verify-button:hover {
+            background: #ff00ff;
+            color: #000;
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+        }
+
+        .verify-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* 메시지 표시 */
+        .form-message {
+            font-size: 12px;
+            margin-top: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .form-message.success {
+            color: #00ff00;
+        }
+
+        .form-message.error {
+            color: #ff0000;
+        }
+
+        /* 회원가입 버튼 */
+        .signup-button {
+            width: 100%;
+            padding: 18px;
+            background: transparent;
+            border: 2px solid #00ffff;
+            border-radius: 50px;
+            color: #00ffff;
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+            margin-top: 30px;
+        }
+
+        .signup-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(0, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .signup-button:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .signup-button span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .signup-button:hover {
+            background: #00ffff;
+            color: #000;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+        }
+
+        /* 하단 링크 */
+        .bottom-link {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.5);
+            letter-spacing: 1px;
+        }
+
+        .bottom-link a {
+            color: #00ffff;
+            text-decoration: none;
+            margin-left: 5px;
+            transition: all 0.3s;
+        }
+
+        .bottom-link a:hover {
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        /* 백 버튼 */
+        .back-button {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: #00ffff;
+            font-size: 20px;
+            z-index: 100;
+        }
+
+        .back-button:hover {
+            background: rgba(0, 255, 255, 0.2);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+            transform: scale(1.05);
+            border-color: #00ffff;
+        }
+
+        /* 환영 모달 */
+        .welcome-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .welcome-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .welcome-content {
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.1) 0%, rgba(255, 0, 255, 0.1) 100%);
+            border: 2px solid rgba(0, 255, 255, 0.5);
+            border-radius: 30px;
+            padding: 50px 40px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 255, 255, 0.3);
+            animation: modalSlideIn 0.5s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .welcome-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: welcomeBounce 2s ease infinite;
+        }
+
+        @keyframes welcomeBounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .welcome-title {
+            font-size: 36px;
+            font-weight: bold;
+            color: #00ffff;
+            margin-bottom: 15px;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+
+        .welcome-subtitle {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 30px;
+        }
+
+        .referrer-info {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .referrer-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 8px;
+        }
+
+        .referrer-id {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00ffff;
+            font-family: monospace;
+        }
+
+        .benefits-section {
+            text-align: left;
+            margin-bottom: 30px;
+        }
+
+        .benefits-title {
+            font-size: 20px;
+            color: #ff00ff;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px;
+            margin-bottom: 10px;
+            background: rgba(255, 0, 255, 0.05);
+            border-left: 3px solid #ff00ff;
+            border-radius: 8px;
+        }
+
+        .benefit-icon {
+            font-size: 24px;
+            min-width: 30px;
+        }
+
+        .benefit-text {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 15px;
+        }
+
+        .welcome-button {
+            width: 100%;
+            padding: 18px 40px;
+            background: linear-gradient(135deg, #00ffff 0%, #00cccc 100%);
+            border: none;
+            border-radius: 15px;
+            color: #000;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .welcome-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 40px rgba(0, 255, 255, 0.5);
+        }
+
+        /* 모바일 반응형 */
+        @media (max-width: 768px) {
+            .welcome-content {
+                padding: 40px 25px;
+            }
+
+            .welcome-icon {
+                font-size: 60px;
+            }
+
+            .welcome-title {
+                font-size: 28px;
+            }
+
+            .welcome-subtitle {
+                font-size: 16px;
+            }
+
+            .referrer-id {
+                font-size: 20px;
+            }
+
+            .signup-container {
+                max-width: 90%;
+            }
+
+            .signup-form {
+                padding: 30px 25px;
+            }
+
+            .signup-title {
+                font-size: 24px;
+                letter-spacing: 4px;
+            }
+
+            .back-button {
+                top: 20px;
+                left: 20px;
+                width: 45px;
+                height: 45px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .signup-form {
+                padding: 25px 20px;
+            }
+
+            .signup-title {
+                font-size: 20px;
+                letter-spacing: 3px;
+            }
+
+            .form-input {
+                padding: 14px 18px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 신경망 배경 -->
+    <div class="neural-background">
+        <div class="neural-grid"></div>
+    </div>
+
+    <!-- 펄스 노드들 -->
+    <div class="neural-connections" id="neuralConnections"></div>
+
+    <!-- 백 버튼 -->
+    <a href="index.html" class="back-button">←</a>
+
+    <!-- 언어 선택기 (Fixed Position) -->
+    <div id="languageSelectorContainer"></div>
+
+    <!-- 환영 모달 -->
+    <div class="welcome-modal" id="welcomeModal">
+        <div class="welcome-content">
+            <div class="welcome-icon">🎉</div>
+            <h1 class="welcome-title">Welcome!</h1>
+            <p class="welcome-subtitle">You've been invited to join AI BTC BOT</p>
+
+            <div class="referrer-info">
+                <div class="referrer-label">Invited by</div>
+                <div class="referrer-id" id="referrerIdDisplay">---</div>
+            </div>
+
+            <div class="benefits-section">
+                <h3 class="benefits-title">💎 Special Benefits</h3>
+                <div class="benefit-item">
+                    <div class="benefit-icon">🎁</div>
+                    <div class="benefit-text">Welcome bonus on first deposit</div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">🚀</div>
+                    <div class="benefit-text">Access to premium AI trading signals</div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">💰</div>
+                    <div class="benefit-text">Earn commissions from your referrals</div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">🏆</div>
+                    <div class="benefit-text">Priority customer support</div>
+                </div>
+            </div>
+
+            <button class="welcome-button" onclick="closeWelcomeModal()">
+                Start Registration
+            </button>
+        </div>
+    </div>
+
+    <!-- 회원가입 컨테이너 -->
+    <div class="signup-container">
+        <!-- 로고 -->
+        <div class="signup-logo">
+            <div class="neural-logo" onclick="location.href='index.html'">
+                <div class="logo-ring"></div>
+                <div class="logo-ring"></div>
+                <div class="logo-ring"></div>
+                <div class="logo-core"></div>
+            </div>
+            <h1 class="signup-title" data-lang="signup.title">SIGN UP</h1>
+            <p class="signup-subtitle" data-lang="signup.subtitle">Join Neural Pulse Network</p>
+        </div>
+
+        <!-- 회원가입 폼 -->
+        <form class="signup-form" onsubmit="handleSignup(event)">
+            <!-- ID -->
+            <div class="form-group">
+                <label class="form-label" data-lang="signup.userId">ID<span class="required">*</span></label>
+                <div class="form-input-wrapper">
+                    <input
+                        type="text"
+                        id="userId"
+                        class="form-input"
+                        data-lang-placeholder="signup.userIdPlaceholder"
+                        placeholder="Enter your ID"
+                        required
+                    >
+                    <button type="button" class="check-button" onclick="checkDuplicateId()" data-lang="signup.checkDuplicate">Check</button>
+                </div>
+                <div id="idMessage" class="form-message"></div>
+            </div>
+
+            <!-- 비밀번호 -->
+            <div class="form-group">
+                <label class="form-label" data-lang="signup.password">Password<span class="required">*</span></label>
+                <input
+                    type="password"
+                    id="password"
+                    class="form-input"
+                    data-lang-placeholder="signup.passwordPlaceholder"
+                    placeholder="Enter password (8+ characters)"
+                    required
+                >
+                <div id="passwordMessage" class="form-message"></div>
+            </div>
+
+            <!-- 비밀번호 확인 -->
+            <div class="form-group">
+                <label class="form-label" data-lang="signup.confirmPassword">Confirm Password<span class="required">*</span></label>
+                <input
+                    type="password"
+                    id="confirmPassword"
+                    class="form-input"
+                    data-lang-placeholder="signup.confirmPasswordPlaceholder"
+                    placeholder="Re-enter password"
+                    required
+                >
+                <div id="confirmPasswordMessage" class="form-message"></div>
+            </div>
+
+            <!-- 이름 -->
+            <div class="form-group">
+                <label class="form-label" data-lang="signup.fullName">Name<span class="required">*</span></label>
+                <input
+                    type="text"
+                    id="name"
+                    class="form-input"
+                    data-lang-placeholder="signup.fullNamePlaceholder"
+                    placeholder="Enter your name"
+                    required
+                >
+            </div>
+
+            <!-- 전화번호 -->
+            <div class="form-group">
+                <label class="form-label" data-lang="signup.phone">Phone Number<span class="required">*</span></label>
+                <input
+                    type="tel"
+                    id="phone"
+                    class="form-input"
+                    data-lang-placeholder="signup.phonePlaceholder"
+                    placeholder="010-1234-5678"
+                    required
+                >
+            </div>
+
+            <!-- 이메일 -->
+            <div class="form-group">
+                <label class="form-label" data-lang="signup.email">Email<span class="required">*</span></label>
+                <div class="form-input-wrapper">
+                    <input
+                        type="email"
+                        id="email"
+                        class="form-input"
+                        data-lang-placeholder="signup.emailPlaceholder"
+                        placeholder="your@email.com"
+                        required
+                    >
+                    <button type="button" class="verify-button" onclick="sendVerificationCode()" data-lang="signup.sendCode">Send Code</button>
+                </div>
+                <div id="emailMessage" class="form-message"></div>
+            </div>
+
+            <!-- 이메일 인증코드 -->
+            <div class="form-group">
+                <label class="form-label" data-lang="signup.verificationCode">Email Verification Code<span class="required">*</span></label>
+                <div class="form-input-wrapper">
+                    <input
+                        type="text"
+                        id="verificationCode"
+                        class="form-input"
+                        data-lang-placeholder="signup.verificationCodePlaceholder"
+                        placeholder="Enter 6-digit code"
+                        maxlength="6"
+                        required
+                    >
+                    <button type="button" class="check-button" onclick="verifyCode()" data-lang="signup.verify">Verify</button>
+                </div>
+                <div id="verificationMessage" class="form-message"></div>
+            </div>
+
+            <!-- 추천인 ID -->
+            <div class="form-group">
+                <label class="form-label" data-lang="signup.referralId">Referral ID</label>
+                <input
+                    type="text"
+                    id="referralId"
+                    class="form-input"
+                    data-lang-placeholder="signup.referralIdPlaceholder"
+                    placeholder="Enter referral ID (optional)"
+                >
+            </div>
+
+            <!-- USDT Address -->
+            <div class="form-group">
+                <label class="form-label" data-lang="signup.usdtAddress">USDT 출금 주소 (BNB Smart Chain)<span class="required">*</span></label>
+                <input
+                    type="text"
+                    id="usdtAddress"
+                    class="form-input"
+                    data-lang-placeholder="signup.usdtAddressPlaceholder"
+                    placeholder="0x..."
+                    required
+                >
+                <div id="usdtMessage" class="form-message"></div>
+                <p style="color: rgba(255, 255, 255, 0.5); font-size: 11px; margin-top: 6px;">
+                    💡 이 주소는 수익금을 지급받을 출금 전용 주소입니다. (BNB Smart Chain 네트워크)
+                </p>
+            </div>
+
+            <button type="submit" class="signup-button">
+                <span data-lang="signup.createAccount">Create Account</span>
+            </button>
+        </form>
+
+        <div class="bottom-link">
+            <span data-lang="signup.haveAccount">Already have an account?</span>
+            <a href="login.html" data-lang="signup.loginHere">Login</a>
+        </div>
+    </div>
+
+    <!-- API 클라이언트 로드 -->
+    <script src="api-client.js"></script>
+    <script>
+        // 전역 상태 변수
+        let isIdChecked = false;
+        let isEmailVerified = false;
+        let verificationCodeSent = false;
+        let currentEmail = '';
+
+        // 환영 모달 표시
+        function showWelcomeModal(referrerId) {
+            const modal = document.getElementById('welcomeModal');
+            const referrerDisplay = document.getElementById('referrerIdDisplay');
+
+            if (referrerDisplay) {
+                referrerDisplay.textContent = referrerId;
+            }
+
+            // 모달 표시 (약간의 지연을 주어 부드럽게 표시)
+            setTimeout(() => {
+                modal.classList.add('active');
+            }, 300);
+        }
+
+        // 환영 모달 닫기
+        function closeWelcomeModal() {
+            const modal = document.getElementById('welcomeModal');
+            modal.classList.remove('active');
+        }
+
+        // 신경망 노드 생성
+        function createNeuralNodes() {
+            const container = document.getElementById('neuralConnections');
+            const nodeCount = 20;
+
+            for (let i = 0; i < nodeCount; i++) {
+                const node = document.createElement('div');
+                node.className = 'pulse-node';
+                node.style.left = Math.random() * 100 + '%';
+                node.style.top = Math.random() * 100 + '%';
+                node.style.animationDelay = Math.random() * 2 + 's';
+                container.appendChild(node);
+            }
+        }
+
+        // ID 중복 체크
+        async function checkDuplicateId() {
+            const userId = document.getElementById('userId').value.trim();
+            const message = document.getElementById('idMessage');
+            const input = document.getElementById('userId');
+            const button = event.target;
+
+            if (!userId) {
+                message.textContent = 'Please enter an ID';
+                message.className = 'form-message error';
+                input.classList.remove('success');
+                input.classList.add('error');
+                isIdChecked = false;
+                return;
+            }
+
+            if (userId.length < 4) {
+                message.textContent = 'ID must be at least 4 characters';
+                message.className = 'form-message error';
+                input.classList.remove('success');
+                input.classList.add('error');
+                isIdChecked = false;
+                return;
+            }
+
+            // API 호출
+            button.disabled = true;
+            button.textContent = 'Checking...';
+
+            const response = await APIClient.checkUserId(userId);
+
+            button.disabled = false;
+            button.textContent = 'Check';
+
+            if (response.success && response.data.available) {
+                message.textContent = 'This ID is available';
+                message.className = 'form-message success';
+                input.classList.remove('error');
+                input.classList.add('success');
+                isIdChecked = true;
+            } else {
+                message.textContent = response.data.message || 'This ID is already taken';
+                message.className = 'form-message error';
+                input.classList.remove('success');
+                input.classList.add('error');
+                isIdChecked = false;
+            }
+        }
+
+        // 이메일 인증코드 발송
+        async function sendVerificationCode() {
+            const email = document.getElementById('email').value.trim();
+            const message = document.getElementById('emailMessage');
+            const button = event.target;
+
+            if (!email) {
+                message.textContent = 'Please enter an email address';
+                message.className = 'form-message error';
+                return;
+            }
+
+            // 이메일 형식 검증
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                message.textContent = 'Please enter a valid email address';
+                message.className = 'form-message error';
+                return;
+            }
+
+            // 버튼 비활성화
+            button.disabled = true;
+            button.textContent = 'Sending...';
+
+            // API 호출
+            const response = await APIClient.sendVerificationCode(email);
+
+            if (response.success) {
+                currentEmail = email;
+                message.textContent = response.data.message;
+                message.className = 'form-message success';
+                verificationCodeSent = true;
+
+                // 개발 환경: 코드 출력
+                if (response.data.code) {
+                    console.log('Verification code:', response.data.code);
+                }
+
+                // 버튼 다시 활성화 (60초 후)
+                let countdown = 60;
+                const interval = setInterval(() => {
+                    button.textContent = `Resend (${countdown}s)`;
+                    countdown--;
+
+                    if (countdown < 0) {
+                        clearInterval(interval);
+                        button.disabled = false;
+                        button.textContent = 'Send Code';
+                    }
+                }, 1000);
+            } else {
+                button.disabled = false;
+                button.textContent = 'Send Code';
+                message.textContent = response.data.message || 'Failed to send verification code';
+                message.className = 'form-message error';
+            }
+        }
+
+        // 인증코드 확인
+        async function verifyCode() {
+            const code = document.getElementById('verificationCode').value.trim();
+            const message = document.getElementById('verificationMessage');
+            const input = document.getElementById('verificationCode');
+            const button = event.target;
+
+            if (!verificationCodeSent) {
+                message.textContent = 'Please send verification code first';
+                message.className = 'form-message error';
+                return;
+            }
+
+            if (!code) {
+                message.textContent = 'Please enter verification code';
+                message.className = 'form-message error';
+                input.classList.remove('success');
+                input.classList.add('error');
+                isEmailVerified = false;
+                return;
+            }
+
+            // API 호출
+            button.disabled = true;
+            button.textContent = 'Verifying...';
+
+            const response = await APIClient.verifyCode(currentEmail, code);
+
+            button.disabled = false;
+            button.textContent = 'Verify';
+
+            if (response.success) {
+                message.textContent = response.data.message;
+                message.className = 'form-message success';
+                input.classList.remove('error');
+                input.classList.add('success');
+                isEmailVerified = true;
+            } else {
+                message.textContent = response.data.message || 'Invalid verification code';
+                message.className = 'form-message error';
+                input.classList.remove('success');
+                input.classList.add('error');
+                isEmailVerified = false;
+            }
+        }
+
+        // 비밀번호 실시간 검증
+        document.getElementById('password').addEventListener('input', function() {
+            const password = this.value;
+            const message = document.getElementById('passwordMessage');
+
+            if (password.length === 0) {
+                message.textContent = '';
+                this.classList.remove('success', 'error');
+                return;
+            }
+
+            if (password.length < 8) {
+                message.textContent = 'Password must be at least 8 characters';
+                message.className = 'form-message error';
+                this.classList.remove('success');
+                this.classList.add('error');
+            } else {
+                message.textContent = 'Password strength: Good';
+                message.className = 'form-message success';
+                this.classList.remove('error');
+                this.classList.add('success');
+            }
+        });
+
+        // 비밀번호 확인 실시간 검증
+        document.getElementById('confirmPassword').addEventListener('input', function() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = this.value;
+            const message = document.getElementById('confirmPasswordMessage');
+
+            if (confirmPassword.length === 0) {
+                message.textContent = '';
+                this.classList.remove('success', 'error');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                message.textContent = 'Passwords do not match';
+                message.className = 'form-message error';
+                this.classList.remove('success');
+                this.classList.add('error');
+            } else {
+                message.textContent = 'Passwords match';
+                message.className = 'form-message success';
+                this.classList.remove('error');
+                this.classList.add('success');
+            }
+        });
+
+        // USDT 주소 검증
+        document.getElementById('usdtAddress').addEventListener('input', function() {
+            const address = this.value.trim();
+            const message = document.getElementById('usdtMessage');
+
+            if (address.length === 0) {
+                message.textContent = '';
+                this.classList.remove('success', 'error');
+                return;
+            }
+
+            // BNB Smart Chain 주소 형식 검증 (0x + 40자리 16진수)
+            const addressRegex = /^0x[a-fA-F0-9]{40}$/;
+            if (addressRegex.test(address)) {
+                message.textContent = 'Valid BNB Smart Chain address';
+                message.className = 'form-message success';
+                this.classList.remove('error');
+                this.classList.add('success');
+            } else {
+                message.textContent = 'Invalid address format (0x + 40 hexadecimal characters)';
+                message.className = 'form-message error';
+                this.classList.remove('success');
+                this.classList.add('error');
+            }
+        });
+
+        // ID 변경 시 중복체크 초기화
+        document.getElementById('userId').addEventListener('input', function() {
+            isIdChecked = false;
+            document.getElementById('idMessage').textContent = '';
+            this.classList.remove('success', 'error');
+        });
+
+        // 이메일 변경 시 인증 초기화
+        document.getElementById('email').addEventListener('input', function() {
+            isEmailVerified = false;
+            verificationCodeSent = false;
+            document.getElementById('emailMessage').textContent = '';
+            document.getElementById('verificationMessage').textContent = '';
+            document.getElementById('verificationCode').value = '';
+            document.getElementById('verificationCode').classList.remove('success', 'error');
+        });
+
+        // 회원가입 처리
+        async function handleSignup(event) {
+            event.preventDefault();
+
+            // 필수 검증 확인
+            if (!isIdChecked) {
+                alert('Please check ID availability');
+                return;
+            }
+
+            // 이메일 인증 임시 비활성화
+            // if (!isEmailVerified) {
+            //     alert('Please verify your email');
+            //     return;
+            // }
+
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (password !== confirmPassword) {
+                alert('Passwords do not match');
+                return;
+            }
+
+            if (password.length < 8) {
+                alert('Password must be at least 8 characters');
+                return;
+            }
+
+            const usdtAddress = document.getElementById('usdtAddress').value.trim();
+            const addressRegex = /^0x[a-fA-F0-9]{40}$/;
+            if (!addressRegex.test(usdtAddress)) {
+                alert('Please enter a valid USDT address (0x + 40 hexadecimal characters)');
+                return;
+            }
+
+            // 폼 데이터 수집
+            const formData = {
+                user_id: document.getElementById('userId').value.trim(),
+                password: password,
+                name: document.getElementById('name').value.trim(),
+                phone: document.getElementById('phone').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                referral_id: document.getElementById('referralId').value.trim() || null,
+                usdt_address: usdtAddress
+            };
+
+            console.log('Signup data:', formData);
+
+            // 회원가입 버튼 비활성화
+            const submitButton = event.target.querySelector('.signup-button');
+            submitButton.disabled = true;
+            submitButton.querySelector('span').textContent = 'Creating Account...';
+
+            // API 호출
+            const response = await APIClient.register(formData);
+
+            if (response.success) {
+                alert('Account created successfully!\nRedirecting to login page...');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 1500);
+            } else {
+                alert(response.data.message || 'Failed to create account. Please try again.');
+                submitButton.disabled = false;
+                submitButton.querySelector('span').textContent = 'Create Account';
+            }
+        }
+
+        // 초기화
+        window.addEventListener('DOMContentLoaded', () => {
+            createNeuralNodes();
+
+            // URL 파라미터에서 referral_id 또는 ref 가져오기
+            const urlParams = new URLSearchParams(window.location.search);
+            const referralId = urlParams.get('referral_id') || urlParams.get('ref');
+
+            if (referralId) {
+                // 환영 모달 표시
+                showWelcomeModal(referralId);
+
+                const referralInput = document.getElementById('referralId');
+                referralInput.value = referralId;
+                referralInput.readOnly = true;
+                referralInput.style.background = 'rgba(0, 0, 0, 0.5)';
+                referralInput.style.borderColor = 'rgba(0, 255, 255, 0.5)';
+                referralInput.style.color = '#00ffff';
+
+                // 추천인 알림 메시지
+                const referralLabel = referralInput.previousElementSibling;
+                if (referralLabel) {
+                    referralLabel.innerHTML += ' <span style="color: #00ff00; font-size: 12px;">✓ Referral Applied</span>';
+                }
+            }
+        });
+        // 언어 선택기 초기화
+        if (window.LanguageSelector) {
+            LanguageSelector.init('languageSelectorContainer');
+        }
+
+    </script>
+</body>
+</html>

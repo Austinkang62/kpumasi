@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K-Pumasi - Admin Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+            background: #0f172a;
+            min-height: 100vh;
+        }
+
+        .login-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-box {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            padding: 50px;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            width: 100%;
+            max-width: 440px;
+        }
+
+        .login-box h1 {
+            text-align: center;
+            color: #f8fafc;
+            margin-bottom: 10px;
+            font-size: 2em;
+            font-weight: 700;
+        }
+
+        .login-box p {
+            text-align: center;
+            color: #94a3b8;
+            margin-bottom: 35px;
+            font-size: 0.95em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #e2e8f0;
+            font-weight: 500;
+            font-size: 0.9em;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 10px;
+            font-size: 1em;
+            color: #f8fafc;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: rgba(15, 23, 42, 0.8);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px -5px rgba(59, 130, 246, 0.4);
+        }
+
+        .error-message {
+            color: #dc3545;
+            text-align: center;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .admin-dashboard {
+            display: none;
+        }
+
+        .dashboard-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 65px 30px 30px 30px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px -8px rgba(0,0,0,0.3);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px -8px rgba(0,0,0,0.4);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .stat-card h3 {
+            color: #94a3b8;
+            font-size: 0.85em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            line-height: 1;
+        }
+
+        .stat-card .value {
+            font-size: 2.25em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 7px;
+            line-height: 1;
+        }
+
+        .stat-card .change {
+            color: #34d399;
+            font-size: 0.9em;
+            font-weight: 500;
+            line-height: 1;
+        }
+
+        .content-section {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px -8px rgba(0,0,0,0.3);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .content-section h2 {
+            color: #f8fafc;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            font-weight: 700;
+            font-size: 1.3em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: rgba(15, 23, 42, 0.5);
+            padding: 14px;
+            text-align: left;
+            font-weight: 600;
+            color: #94a3b8;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        td {
+            padding: 14px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            color: #e2e8f0;
+        }
+
+        tr:hover {
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        /* 보너스 상세 팝업 */
+        .bonus-detail-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10000;
+            backdrop-filter: blur(5px);
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .bonus-detail-popup {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border-radius: 20px;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .bonus-detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid rgba(148, 163, 184, 0.2);
+            padding-bottom: 20px;
+        }
+
+        .bonus-detail-header h2 {
+            color: #f8fafc;
+            font-size: 1.8em;
+            font-weight: 700;
+        }
+
+        .close-popup {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .close-popup:hover {
+            background: rgba(239, 68, 68, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .bonus-detail-table {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .bonus-detail-table th {
+            background: rgba(59, 130, 246, 0.1);
+            padding: 12px;
+            text-align: left;
+            color: #94a3b8;
+            font-weight: 600;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .bonus-detail-table td {
+            padding: 14px 12px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            color: #e2e8f0;
+        }
+
+        .bonus-detail-table tr:hover {
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        /* 회원 검색 섹션 */
+        .member-search-section {
+            margin: 40px 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 10px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .search-container input {
+            flex: 1;
+            padding: 16px 20px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 2px solid rgba(148, 163, 184, 0.2);
+            border-radius: 12px;
+            color: #f8fafc;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .search-container input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: rgba(15, 23, 42, 0.8);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .search-container button {
+            padding: 16px 30px;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1em;
+        }
+
+        .search-container button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        /* 회원 현황판 */
+        .member-dashboard {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .member-dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .member-dashboard-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+
+        .close-dashboard-btn {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #f87171;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .close-dashboard-btn:hover {
+            background: rgba(239, 68, 68, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .member-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .member-info-card {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .member-info-card h3 {
+            color: #94a3b8;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.05);
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #94a3b8;
+            font-size: 0.9em;
+        }
+
+        .info-value {
+            color: #f8fafc;
+            font-weight: 600;
+        }
+
+        .info-value.highlight {
+            color: #10b981;
+        }
+
+        .member-details-section {
+            margin-top: 30px;
+        }
+
+        .detail-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .detail-tab {
+            padding: 12px 24px;
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            font-weight: 600;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.3s;
+            font-size: 0.95em;
+        }
+
+        .detail-tab:hover {
+            color: #60a5fa;
+        }
+
+        .detail-tab.active {
+            color: #60a5fa;
+            border-bottom-color: #60a5fa;
+        }
+
+        .detail-tab-content {
+            display: none;
+        }
+
+        .detail-tab-content.active {
+            display: block;
+        }
+
+        .bonus-list-item {
+            background: rgba(15, 23, 42, 0.3);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+
+        .bonus-list-item:hover {
+            background: rgba(59, 130, 246, 0.05);
+            border-color: rgba(59, 130, 246, 0.2);
+        }
+
+        .bonus-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .bonus-type-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .bonus-type-badge.referral { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+        .bonus-type-badge.edge { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .bonus-type-badge.matching { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+        .bonus-type-badge.rollup { background: rgba(139, 92, 246, 0.2); color: #a78bfa; }
+
+    </style>
+</head>
+<body>
+    <!-- 대시보드 -->
+    <div class="admin-dashboard" id="adminDashboard" style="display: block;">
+        <div id="admin-header"></div>
+
+        <div class="dashboard-content">
+            <div class="stats-grid" id="statsGrid">
+            <!-- 통계 카드들이 여기에 동적으로 추가됩니다 -->
+        </div>
+
+            <!-- 보너스 써머리 -->
+            <div class="stats-grid" id="bonusStatsGrid" style="margin-top: 30px;">
+                <!-- 보너스 통계 카드들이 여기에 동적으로 추가됩니다 -->
+            </div>
+
+            <!-- 회원가입 $100 검증 통계 -->
+            <div style="margin-top: 30px;">
+                <iframe src="signup-stats-widget.html"
+                        style="width: 100%; border: none; min-height: 400px; background: transparent;"
+                        id="signupStatsFrame"
+                        onload="this.style.height = (this.contentWindow.document.body.scrollHeight + 50) + 'px'">
+                </iframe>
+            </div>
+
+            <!-- 회원 검색 섹션 -->
+            <div class="member-search-section">
+                <div class="search-container">
+                    <input type="text" id="memberSearchInput" placeholder="회원 ID 또는 이름 검색..." onkeypress="if(event.key==='Enter') searchMember()" />
+                    <button onclick="searchMember()">🔍 검색</button>
+                    <button onclick="toggleRecentUsers()">📋 최근 가입자</button>
+                </div>
+            </div>
+
+            <!-- 회원 상세 현황판 -->
+            <div class="member-dashboard" id="memberDashboard" style="display: none;">
+                <!-- 회원 정보가 여기에 표시됩니다 -->
+            </div>
+
+        <div class="content-section" id="recentUsersSection" style="display: none;">
+            <h2>최근 가입자</h2>
+            <table id="recentUsersTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Referral Code</th>
+                        <th>Joined</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 데이터가 여기에 추가됩니다 -->
+                </tbody>
+            </table>
+        </div>
+        </div>
+    </div>
+
+    <!-- 보너스 상세 팝업 -->
+    <div class="bonus-detail-overlay" id="bonusDetailOverlay" onclick="closeBonusDetail(event)">
+        <div class="bonus-detail-popup" onclick="event.stopPropagation()">
+            <div class="bonus-detail-header">
+                <h2 id="bonusDetailTitle">보너스 상세</h2>
+                <button class="close-popup" onclick="closeBonusDetail()">✕ 닫기</button>
+            </div>
+            <div id="bonusDetailContent">
+                <!-- 테이블이 여기에 동적으로 추가됩니다 -->
+            </div>
+        </div>
+    </div>
+
+    <script src="js/popup-menu.js"></script>
+    <script src="includes/header-loader.js"></script>
+    <script>
+        const API_BASE = 'api';
+
+        // 로그아웃
+        async function logout() {
+            await fetch(`${API_BASE}/auth.php?action=logout`, { method: 'POST' });
+            window.location.href = 'login.php';
+        }
+
+        // 대시보드 로드
+        async function loadDashboard() {
+            try {
+                const response = await fetch(`get-stats.php?_=${Date.now()}`);
+                const data = await response.json();
+
+                if (!data.success) {
+                    const errorMsg = data.message || 'Failed to load dashboard';
+                    alert('Failed to load dashboard\n\n' + errorMsg);
+                    console.error('Stats API Error:', data);
+                    return;
+                }
+
+                // 통계 카드 렌더링
+                renderStats(data.stats);
+
+                // 보너스 통계 로드 (총매출 값 전달)
+                console.log('Total Sales from API:', data.stats.total_sales);
+                loadBonusStats(data.stats.total_sales);
+
+                // 최근 가입자 렌더링
+                renderRecentUsers(data.recent_users);
+
+            } catch (error) {
+                console.error('Dashboard load error:', error);
+                alert('Dashboard error: ' + error.message);
+            }
+        }
+
+        // 통계 렌더링 (보너스 비율은 나중에 추가됨)
+        function renderStats(stats) {
+            window.currentStats = stats; // 전역 변수에 저장
+            const statsGrid = document.getElementById('statsGrid');
+            statsGrid.innerHTML = `
+                <div class="stat-card" style="padding: 18px 20px;">
+                    <h3 style="font-size: 0.75em; margin-bottom: 8px;">Total Users</h3>
+                    <div class="value" style="font-size: 1.8em; margin-bottom: 4px;">${stats.total_users.toLocaleString()}</div>
+                    <div class="change" style="font-size: 0.8em;">📈 All registered users</div>
+                </div>
+                <div class="stat-card" style="padding: 18px 20px;">
+                    <h3 style="font-size: 0.75em; margin-bottom: 8px;">New Users</h3>
+                    <div class="value" style="font-size: 1.8em; margin-bottom: 4px;">${stats.today_users} / ${stats.active_users}</div>
+                    <div class="change" style="font-size: 0.8em;">🆕 Today / ⚡ Last 7 days</div>
+                </div>
+                <div class="stat-card" style="padding: 18px 20px;">
+                    <h3 style="font-size: 0.75em; margin-bottom: 8px;">Total Sales</h3>
+                    <div class="value" style="font-size: 1.8em; margin-bottom: 4px;">$${parseFloat(stats.total_sales || 0).toLocaleString('en-US', {minimumFractionDigits: 2})}</div>
+                    <div class="change" style="font-size: 0.8em;">💰 Completed purchases</div>
+                </div>
+                <div class="stat-card" id="bonusRatioCard" style="padding: 18px 20px;">
+                    <h3 style="font-size: 0.75em; margin-bottom: 8px;">📊 보너스 비율</h3>
+                    <div class="value" style="font-size: 1.8em; margin-bottom: 4px;">-</div>
+                    <div class="change" style="font-size: 0.8em;">계산 중...</div>
+                </div>
+            `;
+        }
+
+        // 보너스 통계 로드
+        async function loadBonusStats(totalSales) {
+            try {
+                const response = await fetch(`../api/bonus/get-total-summary.php?_=${Date.now()}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    renderBonusStats(data.data, totalSales);
+                } else {
+                    console.error('Bonus stats load failed:', data.message);
+                }
+            } catch (error) {
+                console.error('Bonus stats error:', error);
+            }
+        }
+
+        // 보너스 통계 렌더링
+        function renderBonusStats(bonusData, totalSales) {
+            console.log('renderBonusStats called with totalSales:', totalSales);
+
+            // 총 보너스 합계 계산
+            const totalBonus = parseFloat(bonusData.total_referral || 0) +
+                              parseFloat(bonusData.total_edge || 0) +
+                              parseFloat(bonusData.total_matching || 0) +
+                              parseFloat(bonusData.total_rollup || 0);
+
+            // 비율 계산 및 첫 번째 행 카드 업데이트
+            const totalSalesValue = parseFloat(totalSales || 0);
+            const ratio = totalSalesValue > 0 ? (totalBonus / totalSalesValue) * 100 : 0;
+
+            console.log('Total Bonus:', totalBonus, 'Total Sales:', totalSalesValue, 'Ratio:', ratio);
+
+            const ratioCard = document.getElementById('bonusRatioCard');
+            if (ratioCard) {
+                ratioCard.innerHTML = `
+                    <h3 style="font-size: 0.75em; margin-bottom: 8px;">📊 보너스 비율</h3>
+                    <div class="value" style="font-size: 1.8em; margin-bottom: 4px;">${ratio.toFixed(2)}%</div>
+                    <div class="change" style="font-size: 0.8em;">$${totalBonus.toLocaleString('en-US', {minimumFractionDigits: 2})} / $${totalSalesValue.toLocaleString('en-US', {minimumFractionDigits: 2})}</div>
+                `;
+            }
+
+            // 두 번째 행: 보너스 상세 카드들
+            const bonusGrid = document.getElementById('bonusStatsGrid');
+            bonusGrid.innerHTML = `
+                <div class="stat-card" style="border-left: 3px solid #10b981; padding: 18px 20px; cursor: pointer;" onclick="showBonusDetail('referral')">
+                    <h3 style="font-size: 0.75em; margin-bottom: 8px;">💰 추천 보너스</h3>
+                    <div class="value" style="font-size: 1.8em; margin-bottom: 4px;">$${parseFloat(bonusData.total_referral || 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                    <div class="change" style="font-size: 0.8em;">${(bonusData.referral_count || 0).toLocaleString()}건 지급</div>
+                </div>
+                <div class="stat-card" style="border-left: 3px solid #3b82f6; padding: 18px 20px; cursor: pointer;" onclick="showBonusDetail('edge')">
+                    <h3 style="font-size: 0.75em; margin-bottom: 8px;">⚡ 엣지 보너스</h3>
+                    <div class="value" style="font-size: 1.8em; margin-bottom: 4px;">$${parseFloat(bonusData.total_edge || 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                    <div class="change" style="font-size: 0.8em;">${(bonusData.edge_count || 0).toLocaleString()}건 지급</div>
+                </div>
+                <div class="stat-card" style="border-left: 3px solid #8b5cf6; padding: 18px 20px; cursor: pointer;" onclick="showBonusDetail('matching')">
+                    <h3 style="font-size: 0.75em; margin-bottom: 8px;">🤝 매칭 보너스</h3>
+                    <div class="value" style="font-size: 1.8em; margin-bottom: 4px;">$${parseFloat(bonusData.total_matching || 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                    <div class="change" style="font-size: 0.8em;">${(bonusData.matching_count || 0).toLocaleString()}건 지급</div>
+                </div>
+                <div class="stat-card" style="border-left: 3px solid #f59e0b; padding: 18px 20px; cursor: pointer;" onclick="showBonusDetail('rollup')">
+                    <h3 style="font-size: 0.75em; margin-bottom: 8px;">📈 롤업 보너스</h3>
+                    <div class="value" style="font-size: 1.8em; margin-bottom: 4px;">$${parseFloat(bonusData.total_rollup || 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                    <div class="change" style="font-size: 0.8em;">${(bonusData.rollup_count || 0).toLocaleString()}건 지급</div>
+                </div>
+            `;
+        }
+
+        // 최근 가입자 렌더링
+        function renderRecentUsers(users) {
+            const tbody = document.querySelector('#recentUsersTable tbody');
+            tbody.innerHTML = users.map(user => `
+                <tr>
+                    <td>${user.user_id}</td>
+                    <td>${user.login_id}</td>
+                    <td>${user.email}</td>
+                    <td>${user.referral_code}</td>
+                    <td>${new Date(user.created_at).toLocaleString()}</td>
+                </tr>
+            `).join('');
+        }
+
+        // 보너스 상세 팝업 표시
+        async function showBonusDetail(bonusType) {
+            const titles = {
+                'referral': '💰 추천 보너스 상세',
+                'edge': '⚡ 엣지 보너스 상세',
+                'matching': '🤝 매칭 보너스 상세',
+                'rollup': '📈 롤업 보너스 상세'
+            };
+
+            document.getElementById('bonusDetailTitle').textContent = titles[bonusType];
+            document.getElementById('bonusDetailOverlay').style.display = 'block';
+            document.getElementById('bonusDetailContent').innerHTML = '<p style="color: #94a3b8; text-align: center; padding: 40px;">로딩 중...</p>';
+
+            try {
+                const response = await fetch(`api/bonus-detail.php?type=${bonusType}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    renderBonusDetailTable(data.data, bonusType);
+                } else {
+                    document.getElementById('bonusDetailContent').innerHTML = `<p style="color: #f87171; text-align: center; padding: 40px;">${data.message}</p>`;
+                }
+            } catch (error) {
+                console.error('Bonus detail error:', error);
+                document.getElementById('bonusDetailContent').innerHTML = '<p style="color: #f87171; text-align: center; padding: 40px;">데이터 로드 실패</p>';
+            }
+        }
+
+        // 보너스 상세 테이블 렌더링
+        function renderBonusDetailTable(bonuses, bonusType) {
+            const contentDiv = document.getElementById('bonusDetailContent');
+
+            if (!bonuses || bonuses.length === 0) {
+                contentDiv.innerHTML = '<p style="color: #94a3b8; text-align: center; padding: 40px;">보너스 내역이 없습니다.</p>';
+                return;
+            }
+
+            let tableHTML = '<table class="bonus-detail-table"><thead><tr>';
+
+            if (bonusType === 'rollup') {
+                tableHTML += `
+                    <th>지급일시</th>
+                    <th>받은 회원</th>
+                    <th>발생 회원</th>
+                    <th>레벨</th>
+                    <th>금액</th>
+                    <th>상태</th>
+                `;
+            } else if (bonusType === 'edge') {
+                tableHTML += `
+                    <th>지급일시</th>
+                    <th>받은 회원</th>
+                    <th>발생 회원</th>
+                    <th>엣지</th>
+                    <th>금액</th>
+                    <th>상태</th>
+                `;
+            } else {
+                tableHTML += `
+                    <th>지급일시</th>
+                    <th>받은 회원</th>
+                    <th>발생 회원</th>
+                    <th>보너스 종류</th>
+                    <th>금액</th>
+                    <th>상태</th>
+                `;
+            }
+
+            tableHTML += '</tr></thead><tbody>';
+
+            bonuses.forEach(bonus => {
+                const amount = parseFloat(bonus.amount || 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                const date = new Date(bonus.created_at).toLocaleString('ko-KR');
+
+                // 기본 status 텍스트
+                let statusText = bonus.status === 'paid' ? '✓ 지급완료' : '⏳ 대기중';
+                let statusColor = bonus.status === 'paid' ? '#10b981' : '#f59e0b';
+
+                if (bonusType === 'rollup') {
+                    tableHTML += `
+                        <tr>
+                            <td>${date}</td>
+                            <td>${bonus.to_user_id || '-'}</td>
+                            <td>${bonus.from_user_id || '-'}</td>
+                            <td>Level ${bonus.level || '-'}</td>
+                            <td style="color: #10b981; font-weight: 600;">$${amount}</td>
+                            <td style="color: ${statusColor};">${statusText}</td>
+                        </tr>
+                    `;
+                } else if (bonusType === 'edge') {
+                    // 엣지 미발생: cancelled이면서 amount가 0인 경우
+                    const isNoEdge = bonus.status === 'cancelled' && parseFloat(bonus.amount) === 0;
+
+                    if (isNoEdge) {
+                        statusText = '⊘ 엣지 없음';
+                        statusColor = '#94a3b8';
+                    }
+
+                    const amountColor = isNoEdge ? '#94a3b8' : '#10b981';
+
+                    tableHTML += `
+                        <tr>
+                            <td>${date}</td>
+                            <td>${bonus.to_user_id || '-'}</td>
+                            <td>${bonus.from_user_id || '-'}</td>
+                            <td style="color: #3b82f6; font-weight: 600;">${bonus.edge_info || '-'}</td>
+                            <td style="color: ${amountColor}; font-weight: 600;">$${amount}</td>
+                            <td style="color: ${statusColor};">${statusText}</td>
+                        </tr>
+                    `;
+                } else {
+                    tableHTML += `
+                        <tr>
+                            <td>${date}</td>
+                            <td>${bonus.to_user_id || '-'}</td>
+                            <td>${bonus.from_user_id || '-'}</td>
+                            <td>${bonus.bonus_type || '-'}</td>
+                            <td style="color: #10b981; font-weight: 600;">$${amount}</td>
+                            <td style="color: ${statusColor};">${statusText}</td>
+                        </tr>
+                    `;
+                }
+            });
+
+            tableHTML += '</tbody></table>';
+            contentDiv.innerHTML = tableHTML;
+        }
+
+        // 보너스 상세 팝업 닫기
+        function closeBonusDetail(event) {
+            if (!event || event.target.id === 'bonusDetailOverlay') {
+                document.getElementById('bonusDetailOverlay').style.display = 'none';
+            }
+        }
+
+        // 페이지 로드 시 로그인 상태 확인
+        async function checkAuth() {
+            console.log('🔐 Checking authentication...');
+            try {
+                const response = await fetch(`${API_BASE}/auth.php?action=check`);
+                const data = await response.json();
+                console.log('Auth response:', data);
+
+                if (data.logged_in) {
+                    console.log('✅ Already logged in, loading dashboard');
+
+                    // 헤더 로드 (팝업 메뉴 초기화 포함)
+                    console.log('Checking loadAdminHeader...', typeof window.loadAdminHeader);
+                    if (typeof window.loadAdminHeader === 'function') {
+                        console.log('Calling loadAdminHeader...');
+                        await window.loadAdminHeader();
+                        console.log('loadAdminHeader completed');
+                    } else {
+                        console.error('❌ loadAdminHeader not available!');
+                    }
+
+                    console.log('Loading dashboard...');
+                    loadDashboard();
+                } else {
+                    console.log('❌ Not logged in, redirecting to login page');
+                    window.location.href = 'login.php';
+                }
+            } catch (error) {
+                console.error('Auth check error:', error);
+                window.location.href = 'login.php';
+            }
+        }
+
+        // 회원 검색
+        async function searchMember() {
+            const searchValue = document.getElementById('memberSearchInput').value.trim();
+            if (!searchValue) {
+                alert('회원 ID 또는 이름을 입력하세요.');
+                return;
+            }
+
+            try {
+                // 먼저 회원 목록에서 검색
+                const response = await fetch(`api/member-financial.php?action=list&user_id=${encodeURIComponent(searchValue)}&limit=100`);
+                const data = await response.json();
+
+                if (!data.success) {
+                    alert('검색 실패: ' + data.message);
+                    return;
+                }
+
+                if (data.members.length === 0) {
+                    alert('검색 결과가 없습니다.');
+                    return;
+                }
+
+                // 첫 번째 회원의 상세 페이지로 이동
+                const member = data.members[0];
+                window.location.href = `user-detail.php?user_id=${encodeURIComponent(member.user_id)}`;
+
+            } catch (error) {
+                console.error('Search error:', error);
+                alert('검색 중 오류가 발생했습니다.');
+            }
+        }
+
+        // 회원 현황판 표시
+        async function showMemberDashboard(userId) {
+            try {
+                const response = await fetch(`api/member-financial.php?action=detail&user_id=${userId}`);
+                const data = await response.json();
+
+                if (!data.success) {
+                    alert('회원 정보 로드 실패: ' + data.message);
+                    return;
+                }
+
+                renderMemberDashboard(data);
+                document.getElementById('memberDashboard').style.display = 'block';
+                document.getElementById('memberDashboard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            } catch (error) {
+                console.error('Dashboard error:', error);
+                alert('회원 정보 로드 중 오류가 발생했습니다.');
+            }
+        }
+
+        // 회원 현황판 렌더링
+        function renderMemberDashboard(data) {
+            const m = data.member;
+            const dashboard = document.getElementById('memberDashboard');
+
+            // 받은 보너스 합계
+            const totalReceived = data.received_bonuses.reduce((sum, b) => sum + parseFloat(b.amount), 0);
+            const totalGiven = data.given_bonuses.reduce((sum, b) => sum + parseFloat(b.amount), 0);
+            const totalSales = data.sales.reduce((sum, s) => sum + parseFloat(s.amount), 0);
+
+            // 보너스 타입별 통계 (받은 보너스)
+            const receivedByType = {};
+            data.received_by_type.forEach(t => {
+                if (!receivedByType[t.bonus_type]) receivedByType[t.bonus_type] = 0;
+                receivedByType[t.bonus_type] += parseFloat(t.total);
+            });
+
+            // 보너스 타입별 통계 (지급한 보너스)
+            const givenByType = {};
+            data.given_by_type.forEach(t => {
+                if (!givenByType[t.bonus_type]) givenByType[t.bonus_type] = 0;
+                givenByType[t.bonus_type] += parseFloat(t.total);
+            });
+
+            dashboard.innerHTML = `
+                <div class="member-dashboard-header">
+                    <h2 class="member-dashboard-title">👤 ${m.user_id} ${m.name ? '(' + m.name + ')' : ''}</h2>
+                    <button class="close-dashboard-btn" onclick="closeMemberDashboard()">✕ 닫기</button>
+                </div>
+
+                <div class="member-info-grid">
+                    <div class="member-info-card">
+                        <h3>📋 기본 정보</h3>
+                        <div class="info-item">
+                            <span class="info-label">회원 ID</span>
+                            <span class="info-value">${m.user_id}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">이름</span>
+                            <span class="info-value">${m.name || '-'}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">이메일</span>
+                            <span class="info-value">${m.email}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">패키지</span>
+                            <span class="info-value">${m.package_name || '-'} ($${m.package_price || 0})</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">가입일</span>
+                            <span class="info-value">${m.created_at}</span>
+                        </div>
+                    </div>
+
+                    <div class="member-info-card">
+                        <h3>💰 매출 현황</h3>
+                        <div class="info-item">
+                            <span class="info-label">매출 건수</span>
+                            <span class="info-value">${data.sales.length}건</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">매출 합계</span>
+                            <span class="info-value highlight">$${totalSales.toFixed(2)}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">패키지 날짜</span>
+                            <span class="info-value">${m.package_date || '-'}</span>
+                        </div>
+                    </div>
+
+                    <div class="member-info-card">
+                        <h3>💵 보유 자산</h3>
+                        <div class="info-item">
+                            <span class="info-label">보유 캐시</span>
+                            <span class="info-value highlight">$${parseFloat(m.available_bonus).toFixed(2)}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">아바타 포인트</span>
+                            <span class="info-value highlight">${parseFloat(m.avatar_points).toFixed(2)}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">총 수령 보너스</span>
+                            <span class="info-value">$${parseFloat(m.total_bonus).toFixed(2)}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">총 출금</span>
+                            <span class="info-value">$${parseFloat(m.total_withdrawn).toFixed(2)}</span>
+                        </div>
+                    </div>
+
+                    <div class="member-info-card">
+                        <h3>🎁 보너스 요약</h3>
+                        <div class="info-item">
+                            <span class="info-label">받은 보너스</span>
+                            <span class="info-value highlight">$${totalReceived.toFixed(2)}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">내 매출로 발생한 보너스</span>
+                            <span class="info-value">$${totalGiven.toFixed(2)}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">추천인 수</span>
+                            <span class="info-value">${data.referrals.length}명</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">스폰서 회원</span>
+                            <span class="info-value">${data.sponsored.length}명</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="member-details-section">
+                    <div class="detail-tabs">
+                        <button class="detail-tab active" onclick="switchMemberTab('received')">받은 보너스 (${data.received_bonuses.length})</button>
+                        <button class="detail-tab" onclick="switchMemberTab('given')">발생 보너스 (${data.given_bonuses.length})</button>
+                        <button class="detail-tab" onclick="switchMemberTab('sales')">매출 내역 (${data.sales.length})</button>
+                        <button class="detail-tab" onclick="switchMemberTab('network')">네트워크</button>
+                    </div>
+
+                    <div class="detail-tab-content active" id="receivedContent">
+                        ${renderReceivedBonusesTab(data.received_bonuses, receivedByType)}
+                    </div>
+
+                    <div class="detail-tab-content" id="givenContent">
+                        ${renderGivenBonusesTab(data.given_bonuses, givenByType)}
+                    </div>
+
+                    <div class="detail-tab-content" id="salesContent">
+                        ${renderSalesTab(data.sales)}
+                    </div>
+
+                    <div class="detail-tab-content" id="networkContent">
+                        ${renderNetworkTab(data.referrals, data.sponsored)}
+                    </div>
+                </div>
+            `;
+        }
+
+        // 받은 보너스 탭 렌더링
+        function renderReceivedBonusesTab(bonuses, byType) {
+            let html = '<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px;">';
+            ['referral', 'edge', 'matching', 'rollup'].forEach(type => {
+                const amount = byType[type] || 0;
+                html += `
+                    <div style="background: rgba(15, 23, 42, 0.4); padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="color: #94a3b8; font-size: 0.8em; margin-bottom: 8px;">${type.toUpperCase()}</div>
+                        <div style="color: #10b981; font-size: 1.5em; font-weight: 700;">$${amount.toFixed(2)}</div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+
+            if (bonuses.length === 0) {
+                html += '<div style="text-align: center; padding: 40px; color: #94a3b8;">받은 보너스가 없습니다.</div>';
+            } else {
+                bonuses.forEach(b => {
+                    html += `
+                        <div class="bonus-list-item">
+                            <div class="bonus-item-header">
+                                <div>
+                                    <span class="bonus-type-badge ${b.bonus_type}">${b.bonus_type.toUpperCase()}${b.level ? ' L' + b.level : ''}</span>
+                                    <span style="color: #94a3b8; margin-left: 10px;">← ${b.giver_code || '-'} ${b.giver_name ? '(' + b.giver_name + ')' : ''}</span>
+                                </div>
+                                <span class="info-value highlight">$${parseFloat(b.amount).toFixed(2)}</span>
+                            </div>
+                            <div style="color: #94a3b8; font-size: 0.85em;">${b.description}</div>
+                            <div style="color: #64748b; font-size: 0.8em; margin-top: 5px;">
+                                ${b.payment_type === 'cash' ? '💵 캐시' : '🎮 아바타'} • ${b.created_at}
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            return html;
+        }
+
+        // 발생 보너스 탭 렌더링
+        function renderGivenBonusesTab(bonuses, byType) {
+            let html = '<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px;">';
+            ['referral', 'edge', 'matching', 'rollup'].forEach(type => {
+                const amount = byType[type] || 0;
+                html += `
+                    <div style="background: rgba(15, 23, 42, 0.4); padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="color: #94a3b8; font-size: 0.8em; margin-bottom: 8px;">${type.toUpperCase()}</div>
+                        <div style="color: #f59e0b; font-size: 1.5em; font-weight: 700;">$${amount.toFixed(2)}</div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+
+            if (bonuses.length === 0) {
+                html += '<div style="text-align: center; padding: 40px; color: #94a3b8;">발생한 보너스가 없습니다.</div>';
+            } else {
+                bonuses.forEach(b => {
+                    html += `
+                        <div class="bonus-list-item">
+                            <div class="bonus-item-header">
+                                <div>
+                                    <span class="bonus-type-badge ${b.bonus_type}">${b.bonus_type.toUpperCase()}${b.level ? ' L' + b.level : ''}</span>
+                                    <span style="color: #94a3b8; margin-left: 10px;">→ ${b.receiver_code || '-'} ${b.receiver_name ? '(' + b.receiver_name + ')' : ''}</span>
+                                </div>
+                                <span style="color: #f59e0b; font-weight: 700;">$${parseFloat(b.amount).toFixed(2)}</span>
+                            </div>
+                            <div style="color: #94a3b8; font-size: 0.85em;">${b.description}</div>
+                            <div style="color: #64748b; font-size: 0.8em; margin-top: 5px;">
+                                ${b.payment_type === 'cash' ? '💵 캐시' : '🎮 아바타'} • ${b.created_at}
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            return html;
+        }
+
+        // 매출 탭 렌더링
+        function renderSalesTab(sales) {
+            if (sales.length === 0) {
+                return '<div style="text-align: center; padding: 40px; color: #94a3b8;">매출 내역이 없습니다.</div>';
+            }
+
+            let html = '';
+            sales.forEach(s => {
+                html += `
+                    <div class="bonus-list-item">
+                        <div class="bonus-item-header">
+                            <div>
+                                <span style="color: #f8fafc; font-weight: 600;">Sale #${s.id}</span>
+                                <span style="color: #94a3b8; margin-left: 10px;">Package ${s.package_id}</span>
+                            </div>
+                            <span class="info-value highlight">$${parseFloat(s.amount).toFixed(2)}</span>
+                        </div>
+                        <div style="color: #94a3b8; font-size: 0.85em;">
+                            결제: ${s.payment_method || '-'} | 상태: ${s.status}
+                            ${s.txid ? ' | TXID: ' + s.txid : ''}
+                        </div>
+                        <div style="color: #64748b; font-size: 0.8em; margin-top: 5px;">${s.created_at}</div>
+                    </div>
+                `;
+            });
+            return html;
+        }
+
+        // 네트워크 탭 렌더링
+        function renderNetworkTab(referrals, sponsored) {
+            let html = '<h4 style="color: #f8fafc; margin-bottom: 15px;">추천한 회원 (' + referrals.length + '명)</h4>';
+
+            if (referrals.length === 0) {
+                html += '<div style="text-align: center; padding: 20px; color: #94a3b8;">추천한 회원이 없습니다.</div>';
+            } else {
+                referrals.forEach(r => {
+                    html += `
+                        <div class="bonus-list-item" style="cursor: pointer;" onclick="showMemberDashboard(${r.id})">
+                            <div class="bonus-item-header">
+                                <span style="color: #60a5fa; font-weight: 600;">${r.user_id}</span>
+                                <span style="color: #e2e8f0;">${r.name || '-'}</span>
+                                <span style="color: #94a3b8;">Package ${r.package_id || 0}</span>
+                            </div>
+                            <div style="color: #64748b; font-size: 0.8em;">${r.created_at}</div>
+                        </div>
+                    `;
+                });
+            }
+
+            html += '<h4 style="color: #f8fafc; margin: 30px 0 15px;">스폰서한 회원 (' + sponsored.length + '명)</h4>';
+
+            if (sponsored.length === 0) {
+                html += '<div style="text-align: center; padding: 20px; color: #94a3b8;">스폰서한 회원이 없습니다.</div>';
+            } else {
+                sponsored.forEach(s => {
+                    html += `
+                        <div class="bonus-list-item" style="cursor: pointer;" onclick="showMemberDashboard(${s.id})">
+                            <div class="bonus-item-header">
+                                <div>
+                                    <span style="color: #60a5fa; font-weight: 600;">${s.user_id}</span>
+                                    <span style="color: #e2e8f0; margin: 0 10px;">${s.name || '-'}</span>
+                                    <span style="color: #94a3b8;">Package ${s.package_id || 0}</span>
+                                </div>
+                                <span style="color: #94a3b8;">위치: ${s.sponsor_position === 1 ? '좌측' : s.sponsor_position === 2 ? '우측' : '-'}</span>
+                            </div>
+                            <div style="color: #64748b; font-size: 0.8em;">${s.created_at}</div>
+                        </div>
+                    `;
+                });
+            }
+
+            return html;
+        }
+
+        // 탭 전환
+        function switchMemberTab(tabName) {
+            document.querySelectorAll('.detail-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.detail-tab-content').forEach(c => c.classList.remove('active'));
+
+            event.target.classList.add('active');
+            document.getElementById(tabName + 'Content').classList.add('active');
+        }
+
+        // 회원 현황판 닫기
+        function closeMemberDashboard() {
+            document.getElementById('memberDashboard').style.display = 'none';
+            document.getElementById('memberSearchInput').value = '';
+        }
+
+        // 최근 가입자 섹션 토글
+        function toggleRecentUsers() {
+            const section = document.getElementById('recentUsersSection');
+            if (section.style.display === 'none') {
+                section.style.display = 'block';
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                section.style.display = 'none';
+            }
+        }
+
+        // Enter 키로 검색
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('memberSearchInput');
+            if (searchInput) {
+                searchInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') searchMember();
+                });
+            }
+        });
+
+        // 초기화
+        checkAuth();
+    </script>
+</body>
+</html>

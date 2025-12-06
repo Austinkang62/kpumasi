@@ -1,0 +1,73 @@
+# Super Admin Panel - Apache Configuration
+
+# PHP 설정
+php_value upload_max_filesize 10M
+php_value post_max_size 10M
+php_value max_execution_time 300
+php_value max_input_time 300
+
+# 보안 헤더
+<IfModule mod_headers.c>
+    # XSS 보호
+    Header set X-XSS-Protection "1; mode=block"
+
+    # 클릭재킹 방지
+    Header set X-Frame-Options "SAMEORIGIN"
+
+    # MIME 타입 스니핑 방지
+    Header set X-Content-Type-Options "nosniff"
+
+    # Referrer 정책
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# 디렉토리 리스팅 차단
+Options -Indexes
+
+# 민감한 파일 접근 차단
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# README.md 접근 차단
+<Files "README.md">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# 에러 페이지
+ErrorDocument 403 /admins/login.php
+ErrorDocument 404 /admins/login.php
+
+# URL Rewriting (필요시)
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /admins/
+
+    # HTTPS 강제 (프로덕션에서 활성화)
+    # RewriteCond %{HTTPS} off
+    # RewriteRule ^(.*)$ https://%{HTTP_HOST%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# 캐싱 설정
+<IfModule mod_expires.c>
+    ExpiresActive On
+
+    # CSS and JavaScript
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+
+    # Images
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+
+    # Default
+    ExpiresDefault "access plus 1 week"
+</IfModule>
+
+# Gzip 압축
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css application/javascript application/json
+</IfModule>

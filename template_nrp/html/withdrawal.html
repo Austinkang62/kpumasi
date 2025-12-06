@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Withdrawal - AI BTC BOT</title>
+    <script src="js/language.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: radial-gradient(ellipse at center, #0a0a1f 0%, #000 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 신경망 배경 */
+        .neural-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .neural-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes gridPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+
+        .neural-connections {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .neural-node {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: radial-gradient(circle, #00ffff, transparent);
+            border-radius: 50%;
+            animation: nodePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes nodePulse {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.5); }
+        }
+
+        /* Floating Navigation */
+        .floating-nav {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        
+
+        @keyframes floatButton {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        /* 홈 버튼 */
+        .home-button {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .home-button:hover {
+            background: rgba(0, 255, 255, 0.2);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+        }
+
+        .mini-pulse {
+            position: relative;
+            width: 30px;
+            height: 30px;
+        }
+
+        .mini-ring {
+            position: absolute;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: miniRingRotate 3s linear infinite;
+        }
+
+        .mini-ring:nth-child(1) {
+            width: 100%;
+            height: 100%;
+            border-top-color: #00ffff;
+            animation-duration: 2s;
+        }
+
+        .mini-ring:nth-child(2) {
+            width: 70%;
+            height: 70%;
+            top: 15%;
+            left: 15%;
+            border-right-color: #ff00ff;
+            animation-duration: 3s;
+            animation-direction: reverse;
+        }
+
+        .mini-core {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, #00ffff 0%, transparent 70%);
+            border-radius: 50%;
+            animation: miniCorePulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes miniRingRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes miniCorePulse {
+            0%, 100% { box-shadow: 0 0 10px #00ffff; }
+            50% { box-shadow: 0 0 20px #00ffff, 0 0 30px #00ffff; }
+        }
+
+        /* 메인 컨테이너 */
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 100px 24px 50px;
+        }
+
+        .page-title {
+            font-size: 36px;
+            font-weight: 300;
+            margin-bottom: 40px;
+            text-align: center;
+            background: linear-gradient(135deg, #00ffff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 2px;
+        }
+
+        /* 잔액 카드 */
+        .balance-card {
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(255, 0, 255, 0.1));
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .balance-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-bottom: 25px;
+        }
+
+        .balance-item {
+            text-align: center;
+        }
+
+        .balance-label {
+            font-size: 12px;
+            color: #9fa3b8;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .balance-amount {
+            font-size: 48px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00ffff, #ffff00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-top: 10px;
+        }
+
+        .balance-total {
+            font-size: 36px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ff00ff, #00ffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .avatar-info {
+            text-align: center;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #9fa3b8;
+        }
+
+        .avatar-info strong {
+            color: #00ffff;
+        }
+
+        /* 프로그레스 바 */
+        .progress-container {
+            margin: 25px 0;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+        }
+
+        .progress-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 12px;
+            color: #9fa3b8;
+            font-weight: 600;
+        }
+
+        .progress-label-middle {
+            color: #00ffff;
+        }
+
+        .progress-label-end {
+            color: #ff00ff;
+        }
+
+        .progress-bar-wrapper {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .progress-bar {
+            display: flex;
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+        }
+
+        .progress-zone {
+            height: 100%;
+            position: relative;
+        }
+
+        .progress-zone-safe {
+            flex: 2;
+            background: linear-gradient(90deg,
+                rgba(0, 255, 136, 0.3) 0%,
+                rgba(0, 255, 255, 0.4) 100%);
+            border-right: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .progress-zone-blocked {
+            flex: 1;
+            background: linear-gradient(90deg,
+                rgba(255, 100, 100, 0.3) 0%,
+                rgba(255, 0, 255, 0.4) 100%);
+            position: relative;
+        }
+
+        .progress-zone-blocked::before {
+            content: '⚠️ AVATAR ZONE';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 10px;
+            font-weight: 700;
+            color: #ff4444;
+            white-space: nowrap;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+        }
+
+        .progress-indicator {
+            position: absolute;
+            top: -5px;
+            bottom: -5px;
+            width: 3px;
+            transition: left 0.5s ease;
+        }
+
+        .progress-marker {
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(180deg, #ffff00, #ff00ff);
+            box-shadow: 0 0 15px rgba(255, 255, 0, 0.8);
+            border-radius: 2px;
+        }
+
+        .progress-tooltip {
+            position: absolute;
+            top: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: #ffff00;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+            border: 1px solid #ffff00;
+            box-shadow: 0 0 15px rgba(255, 255, 0, 0.5);
+        }
+
+        .progress-tooltip::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 6px solid;
+            border-top-color: inherit;
+        }
+
+        .progress-legends {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 12px;
+            border-radius: 3px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .legend-safe {
+            background: linear-gradient(90deg, rgba(0, 255, 136, 0.5), rgba(0, 255, 255, 0.6));
+        }
+
+        .legend-blocked {
+            background: linear-gradient(90deg, rgba(255, 100, 100, 0.5), rgba(255, 0, 255, 0.6));
+        }
+
+        .legend-text {
+            font-size: 12px;
+            color: #9fa3b8;
+        }
+
+        @media (max-width: 600px) {
+            .progress-container {
+                padding: 15px;
+            }
+
+            .progress-bar {
+                height: 25px;
+            }
+
+            .progress-zone-blocked::before {
+                font-size: 7px;
+            }
+
+            .progress-tooltip {
+                font-size: 11px;
+                padding: 4px 8px;
+            }
+
+            .progress-legends {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+
+            .legend-text {
+                font-size: 11px;
+            }
+
+            .balance-amount {
+                font-size: 36px;
+            }
+        }
+
+        /* 출금 신청 폼 */
+        .withdrawal-form {
+            background: rgba(18, 21, 47, 0.6);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            color: #9fa3b8;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #00ffff;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+
+        .form-input:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .form-hint {
+            font-size: 12px;
+            color: #7a7e98;
+            margin-top: 8px;
+        }
+
+        .amount-suggestions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .amount-btn {
+            padding: 8px 16px;
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 8px;
+            color: #00ffff;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .amount-btn:hover {
+            background: rgba(0, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* 버튼 */
+        .btn {
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00ffff, #00cccc);
+            color: #000;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 255, 255, 0.5);
+        }
+
+        .btn-primary:disabled {
+            background: rgba(100, 100, 100, 0.5);
+            color: #666;
+            cursor: not-allowed;
+        }
+
+        /* 알림 박스 */
+        .alert {
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border-left: 4px solid;
+        }
+
+        .alert-info {
+            background: rgba(0, 191, 255, 0.1);
+            border-color: #00bfff;
+            color: #00bfff;
+        }
+
+        .alert-warning {
+            background: rgba(255, 193, 7, 0.1);
+            border-color: #ffc107;
+            color: #ffc107;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .alert-text {
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        /* 규칙 안내 */
+        .rules-section {
+            background: rgba(18, 21, 47, 0.4);
+            border: 1px solid rgba(0, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 25px;
+        }
+
+        .rules-title {
+            font-size: 18px;
+            color: #00ffff;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .rules-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .rules-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 14px;
+            color: #9fa3b8;
+        }
+
+        .rules-list li:last-child {
+            border-bottom: none;
+        }
+
+        .rules-list li::before {
+            content: "✓ ";
+            color: #00ff88;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 80px 16px 40px;
+            }
+
+            .page-title {
+                font-size: 28px;
+            }
+
+            .balance-amount {
+                font-size: 36px;
+            }
+
+            .amount-suggestions {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 신경망 배경 -->
+    <div class="neural-background">
+        <div class="neural-grid"></div>
+    </div>
+
+    <!-- 펄스 노드들 -->
+    <div class="neural-connections" id="neuralConnections"></div>
+
+    <!-- Floating Navigation -->
+    <nav class="floating-nav">
+        <div></div> <!-- 좌측 빈 공간 -->
+
+        <!-- 우측 버튼 그룹 -->
+        <div style="display: flex; align-items: center;">
+            <!-- 홈 버튼 (미니 펄스 로고) -->
+            <div class="home-button" id="homeButton">
+                <div class="mini-pulse">
+                    <div class="mini-ring"></div>
+                    <div class="mini-ring"></div>
+                    <div class="mini-core"></div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    
+    <!-- 메인 컨텐츠 -->
+    <div class="container">
+        <h1 class="page-title" data-lang="withdrawal.title">💰 출금</h1>
+
+        <!-- 잔액 카드 -->
+        <div class="balance-card">
+            <div style="text-align: center; margin-bottom: 25px;">
+                <div class="balance-label" data-lang="withdrawal.currentBalance">출금 가능 잔액</div>
+                <div class="balance-amount" id="currentBalance">$0.00</div>
+            </div>
+
+            <!-- 출금 구간 프로그레스 바 -->
+            <div class="progress-container" id="progressContainer" style="display: none;">
+                <div class="progress-labels">
+                    <span class="progress-label-start">$0</span>
+                    <span class="progress-label-middle" id="progressMiddleLabel">$100</span>
+                    <span class="progress-label-end" id="progressEndLabel">$150</span>
+                </div>
+                <div class="progress-bar-wrapper">
+                    <div class="progress-bar">
+                        <!-- 출금 가능 구간 (0-100%) -->
+                        <div class="progress-zone progress-zone-safe"></div>
+                        <!-- 아바타 구간 (100-150%) -->
+                        <div class="progress-zone progress-zone-blocked"></div>
+                    </div>
+                    <!-- 현재 위치 표시 -->
+                    <div class="progress-indicator" id="progressIndicator">
+                        <div class="progress-marker"></div>
+                        <div class="progress-tooltip" id="progressTooltip">$0.00</div>
+                    </div>
+                </div>
+                <div class="progress-legends">
+                    <div class="legend-item">
+                        <div class="legend-color legend-safe"></div>
+                        <span class="legend-text" data-lang="withdrawal.legendSafe">출금 가능</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color legend-blocked"></div>
+                        <span class="legend-text" data-lang="withdrawal.legendBlocked">아바타 구간 (출금 금지)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 경고 메시지 (필요시 표시) -->
+        <div class="alert alert-warning" id="warningAlert" style="display: none;">
+            <div class="alert-title" data-lang="withdrawal.alertTitle">⚠️ 알림</div>
+            <div class="alert-text" id="warningText"></div>
+        </div>
+
+        <!-- 출금 신청 폼 -->
+        <div class="withdrawal-form">
+            <div class="form-group">
+                <label class="form-label" data-lang="withdrawal.withdrawalAmount">출금 금액 (USD)</label>
+                <input
+                    type="number"
+                    class="form-input"
+                    id="withdrawalAmount"
+                    data-lang-placeholder="withdrawal.amountPlaceholder"
+                    placeholder="금액 입력 (최소 $10)"
+                    min="10"
+                    step="0.01"
+                >
+                <div class="form-hint"><span data-lang="withdrawal.maxWithdrawable">최대 출금 가능</span>: <span id="maxWithdrawable">$0.00</span></div>
+                <div class="amount-suggestions">
+                    <button class="amount-btn" onclick="setAmount(10)">$10</button>
+                    <button class="amount-btn" onclick="setAmount(50)">$50</button>
+                    <button class="amount-btn" onclick="setAmount(100)">$100</button>
+                    <button class="amount-btn" onclick="setMaxAmount()">Max</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" data-lang="withdrawal.usdtAddress">USDT 주소 (BNB Smart Chain)</label>
+                <input
+                    type="text"
+                    class="form-input"
+                    id="usdtAddress"
+                    placeholder="0x..."
+                    readonly
+                >
+                <div class="form-hint" data-lang="withdrawal.usdtAddressNote">프로필 수정에서 변경할 수 있습니다</div>
+            </div>
+
+            <div class="alert alert-info">
+                <div class="alert-title" data-lang="withdrawal.processingInfo">📋 처리 정보</div>
+                <div class="alert-text" data-lang="withdrawal.processingText">
+                    출금 요청은 영업일 기준 24-48시간 이내에 처리됩니다. 승인되면 확인 이메일을 받으실 수 있습니다.
+                </div>
+            </div>
+
+            <button class="btn btn-primary" id="submitBtn" onclick="submitWithdrawal()" data-lang="withdrawal.submitRequest">
+                출금 신청
+            </button>
+        </div>
+
+        <!-- 출금 규칙 안내 -->
+        <div class="rules-section">
+            <div class="rules-title" data-lang="withdrawal.rulesTitle">📖 출금 규칙</div>
+            <ul class="rules-list">
+                <li data-lang="withdrawal.ruleMinimum">최소 출금 금액: $10 USD</li>
+                <li data-lang="withdrawal.ruleWeekly">주간 출금 제한: 주 1회</li>
+                <li data-lang="withdrawal.rulePayment">결제 방식: USDT (BNB Smart Chain)</li>
+                <li data-lang="withdrawal.ruleProcessing">처리 시간: 영업일 기준 24-48시간</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Popup Menu 스크립트 -->
+    <script src="popup-menu.js"></script>
+    <script>
+        // 신경망 노드 생성
+        function createNeuralNodes() {
+            const container = document.getElementById('neuralConnections');
+            const nodeCount = 20;
+
+            for (let i = 0; i < nodeCount; i++) {
+                const node = document.createElement('div');
+                node.className = 'neural-node';
+                node.style.left = Math.random() * 100 + '%';
+                node.style.top = Math.random() * 100 + '%';
+                node.style.animationDelay = Math.random() * 2 + 's';
+                container.appendChild(node);
+            }
+        }
+
+        // 전역 사용자 데이터 저장 (언어 변경 시 사용)
+        let currentUserData = null;
+
+        // 언어 변경 시 출금 상태 업데이트
+        window.addEventListener('languageChanged', () => {
+            if (currentUserData) {
+                updateProgressBar(currentUserData.balance, currentUserData.package);
+                checkWithdrawalEligibility(currentUserData);
+            }
+        });
+
+        // 팝업 메뉴 및 언어 초기화
+        document.addEventListener('DOMContentLoaded', () => {
+            createNeuralNodes();
+
+            const homeButton = document.getElementById('homeButton');
+            if (homeButton && typeof NeuralPopupMenu !== 'undefined') {
+                NeuralPopupMenu.init(homeButton);
+            }
+
+            loadUserData();
+        });
+
+        // 사용자 데이터 로드
+        async function loadUserData() {
+            console.log('🚀 withdrawal.html - loadUserData started');
+
+            try {
+                const sessionToken = localStorage.getItem('neural_token');
+                if (!sessionToken) {
+                    alert('로그인이 필요합니다.');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                console.log('📡 Fetching withdrawal balance...');
+                const response = await fetch(`api/withdrawal/balance.php?session_token=${sessionToken}`);
+                console.log('📥 Response status:', response.status);
+
+                const result = await response.json();
+                console.log('📦 Full API Response:', result);
+
+                if (result.debug) {
+                    console.log('🔍 DEBUG INFO:', result.debug);
+                }
+
+                if (!result.success) {
+                    console.error('API Error:', result);
+                    alert(result.message || '잔액 조회 실패');
+                    if (result.error) {
+                        console.error('Error details:', result.error);
+                    }
+                    if (result.trace) {
+                        console.error('Stack trace:', result.trace);
+                    }
+                    return;
+                }
+
+                const data = result.data;
+                console.log('💰 Balance data:', data);
+                const userData = {
+                    balance: data.current_balance,
+                    totalEarned: data.total_earned,
+                    package: data.package_id,
+                    usdtAddress: data.usdt_address,
+                    lastWithdrawal: data.last_withdrawal
+                };
+
+                // 전역 변수에 저장 (언어 변경 시 사용)
+                currentUserData = userData;
+
+                // 현재 잔액 표시
+                document.getElementById('currentBalance').textContent = '$' + userData.balance.toFixed(2);
+
+                // USDT 주소 표시
+                document.getElementById('usdtAddress').value = userData.usdtAddress || '';
+
+                // 프로그레스 바 표시
+                updateProgressBar(userData.balance, userData.package);
+
+                // 출금 가능 여부 확인
+                checkWithdrawalEligibility(userData);
+
+            } catch (error) {
+                console.error('Load user data error:', error);
+                alert('데이터 로드 중 오류가 발생했습니다.');
+            }
+        }
+
+        // 프로그레스 바 업데이트
+        function updateProgressBar(balance, packageId) {
+            const container = document.getElementById('progressContainer');
+            const indicator = document.getElementById('progressIndicator');
+            const tooltip = document.getElementById('progressTooltip');
+            const middleLabel = document.getElementById('progressMiddleLabel');
+            const endLabel = document.getElementById('progressEndLabel');
+
+            if (!packageId || (packageId !== 1 && packageId !== 2)) {
+                container.style.display = 'none';
+                return;
+            }
+
+            container.style.display = 'block';
+
+            let safeZoneEnd, blockedZoneEnd, maxRange;
+
+            if (packageId === 1) { // PKG_50 = product_id 1
+                safeZoneEnd = 100;
+                blockedZoneEnd = 150;
+                maxRange = 150;
+                middleLabel.textContent = '$100';
+                endLabel.textContent = '$150';
+            } else { // PKG_100 = product_id 2
+                safeZoneEnd = 200;
+                blockedZoneEnd = 300;
+                maxRange = 300;
+                middleLabel.textContent = '$200';
+                endLabel.textContent = '$300';
+            }
+
+            // 현재 위치 계산 (0-150% 범위로 매핑)
+            let position = (balance / maxRange) * 100;
+
+            // 최대 150%까지만 표시
+            position = Math.min(position, 100);
+
+            // 인디케이터 위치 설정
+            indicator.style.left = position + '%';
+
+            // 툴팁 업데이트
+            tooltip.textContent = '$' + balance.toFixed(2);
+
+            // 구간별 색상 변경
+            if (balance < safeZoneEnd) {
+                // 안전 구간
+                tooltip.style.color = '#00ff88';
+                tooltip.style.borderColor = '#00ff88';
+            } else if (balance >= safeZoneEnd && balance < blockedZoneEnd) {
+                // 위험 구간 (아바타 존)
+                tooltip.style.color = '#ff4444';
+                tooltip.style.borderColor = '#ff4444';
+            } else {
+                // 아바타 구매 후
+                tooltip.style.color = '#ffff00';
+                tooltip.style.borderColor = '#ffff00';
+            }
+        }
+
+        // 출금 가능 여부 확인
+        function checkWithdrawalEligibility(userData) {
+            const balance = userData.balance;
+            const packageId = userData.package;
+            const today = new Date();
+
+            // lastWithdrawal이 null이 아닐 때만 날짜 계산
+            let daysSinceLastWithdrawal = 999; // 기본값: 충분히 큰 숫자 (제한 없음)
+            if (userData.lastWithdrawal) {
+                const lastWithdrawal = new Date(userData.lastWithdrawal);
+                daysSinceLastWithdrawal = Math.floor((today - lastWithdrawal) / (1000 * 60 * 60 * 24));
+            }
+
+            let canWithdraw = true;
+            let maxWithdrawable = balance;
+            let warningMessage = '';
+
+            const getLangText = (key) => {
+                if (window.langManager && window.langManager.translate) {
+                    const [section, subkey] = key.split('.');
+                    return window.langManager.translate(section, subkey);
+                }
+                return key;
+            };
+
+            // 주 1회 제한 체크 (7일)
+            if (daysSinceLastWithdrawal < 7) {
+                canWithdraw = false;
+                warningMessage = getLangText('withdrawal.warningWeeklyLimit').replace('{days}', 7 - daysSinceLastWithdrawal);
+            }
+
+            // 최소 금액 체크
+            if (balance < 10) {
+                canWithdraw = false;
+                warningMessage = getLangText('withdrawal.warningMinBalance');
+            }
+
+            // 패키지별 출금 가능 금액 계산 (새로운 정책)
+            // 아바타 구간에 있어도 이전 사이클에서 번 금액은 출금 가능
+            if (packageId === 1) { // PKG_50 = product_id 1
+                const cycleAmount = 150; // $150 사이클
+                const safeZoneEnd = 100; // $100까지 안전 구간
+
+                // 현재 사이클 시작점 계산
+                const currentCycle = Math.floor(balance / cycleAmount);
+                const cycleStart = currentCycle * cycleAmount;
+
+                // 아바타 구간에 있는지 체크 ($100-$150, $250-$300, ...)
+                const balanceInCycle = balance - cycleStart;
+                if (balanceInCycle >= safeZoneEnd && balanceInCycle < cycleAmount) {
+                    // 아바타 구간에 있음: 이전 사이클 + 안전구간까지만 출금 가능
+                    maxWithdrawable = cycleStart + safeZoneEnd;
+                    warningMessage = `현재 잔액($${balance.toFixed(2)})이 아바타 구간($${(cycleStart + safeZoneEnd).toFixed(2)}-$${(cycleStart + cycleAmount).toFixed(2)})에 있습니다. 최대 출금 가능: $${maxWithdrawable.toFixed(2)}`;
+                }
+
+            } else if (packageId === 2) { // PKG_100 = product_id 2
+                const cycleAmount = 300; // $300 사이클
+                const safeZoneEnd = 200; // $200까지 안전 구간
+
+                // 현재 사이클 시작점 계산
+                const currentCycle = Math.floor(balance / cycleAmount);
+                const cycleStart = currentCycle * cycleAmount;
+
+                // 아바타 구간에 있는지 체크 ($200-$300, $500-$600, ...)
+                const balanceInCycle = balance - cycleStart;
+                if (balanceInCycle >= safeZoneEnd && balanceInCycle < cycleAmount) {
+                    // 아바타 구간에 있음: 이전 사이클 + 안전구간까지만 출금 가능
+                    maxWithdrawable = cycleStart + safeZoneEnd;
+                    warningMessage = `현재 잔액($${balance.toFixed(2)})이 아바타 구간($${(cycleStart + safeZoneEnd).toFixed(2)}-$${(cycleStart + cycleAmount).toFixed(2)})에 있습니다. 최대 출금 가능: $${maxWithdrawable.toFixed(2)}`;
+                }
+            }
+
+            // UI 업데이트
+            const submitBtn = document.getElementById('submitBtn');
+            const warningAlert = document.getElementById('warningAlert');
+            const warningText = document.getElementById('warningText');
+            const maxWithdrawableEl = document.getElementById('maxWithdrawable');
+
+            if (canWithdraw) {
+                submitBtn.disabled = false;
+                maxWithdrawableEl.textContent = '$' + maxWithdrawable.toFixed(2);
+
+                if (warningMessage) {
+                    warningAlert.style.display = 'block';
+                    warningText.textContent = warningMessage;
+                } else {
+                    warningAlert.style.display = 'none';
+                }
+            } else {
+                submitBtn.disabled = true;
+                warningAlert.style.display = 'block';
+                warningText.textContent = warningMessage;
+                maxWithdrawableEl.textContent = '$0.00';
+            }
+        }
+
+        // 금액 설정 (누적)
+        function setAmount(amount) {
+            const inputEl = document.getElementById('withdrawalAmount');
+            const currentAmount = parseFloat(inputEl.value) || 0;
+            const newAmount = currentAmount + amount;
+
+            // 최대 출금 가능 금액 체크
+            const maxWithdrawable = parseFloat(document.getElementById('maxWithdrawable').textContent.replace('$', ''));
+
+            if (newAmount > maxWithdrawable) {
+                alert(`최대 출금 가능 금액($${maxWithdrawable.toFixed(2)})을 초과할 수 없습니다.`);
+                return;
+            }
+
+            inputEl.value = newAmount.toFixed(2);
+        }
+
+        function setMaxAmount() {
+            const maxText = document.getElementById('maxWithdrawable').textContent;
+            const maxAmount = parseFloat(maxText.replace('$', ''));
+            document.getElementById('withdrawalAmount').value = maxAmount.toFixed(2);
+        }
+
+        // 출금 신청
+        async function submitWithdrawal() {
+            const amount = parseFloat(document.getElementById('withdrawalAmount').value);
+            const usdtAddress = document.getElementById('usdtAddress').value;
+            const maxWithdrawable = parseFloat(document.getElementById('maxWithdrawable').textContent.replace('$', ''));
+
+            // 유효성 검사
+            if (!amount || amount < 10) {
+                alert('Please enter a valid amount (minimum $10)');
+                return;
+            }
+
+            if (amount > maxWithdrawable) {
+                alert(`Amount exceeds maximum withdrawable ($${maxWithdrawable.toFixed(2)})`);
+                return;
+            }
+
+            if (!usdtAddress) {
+                alert('USDT address is required');
+                return;
+            }
+
+            // 확인
+            if (!confirm(`Are you sure you want to withdraw $${amount.toFixed(2)} to ${usdtAddress}?`)) {
+                return;
+            }
+
+            // API 호출
+            try {
+                const sessionToken = localStorage.getItem('neural_token');
+                if (!sessionToken) {
+                    alert('로그인이 필요합니다.');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const response = await fetch('api/withdrawal/request.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        session_token: sessionToken,
+                        amount: amount,
+                        usdt_address: usdtAddress
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('✅ Withdrawal request submitted successfully!\n\nYour request will be processed within 24-48 hours.');
+
+                    // 페이지 새로고침 (잔액 업데이트)
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    alert('❌ ' + (result.message || 'Failed to submit withdrawal request.'));
+                }
+
+            } catch (error) {
+                console.error('Withdrawal error:', error);
+                alert('❌ Failed to submit withdrawal request. Please try again.');
+            }
+        }
+
+    </script>
+    <script src="api-client.js"></script>
+</body>
+</html>

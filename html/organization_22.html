@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>조직도 - We One</title>
+    <script src="../js/auth-check.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #000;
+            color: #fff;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        /* 신경망 배경 */
+        .neural-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background: radial-gradient(ellipse at center, #0a0a1f 0%, #000000 100%);
+        }
+
+        .neural-grid {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(212, 175, 55, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(212, 175, 55, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes gridPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+
+        /* 헤더 */
+        .floating-nav {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .page-title-main {
+            font-size: 36px;
+            font-weight: 300;
+            letter-spacing: 8px;
+            background: linear-gradient(45deg, #d4af37, #ffd700, #ffed4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: titleGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        .back-button {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(212, 175, 55, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: #d4af37;
+        }
+
+        .back-button:hover {
+            background: rgba(212, 175, 55, 0.2);
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.5);
+            transform: translateY(-2px) scale(1.05);
+        }
+
+        /* 컨테이너 */
+        .container {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            padding: 100px 20px;
+        }
+
+        .content {
+            max-width: 100%;
+            width: 100%;
+        }
+
+        /* 조직도 */
+        .org-chart {
+            position: relative;
+            margin: 0 auto;
+            padding: 60px 40px 100px 40px;
+            min-width: 100%;
+        }
+
+        /* 조직도 카드 - AiBB 스타일 */
+        .org-card {
+            position: absolute;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.05), rgba(255, 215, 0, 0.05));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 10px;
+            padding: 8px;
+            width: 140px;
+            transition: all 0.4s;
+            animation: cardFadeIn 0.6s ease-out backwards;
+            z-index: 20;
+        }
+
+        @keyframes cardFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .org-card:hover {
+            box-shadow: 0 20px 60px rgba(212, 175, 55, 0.3);
+            transform: translateY(-5px);
+            border-color: rgba(212, 175, 55, 0.6);
+        }
+
+        .org-header {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+
+        .org-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #d4af37, #ffd700);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            flex-shrink: 0;
+            transition: all 0.3s;
+        }
+
+        .org-name {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            color: #fff;
+            text-align: left;
+        }
+
+        .org-info {
+            font-size: 9px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        .org-stats {
+            margin-top: 5px;
+            padding-top: 5px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .org-stat-item {
+            font-size: 9px;
+            color: rgba(212, 175, 55, 0.9);
+            background: rgba(212, 175, 55, 0.1);
+            padding: 3px 6px;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        /* SVG 연결선 - AiBB 스타일 */
+        .org-connections {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+            overflow: visible;
+        }
+
+        .org-connection-line {
+            stroke: rgba(212, 175, 55, 0.25);
+            stroke-width: 1;
+            fill: none;
+        }
+
+        /* 로딩 */
+        .loading {
+            text-align: center;
+            padding: 100px 20px;
+            color: #d4af37;
+            font-size: 18px;
+        }
+
+        /* 반응형 */
+        @media (max-width: 768px) {
+            .page-title-main {
+                font-size: 24px;
+                letter-spacing: 4px;
+            }
+
+            .org-card {
+                min-width: 120px;
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 배경 -->
+    <div class="neural-background">
+        <div class="neural-grid"></div>
+    </div>
+
+    <!-- 헤더 -->
+    <nav class="floating-nav">
+        <a href="dashboard.html" class="back-button">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+        </a>
+
+        <span class="page-title-main">조직도</span>
+
+        <div style="width: 50px;"></div>
+    </nav>
+
+    <!-- 조직도 -->
+    <div class="container">
+        <div class="content">
+            <div id="orgChart" class="org-chart">
+                <div class="loading">조직도를 불러오는 중...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 조직도 로드
+        async function loadOrganizationTree() {
+            const token = localStorage.getItem('neural_token');
+
+            if (!token) {
+                alert('로그인이 필요합니다.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const response = await fetch('../api/organization/get-tree.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ session_token: token })
+                });
+
+                const result = await response.json();
+                console.log('조직도 데이터:', result);
+
+                if (result.success && result.data) {
+                    renderOrganizationChart(result.data);
+                } else {
+                    document.getElementById('orgChart').innerHTML =
+                        '<div class="loading">' + (result.message || '조직도를 불러올 수 없습니다.') + '</div>';
+                }
+            } catch (error) {
+                console.error('조직도 로드 오류:', error);
+                document.getElementById('orgChart').innerHTML =
+                    '<div class="loading">네트워크 오류가 발생했습니다.</div>';
+            }
+        }
+
+        // 조직도 렌더링 (AiBB 스타일 레이아웃)
+        function renderOrganizationChart(data) {
+            const orgChart = document.getElementById('orgChart');
+            orgChart.innerHTML = '';
+
+            if (!data) {
+                orgChart.innerHTML = '<div class="loading">데이터가 없습니다.</div>';
+                return;
+            }
+
+            // 레이아웃 설정 (AiBB와 동일)
+            const nodeWidth = 140;
+            const nodeHeight = 110;
+            const horizontalGap = 20;
+            const verticalGap = 160;
+
+            const nodePositions = new Map();
+            const connections = [];
+            let nextX = 0;
+
+            // 좌표 계산 (후위 순회)
+            function calculatePositions(node, depth = 0, parent = null) {
+                if (parent) {
+                    connections.push({ parent, child: node });
+                }
+
+                if (node.children && node.children.length > 0) {
+                    node.children.forEach(child => {
+                        calculatePositions(child, depth + 1, node);
+                    });
+
+                    const childPositions = node.children.map(child => nodePositions.get(child.id).x);
+                    const x = (Math.min(...childPositions) + Math.max(...childPositions)) / 2;
+                    const y = depth * verticalGap;
+
+                    nodePositions.set(node.id, { x, y, node });
+                } else {
+                    const x = nextX;
+                    nextX += nodeWidth + horizontalGap;
+                    const y = depth * verticalGap;
+
+                    nodePositions.set(node.id, { x, y, node });
+                }
+            }
+
+            calculatePositions(data, 0);
+
+            // 중앙 정렬 계산
+            const containerWidth = orgChart.parentElement.clientWidth;
+            const allX = Array.from(nodePositions.values()).map(p => p.x);
+            const minX = Math.min(...allX);
+            const maxX = Math.max(...allX);
+            const treeWidth = maxX - minX + nodeWidth;
+            const offsetX = (containerWidth - treeWidth) / 2 - minX;
+
+            // 노드 렌더링
+            nodePositions.forEach((pos, nodeId) => {
+                const node = pos.node;
+                const depth = Math.round(pos.y / verticalGap);
+
+                const card = document.createElement('div');
+                card.className = 'org-card';
+                card.style.left = (pos.x + offsetX) + 'px';
+                card.style.top = pos.y + 'px';
+
+                const emoji = depth === 0 ? '👑' : '👤';
+                const joinDate = node.joined_date ? new Date(node.joined_date).toLocaleDateString('ko-KR') : '-';
+
+                card.innerHTML = `
+                    <div class="org-header">
+                        <div class="org-avatar">${emoji}</div>
+                        <div class="org-name">${node.user_id || 'Unknown'}</div>
+                    </div>
+                    <div class="org-info">${joinDate}</div>
+                    <div class="org-stats">
+                        <div class="org-stat-item">직추천: ${node.direct_referrals_count || 0}명</div>
+                        <div class="org-stat-item">매출: $${(node.total_sales || 0).toFixed(0)}</div>
+                    </div>
+                `;
+
+                orgChart.appendChild(card);
+            });
+
+            // SVG 연결선
+            if (connections.length > 0) {
+                const maxY = Math.max(...Array.from(nodePositions.values()).map(p => p.y));
+                const svgWidth = Math.max(maxX + offsetX + nodeWidth + 100, window.innerWidth);
+                const svgHeight = maxY + nodeHeight + 200;
+
+                const svgNS = "http://www.w3.org/2000/svg";
+                const svg = document.createElementNS(svgNS, "svg");
+                svg.setAttribute("class", "org-connections");
+                svg.setAttribute("width", svgWidth);
+                svg.setAttribute("height", svgHeight);
+                svg.style.position = 'absolute';
+                svg.style.top = '0';
+                svg.style.left = '0';
+
+                connections.forEach(conn => {
+                    const parentPos = nodePositions.get(conn.parent.id);
+                    const childPos = nodePositions.get(conn.child.id);
+
+                    const parentX = parentPos.x + offsetX + nodeWidth / 2;
+                    const parentY = parentPos.y + nodeHeight + 8;
+                    const childX = childPos.x + offsetX + nodeWidth / 2;
+                    const childY = childPos.y - 2;
+
+                    // 부드러운 곡선 연결
+                    const path = document.createElementNS(svgNS, "path");
+                    const midY = (parentY + childY) / 2;
+                    const pathD = `M ${parentX} ${parentY} C ${parentX} ${midY}, ${childX} ${midY}, ${childX} ${childY}`;
+                    path.setAttribute("d", pathD);
+                    path.setAttribute("class", "org-connection-line");
+
+                    svg.appendChild(path);
+                });
+
+                orgChart.insertBefore(svg, orgChart.firstChild);
+            }
+
+            // 차트 크기 설정
+            const maxY = Math.max(...Array.from(nodePositions.values()).map(p => p.y));
+            const rightMost = maxX + offsetX + nodeWidth;
+            orgChart.style.minHeight = (maxY + nodeHeight + 200) + 'px';
+            orgChart.style.minWidth = Math.max(rightMost + 100, window.innerWidth) + 'px';
+
+            console.log('렌더링 완료');
+        }
+
+        // 초기화
+        window.addEventListener('DOMContentLoaded', () => {
+            loadOrganizationTree();
+        });
+    </script>
+</body>
+</html>

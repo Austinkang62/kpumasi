@@ -1,0 +1,548 @@
+/* 회원 정보 모달 스타일 */
+
+.user-profile-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+.user-profile-modal.active {
+    display: flex;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-content {
+    background: linear-gradient(135deg, rgba(0, 20, 40, 0.95), rgba(20, 0, 40, 0.95));
+    border: 2px solid rgba(0, 255, 255, 0.3);
+    border-radius: 20px;
+    padding: 20px;
+    max-width: 380px;
+    width: 90%;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0, 255, 255, 0.3);
+    animation: modalSlideIn 0.4s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 0, 255, 0.2);
+    border: 1px solid rgba(255, 0, 255, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    color: #ff00ff;
+    font-size: 20px;
+}
+
+.modal-close:hover {
+    background: rgba(255, 0, 255, 0.4);
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.6);
+    transform: rotate(90deg);
+}
+
+.modal-header {
+    text-align: center;
+    margin-bottom: 15px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid rgba(0, 255, 255, 0.2);
+}
+
+.modal-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin: 0 auto 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    background: linear-gradient(135deg, #00ffff, #ff00ff);
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+    animation: avatarPulse 2s ease-in-out infinite;
+}
+
+@keyframes avatarPulse {
+    0%, 100% {
+        box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 50px rgba(0, 255, 255, 0.8), 0 0 70px rgba(255, 0, 255, 0.4);
+    }
+}
+
+/* 매출액에 따른 모달 아바타 색상 */
+.modal-avatar.no-sales {
+    background: linear-gradient(135deg, rgba(20, 20, 20, 0.3), rgba(30, 30, 30, 0.3));
+    border: 2px solid rgba(80, 80, 80, 0.5);
+}
+
+.modal-avatar.has-avatar {
+    background: linear-gradient(135deg, #00ffff, #0099ff);
+    border: 2px solid #00ffff;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+.modal-avatar.sales-50 {
+    background: linear-gradient(135deg, #ffdc00, #f0c800);
+    border: 2px solid #ffdc00;
+    box-shadow: 0 0 10px rgba(255, 220, 0, 0.5);
+}
+
+.modal-avatar.sales-100 {
+    background: linear-gradient(135deg, #ff6464, #dc5050);
+    border: 2px solid #ff6464;
+    box-shadow: 0 0 15px rgba(255, 100, 100, 0.6);
+}
+
+.modal-user-id {
+    font-size: 20px;
+    font-weight: 600;
+    color: #00ffff;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+}
+
+.modal-user-level {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+    letter-spacing: 1px;
+}
+
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.profile-section {
+    background: rgba(0, 255, 255, 0.05);
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 12px;
+}
+
+.profile-section-title {
+    font-size: 12px;
+    color: rgba(0, 255, 255, 0.8);
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.profile-section-title::before {
+    content: '';
+    width: 4px;
+    height: 4px;
+    background: #00ffff;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #00ffff;
+}
+
+.profile-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.profile-item:last-child {
+    border-bottom: none;
+}
+
+.profile-label {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 0.5px;
+}
+
+.profile-value {
+    font-size: 14px;
+    color: #fff;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.profile-value.highlight {
+    color: #00ffff;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+.profile-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(255, 0, 255, 0.2));
+    border: 1px solid rgba(0, 255, 255, 0.4);
+    border-radius: 12px;
+    font-size: 11px;
+    color: #00ffff;
+    letter-spacing: 1px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+}
+
+.modal-action-btn {
+    flex: 1;
+    min-width: 90px;
+    padding: 10px 6px;
+    background: linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(255, 0, 255, 0.1));
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    border-radius: 10px;
+    color: #00ffff;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.modal-action-btn:hover {
+    background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(255, 0, 255, 0.2));
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+    transform: translateY(-2px);
+}
+
+.modal-action-btn:active {
+    transform: translateY(0);
+}
+
+/* 관리자 삭제 버튼 컨테이너 */
+.admin-delete-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+/* 삭제 버튼 공통 스타일 */
+.modal-delete-btn {
+    flex: 1;
+    padding: 14px 12px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    letter-spacing: 0.5px;
+    border: 2px solid;
+}
+
+/* 매출 삭제 버튼 (주황색) */
+.modal-delete-btn.sales {
+    background: linear-gradient(135deg, rgba(255, 150, 0, 0.15), rgba(255, 100, 0, 0.15));
+    border-color: rgba(255, 150, 0, 0.5);
+    color: #ff9944;
+}
+
+.modal-delete-btn.sales:hover {
+    background: linear-gradient(135deg, rgba(255, 150, 0, 0.25), rgba(255, 100, 0, 0.25));
+    border-color: #ff9900;
+    box-shadow: 0 0 25px rgba(255, 150, 0, 0.4);
+    transform: translateY(-2px);
+    color: #ffaa66;
+}
+
+/* 회원 삭제 버튼 (빨간색) */
+.modal-delete-btn.user {
+    background: linear-gradient(135deg, rgba(255, 0, 0, 0.15), rgba(200, 0, 0, 0.15));
+    border-color: rgba(255, 0, 0, 0.5);
+    color: #ff4444;
+}
+
+.modal-delete-btn.user:hover {
+    background: linear-gradient(135deg, rgba(255, 0, 0, 0.25), rgba(200, 0, 0, 0.25));
+    border-color: #ff0000;
+    box-shadow: 0 0 25px rgba(255, 0, 0, 0.4);
+    transform: translateY(-2px);
+    color: #ff6666;
+}
+
+.modal-delete-btn:active {
+    transform: translateY(0);
+}
+
+.modal-delete-btn span:first-child {
+    font-size: 18px;
+}
+
+/* 반응형 - 모바일에서는 세로 배치 */
+@media (max-width: 480px) {
+    .admin-delete-buttons {
+        flex-direction: column;
+    }
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+    .modal-content {
+        padding: 18px 12px;
+        max-width: 340px;
+    }
+
+    .modal-avatar {
+        width: 50px;
+        height: 50px;
+        font-size: 25px;
+    }
+
+    .modal-user-id {
+        font-size: 18px;
+    }
+
+    .modal-actions {
+        flex-direction: column;
+    }
+
+    .modal-action-btn {
+        width: 100%;
+    }
+}
+
+/* 다이아몬드 마커 (프로그레스 바 위) */
+.diamond-marker {
+    position: absolute;
+    top: -22px;
+    left: 0;
+    transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 10;
+    pointer-events: none;
+}
+
+.diamond-shape {
+    position: relative;
+    width: 24px;
+    height: 28px;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, rgba(0, 255, 255, 0.3), rgba(0, 200, 255, 0.5));
+    border: 2px solid #00ffff;
+    clip-path: polygon(0% 0%, 100% 0%, 100% 60%, 50% 100%, 0% 60%);
+    box-shadow:
+        0 0 20px rgba(0, 255, 255, 0.8),
+        0 0 30px rgba(0, 255, 255, 0.4),
+        inset 0 0 10px rgba(0, 255, 255, 0.3);
+    animation: diamondFloat 2s ease-in-out infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.diamond-shape::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(
+        45deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+    );
+    animation: diamondShine 2s linear infinite;
+    border-radius: inherit;
+}
+
+.diamond-number {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 11px;
+    font-weight: 700;
+    color: #00ffff;
+    text-shadow: 0 0 8px rgba(0, 255, 255, 0.8);
+    z-index: 1;
+}
+
+@keyframes diamondFloat {
+    0%, 100% {
+        transform: translateX(-50%) translateY(0);
+        box-shadow:
+            0 0 20px rgba(0, 255, 255, 0.8),
+            0 0 30px rgba(0, 255, 255, 0.4),
+            inset 0 0 10px rgba(0, 255, 255, 0.3);
+    }
+    50% {
+        transform: translateX(-50%) translateY(-3px);
+        box-shadow:
+            0 0 30px rgba(0, 255, 255, 1),
+            0 0 50px rgba(0, 255, 255, 0.6),
+            inset 0 0 15px rgba(0, 255, 255, 0.5);
+    }
+}
+
+@keyframes diamondShine {
+    0% {
+        transform: rotate(0deg);
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        transform: rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* 아바타 구매 알림 오버레이 */
+.avatar-purchase-alert {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 0, 255, 0.95), rgba(138, 43, 226, 0.95));
+    border-radius: 12px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    animation: alertSlideIn 0.5s ease-out;
+}
+
+.alert-glow {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+    animation: glowRotate 4s linear infinite;
+}
+
+.alert-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 20px;
+}
+
+.alert-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+    animation: iconBounce 1s ease-in-out infinite;
+}
+
+.alert-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 10px;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+}
+
+.alert-message {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.alert-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #fff, #f0f0f0);
+    color: #8b2bda;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 20px rgba(255, 255, 255, 0.4);
+}
+
+.alert-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 30px rgba(255, 255, 255, 0.6);
+    background: linear-gradient(135deg, #ffffff, #ffd700);
+}
+
+.alert-button:active {
+    transform: translateY(0);
+}
+
+@keyframes alertSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes glowRotate {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes iconBounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}

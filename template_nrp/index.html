@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Template NRP - Neural Referral Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #000;
+            color: #fff;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* 신경망 배경 */
+        .neural-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background: radial-gradient(ellipse at center, #0a0a1f 0%, #000000 100%);
+        }
+
+        .neural-grid {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes gridPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+
+        /* 펄스 노드 */
+        .pulse-node {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #00ffff;
+            box-shadow: 0 0 20px #00ffff;
+            animation: nodePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes nodePulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(2); opacity: 0.5; }
+        }
+
+        .neural-connections {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* 컨테이너 */
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* 헤더 */
+        .header {
+            text-align: center;
+            padding: 100px 20px 60px;
+        }
+
+        .logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+            position: relative;
+        }
+
+        .logo-ring {
+            position: absolute;
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: ringRotate 4s linear infinite;
+        }
+
+        .logo-ring:nth-child(1) {
+            width: 100%;
+            height: 100%;
+            border-top-color: #00ffff;
+        }
+
+        .logo-ring:nth-child(2) {
+            width: 75%;
+            height: 75%;
+            top: 12.5%;
+            left: 12.5%;
+            border-right-color: #ff00ff;
+            animation-duration: 3s;
+            animation-direction: reverse;
+        }
+
+        .logo-ring:nth-child(3) {
+            width: 50%;
+            height: 50%;
+            top: 25%;
+            left: 25%;
+            border-bottom-color: #ffff00;
+            animation-duration: 5s;
+        }
+
+        .logo-core {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, #00ffff 0%, transparent 70%);
+            border-radius: 50%;
+            animation: corePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes ringRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes corePulse {
+            0%, 100% { box-shadow: 0 0 20px #00ffff; }
+            50% { box-shadow: 0 0 40px #00ffff, 0 0 60px #00ffff; }
+        }
+
+        .main-title {
+            font-size: 72px;
+            font-weight: 300;
+            letter-spacing: 12px;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #00ffff, #ff00ff, #ffff00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: titleGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        .subtitle {
+            font-size: 24px;
+            color: rgba(255, 255, 255, 0.6);
+            letter-spacing: 4px;
+            margin-bottom: 40px;
+        }
+
+        .version-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(255, 0, 255, 0.1));
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 20px;
+            color: #00ffff;
+            font-size: 14px;
+            letter-spacing: 2px;
+        }
+
+        /* 통계 카드 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin: 60px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.05), rgba(255, 0, 255, 0.05));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.4s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(0, 255, 255, 0.5);
+            box-shadow: 0 20px 60px rgba(0, 255, 255, 0.2);
+        }
+
+        .stat-number {
+            font-size: 48px;
+            font-weight: 700;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* 섹션 */
+        .section {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            font-size: 48px;
+            font-weight: 300;
+            letter-spacing: 6px;
+            text-align: center;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 60px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* 기능 카드 */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.05), rgba(255, 0, 255, 0.05));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 30px;
+            padding: 40px;
+            transition: all 0.4s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #00ffff, #ff00ff);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(0, 255, 255, 0.5);
+            box-shadow: 0 30px 80px rgba(0, 255, 255, 0.3);
+        }
+
+        .feature-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        .feature-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #00ffff;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+        }
+
+        .feature-desc {
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            padding: 8px 0;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .feature-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #00ff88;
+            font-weight: bold;
+        }
+
+        /* 디렉토리 구조 */
+        .directory-tree {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+        }
+
+        .directory-tree pre {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.8;
+        }
+
+        .dir-folder {
+            color: #00ffff;
+            font-weight: 600;
+        }
+
+        .dir-file {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .dir-comment {
+            color: rgba(0, 255, 136, 0.6);
+        }
+
+        /* CTA 버튼 */
+        .cta-section {
+            text-align: center;
+            padding: 80px 20px;
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.05), rgba(255, 0, 255, 0.05));
+            border-radius: 30px;
+            margin: 40px 0;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+
+        .btn {
+            padding: 18px 40px;
+            border-radius: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: inline-block;
+            text-transform: uppercase;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00ffff, #0099ff);
+            color: #000;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 255, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #00ffff;
+            border: 2px solid #00ffff;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 255, 255, 0.1);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 255, 255, 0.2);
+        }
+
+        /* 푸터 */
+        .footer {
+            text-align: center;
+            padding: 60px 20px;
+            border-top: 1px solid rgba(0, 255, 255, 0.1);
+        }
+
+        .footer-text {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 14px;
+            letter-spacing: 2px;
+        }
+
+        .pulse-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00ffff;
+            display: inline-block;
+            margin: 0 10px;
+            animation: pulseIndicator 2s ease-in-out infinite;
+        }
+
+        @keyframes pulseIndicator {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.5; }
+        }
+
+        /* 코드 블록 */
+        .code-block {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            overflow-x: auto;
+        }
+
+        .code-block pre {
+            color: #00ffff;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .code-comment {
+            color: rgba(0, 255, 136, 0.6);
+        }
+
+        /* 탭 네비게이션 */
+        .tab-nav {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 12px 30px;
+            background: rgba(0, 255, 255, 0.05);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 10px;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+
+        .tab-btn:hover,
+        .tab-btn.active {
+            background: rgba(0, 255, 255, 0.2);
+            border-color: #00ffff;
+            color: #00ffff;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 반응형 */
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 48px;
+                letter-spacing: 6px;
+            }
+
+            .subtitle {
+                font-size: 18px;
+            }
+
+            .section-title {
+                font-size: 36px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+
+        /* 스크롤 다운 인디케이터 */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+        }
+
+        .scroll-indicator svg {
+            width: 30px;
+            height: 30px;
+            stroke: #00ffff;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 신경망 배경 -->
+    <div class="neural-background">
+        <div class="neural-grid"></div>
+    </div>
+    <div class="neural-connections" id="neuralConnections"></div>
+
+    <!-- 헤더 -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <div class="logo-ring"></div>
+                <div class="logo-ring"></div>
+                <div class="logo-ring"></div>
+                <div class="logo-core"></div>
+            </div>
+            <h1 class="main-title">TEMPLATE NRP</h1>
+            <p class="subtitle">Neural Referral Platform</p>
+            <div class="version-badge">VERSION 1.0</div>
+        </div>
+        <div class="scroll-indicator">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                <path d="M12 5v14M19 12l-7 7-7-7"/>
+            </svg>
+        </div>
+    </header>
+
+    <!-- 통계 -->
+    <section class="container">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">42</div>
+                <div class="stat-label">Template Files</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">692KB</div>
+                <div class="stat-label">Total Size</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">8</div>
+                <div class="stat-label">Core Systems</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">15</div>
+                <div class="stat-label">Bonus Levels</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 소개 섹션 -->
+    <section class="section container">
+        <h2 class="section-title">프로젝트 개요</h2>
+        <p class="section-subtitle">
+            Binary Tree 기반 MLM(Multi-Level Marketing) 시스템의 완벽한 템플릿입니다.<br>
+            조직도, 구매, 출금, 보너스, 아바타 시스템이 모두 구현되어 있습니다.
+        </p>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🌳</div>
+                <h3 class="feature-title">Binary Tree System</h3>
+                <p class="feature-desc">이진 트리 구조로 조직을 관리하며, BFS 알고리즘으로 자동 배치됩니다.</p>
+                <ul class="feature-list">
+                    <li>BFS 자동 배치 알고리즘</li>
+                    <li>15단계 레그 시스템</li>
+                    <li>실시간 조직도 시각화</li>
+                    <li>매출 상태별 컬러 표시</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📦</div>
+                <h3 class="feature-title">Package System</h3>
+                <p class="feature-desc">$50과 $100 두 가지 패키지를 제공하며, 자동 업그레이드가 지원됩니다.</p>
+                <ul class="feature-list">
+                    <li>$50 기본 패키지</li>
+                    <li>$100 프리미엄 패키지</li>
+                    <li>자동 업그레이드 ($50+$50)</li>
+                    <li>USDT TRC20 결제</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">💰</div>
+                <h3 class="feature-title">15-Level Bonus</h3>
+                <p class="feature-desc">직접 추천 수에 따라 최대 15단계까지 보너스를 받을 수 있습니다.</p>
+                <ul class="feature-list">
+                    <li>1명 추천 → 5단계 보너스</li>
+                    <li>2명 추천 → 10단계 보너스</li>
+                    <li>3명+ 추천 → 15단계 보너스</li>
+                    <li>패키지별 차등 지급</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">💵</div>
+                <h3 class="feature-title">Withdrawal System</h3>
+                <p class="feature-desc">주 1회 출금이 가능하며, 아바타 구간 제한이 적용됩니다.</p>
+                <ul class="feature-list">
+                    <li>주 1회 출금 제한</li>
+                    <li>최소 $10 출금</li>
+                    <li>아바타 구간 출금 제한</li>
+                    <li>USDT BNB Smart Chain</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <h3 class="feature-title">Avatar System</h3>
+                <p class="feature-desc">보너스 포인트로 아바타를 구매하여 조직을 자동 확장합니다.</p>
+                <ul class="feature-list">
+                    <li>$150/$300 배수마다 트리거</li>
+                    <li>$50 회원: 1개씩</li>
+                    <li>$100 회원: 2개씩</li>
+                    <li>BFS 자동 배치</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🔐</div>
+                <h3 class="feature-title">Security & API</h3>
+                <p class="feature-desc">완벽한 보안 시스템과 RESTful API가 구현되어 있습니다.</p>
+                <ul class="feature-list">
+                    <li>토큰 기반 인증</li>
+                    <li>CSRF 보호</li>
+                    <li>SQL Injection 방지</li>
+                    <li>RESTful API 설계</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- 디렉토리 구조 -->
+    <section class="section container">
+        <h2 class="section-title">디렉토리 구조</h2>
+        <p class="section-subtitle">
+            체계적으로 정리된 파일 구조로 쉽게 이해하고 커스터마이징할 수 있습니다.
+        </p>
+
+        <div class="directory-tree">
+<pre><span class="dir-folder">template_nrp/</span>
+├── <span class="dir-file">README.md</span>              <span class="dir-comment"># 프로젝트 전체 개요 (19KB)</span>
+├── <span class="dir-folder">docs/</span>
+│   ├── <span class="dir-file">SYSTEM_DESIGN.md</span>    <span class="dir-comment"># 시스템 설계 문서 (35KB)</span>
+│   └── <span class="dir-file">CONFIG_TEMPLATE.md</span>  <span class="dir-comment"># 설정 가이드 (34KB)</span>
+├── <span class="dir-folder">html/</span>
+│   ├── <span class="dir-file">index.html</span>          <span class="dir-comment"># 메인 페이지</span>
+│   ├── <span class="dir-file">login.html</span>          <span class="dir-comment"># 로그인</span>
+│   ├── <span class="dir-file">signup.html</span>         <span class="dir-comment"># 회원가입</span>
+│   ├── <span class="dir-file">dashboard.html</span>      <span class="dir-comment"># 대시보드</span>
+│   ├── <span class="dir-file">organization.html</span>   <span class="dir-comment"># 조직도 (바이너리 트리)</span>
+│   ├── <span class="dir-file">purchase.html</span>       <span class="dir-comment"># 패키지 구매</span>
+│   ├── <span class="dir-file">withdrawal.html</span>     <span class="dir-comment"># 출금 신청</span>
+│   └── <span class="dir-file">bonus-rules.html</span>    <span class="dir-comment"># 보너스 규칙</span>
+├── <span class="dir-folder">js/</span>
+│   ├── <span class="dir-file">popup-menu.js</span>       <span class="dir-comment"># 통합 팝업 메뉴</span>
+│   ├── <span class="dir-file">organization-modal.js</span> <span class="dir-comment"># 조직도 모달</span>
+│   └── <span class="dir-file">api-client.js</span>       <span class="dir-comment"># API 클라이언트</span>
+├── <span class="dir-folder">css/</span>
+│   ├── <span class="dir-file">organization-modal.css</span>
+│   ├── <span class="dir-file">neural-pulse.css</span>
+│   └── <span class="dir-file">aibb-cosmic.css</span>
+├── <span class="dir-folder">api/</span>
+│   ├── <span class="dir-folder">auth/</span>             <span class="dir-comment"># 인증 (로그인, 회원가입)</span>
+│   ├── <span class="dir-folder">organization/</span>     <span class="dir-comment"># 조직도 API</span>
+│   ├── <span class="dir-folder">sales/</span>            <span class="dir-comment"># 구매/매출 API</span>
+│   ├── <span class="dir-folder">withdrawal/</span>       <span class="dir-comment"># 출금 API</span>
+│   ├── <span class="dir-folder">bonus/</span>            <span class="dir-comment"># 보너스 API</span>
+│   ├── <span class="dir-folder">dashboard/</span>        <span class="dir-comment"># 대시보드 통계</span>
+│   ├── <span class="dir-folder">payment/</span>          <span class="dir-comment"># 결제 검증</span>
+│   └── <span class="dir-folder">user/</span>             <span class="dir-comment"># 사용자 정보</span>
+├── <span class="dir-folder">config/</span>
+│   └── <span class="dir-file">database.php</span>        <span class="dir-comment"># DB 설정</span>
+└── <span class="dir-folder">database/</span>
+    └── <span class="dir-file">schema.sql</span>          <span class="dir-comment"># DB 스키마</span>
+</pre>
+        </div>
+    </section>
+
+    <!-- 설치 가이드 -->
+    <section class="section container">
+        <h2 class="section-title">빠른 시작</h2>
+        <p class="section-subtitle">
+            3단계로 간단하게 시작할 수 있습니다.
+        </p>
+
+        <div class="tab-nav">
+            <button class="tab-btn active" onclick="showTab('install')">설치</button>
+            <button class="tab-btn" onclick="showTab('config')">설정</button>
+            <button class="tab-btn" onclick="showTab('deploy')">배포</button>
+        </div>
+
+        <div class="tab-content active" id="install">
+            <div class="code-block">
+<pre><span class="code-comment"># 1. 템플릿 복사</span>
+cp -r template_nrp your_project_name
+cd your_project_name
+
+<span class="code-comment"># 2. 데이터베이스 생성</span>
+mysql -u root -p
+CREATE DATABASE your_db_name CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE your_db_name;
+SOURCE database/schema.sql;
+
+<span class="code-comment"># 3. 설정 파일 수정</span>
+nano config/database.php
+<span class="code-comment"># DB 정보 입력 (호스트, 사용자명, 비밀번호, DB명)</span></pre>
+            </div>
+        </div>
+
+        <div class="tab-content" id="config">
+            <div class="code-block">
+<pre><span class="code-comment"># database.php 설정 예시</span>
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'your_db_name');
+define('DB_USER', 'your_db_user');
+define('DB_PASS', 'your_password');
+
+<span class="code-comment"># USDT 입금 주소 설정 (purchase.html)</span>
+value="YOUR_USDT_TRC20_ADDRESS"
+
+<span class="code-comment"># 관리자 계정 생성</span>
+INSERT INTO users (user_id, password, email, role)
+VALUES ('admin', PASSWORD_HASH, 'admin@example.com', 'admin');</pre>
+            </div>
+        </div>
+
+        <div class="tab-content" id="deploy">
+            <div class="code-block">
+<pre><span class="code-comment"># Apache 설정</span>
+&lt;VirtualHost *:80&gt;
+    ServerName your-domain.com
+    DocumentRoot /var/www/your_project_name
+    &lt;Directory /var/www/your_project_name&gt;
+        AllowOverride All
+        Require all granted
+    &lt;/Directory&gt;
+&lt;/VirtualHost&gt;
+
+<span class="code-comment"># 파일 권한 설정</span>
+chown -R www-data:www-data /var/www/your_project_name
+chmod -R 755 /var/www/your_project_name
+
+<span class="code-comment"># Apache 재시작</span>
+systemctl restart apache2</pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- 기술 스택 -->
+    <section class="section container">
+        <h2 class="section-title">기술 스택</h2>
+        <p class="section-subtitle">
+            현대적이고 안정적인 기술로 구축되었습니다.
+        </p>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">⚙️</div>
+                <h3 class="feature-title">Backend</h3>
+                <ul class="feature-list">
+                    <li>PHP 7.4+</li>
+                    <li>MySQL 5.7+ / MariaDB 10.3+</li>
+                    <li>PDO (Prepared Statements)</li>
+                    <li>RESTful API</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <h3 class="feature-title">Frontend</h3>
+                <ul class="feature-list">
+                    <li>HTML5 / CSS3</li>
+                    <li>Vanilla JavaScript (ES6+)</li>
+                    <li>Responsive Design</li>
+                    <li>Neural Pulse Theme</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🔗</div>
+                <h3 class="feature-title">Blockchain</h3>
+                <ul class="feature-list">
+                    <li>USDT TRC20 (Tron)</li>
+                    <li>BNB Smart Chain</li>
+                    <li>TronGrid API</li>
+                    <li>자동 결제 검증</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="container">
+        <div class="cta-section">
+            <h2 class="section-title">지금 시작하세요</h2>
+            <p class="section-subtitle">
+                완벽한 MLM 플랫폼을 단 몇 분 만에 구축할 수 있습니다.
+            </p>
+            <div class="cta-buttons">
+                <a href="docs/SYSTEM_DESIGN.md" class="btn btn-primary">시스템 설계 보기</a>
+                <a href="docs/CONFIG_TEMPLATE.md" class="btn btn-secondary">설정 가이드</a>
+                <a href="README.md" class="btn btn-secondary">전체 문서</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 푸터 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="pulse-indicator"></div>
+            <p class="footer-text">TEMPLATE NRP v1.0 - NEURAL REFERRAL PLATFORM</p>
+            <p class="footer-text" style="margin-top: 10px; font-size: 12px;">
+                Total: 42 Files | 692KB | 8 Core Systems
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // 신경망 노드 생성
+        function createNeuralNodes() {
+            const container = document.getElementById('neuralConnections');
+            const nodeCount = 30;
+
+            for (let i = 0; i < nodeCount; i++) {
+                const node = document.createElement('div');
+                node.className = 'pulse-node';
+                node.style.left = Math.random() * 100 + '%';
+                node.style.top = Math.random() * 100 + '%';
+                node.style.animationDelay = Math.random() * 2 + 's';
+                container.appendChild(node);
+            }
+        }
+
+        // 탭 전환
+        function showTab(tabId) {
+            // 모든 탭 숨기기
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // 모든 버튼 비활성화
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // 선택된 탭 표시
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // 스크롤 애니메이션
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '0';
+                    entry.target.style.transform = 'translateY(20px)';
+
+                    setTimeout(() => {
+                        entry.target.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }, 100);
+
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        // 페이지 로드
+        window.addEventListener('DOMContentLoaded', () => {
+            createNeuralNodes();
+
+            // 애니메이션 관찰
+            document.querySelectorAll('.feature-card, .stat-card, .section').forEach(el => {
+                observer.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>

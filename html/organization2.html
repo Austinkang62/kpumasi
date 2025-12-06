@@ -1,0 +1,1666 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>후원 조직도 - We One (v2025-11-15-sponsor-position)</title>
+    <link rel="stylesheet" href="../css/k-pumasi-modern.css">
+    <script src="../js/auth-check.js"></script>
+    <style>
+        body {
+            min-height: 100vh;
+            overflow: auto;
+            padding: 0;
+            margin: 0;
+        }
+
+        /* 조직도 컨테이너 */
+        .org-container {
+            position: relative;
+            padding: 20px;
+            min-height: 100vh;
+            background: #0a0e1a;
+            overflow: auto;
+        }
+
+        .org-chart {
+            position: relative;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        /* 조직도 카드 */
+        .org-card {
+            position: absolute;
+            width: 110px;
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.08), rgba(255, 0, 255, 0.08));
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(0, 255, 255, 0.4);
+            border-radius: 10px;
+            padding: 6px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 20px rgba(0, 255, 255, 0.2);
+            font-family: -apple-system, BlinkMacSystemFont, 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', sans-serif;
+        }
+
+        .org-card:hover {
+            transform: translateY(-8px) scale(1.05);
+            border-color: var(--we1-gold);
+            box-shadow: 0 12px 40px rgba(212, 175, 55, 0.5);
+            z-index: 100;
+        }
+
+        .org-card.root {
+            border: 3px solid var(--we1-gold);
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(255, 215, 0, 0.1));
+        }
+
+        .org-card.direct-referral {
+            border: 2px solid rgba(212, 175, 55, 0.5);
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(255, 215, 0, 0.08));
+        }
+
+        .org-card.direct-referral:hover {
+            border-color: rgba(212, 175, 55, 0.8);
+            box-shadow: 0 12px 40px rgba(212, 175, 55, 0.4);
+        }
+
+        .card-avatar {
+            font-size: 20px;
+            text-align: center;
+            margin-bottom: 3px;
+            line-height: 1;
+        }
+
+        .card-user-id {
+            font-size: 11px;
+            font-weight: 700;
+            color: #00ffff;
+            text-align: center;
+            margin-bottom: 2px;
+            line-height: 1.2;
+        }
+
+        .card-position {
+            font-size: 10px;
+            text-align: center;
+            margin-bottom: 2px;
+            line-height: 1;
+            color: rgba(0, 255, 255, 0.5);
+        }
+
+        .card-stats {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.6);
+            text-align: center;
+            line-height: 1.3;
+            font-weight: 700;
+        }
+
+        .card-stats span {
+            color: #00ffff;
+            font-size: 12px;
+        }
+
+        .card-badge {
+            display: inline-block;
+            padding: 1px 5px;
+            background: rgba(212, 175, 55, 0.2);
+            border-radius: 6px;
+            font-size: 7px;
+            color: var(--we1-gold);
+            margin-top: 2px;
+        }
+
+        /* 네비게이션 버튼 */
+        .nav-buttons {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            z-index: 10;
+        }
+
+        .nav-btn {
+            width: 18px;
+            height: 18px;
+            background: rgba(0, 255, 255, 0.2);
+            border: 1px solid rgba(0, 255, 255, 0.5);
+            border-radius: 4px;
+            color: #00ffff;
+            font-size: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            line-height: 1;
+        }
+
+        .nav-btn:hover {
+            background: rgba(212, 175, 55, 0.3);
+            border-color: var(--we1-gold);
+            color: var(--we1-gold);
+            transform: scale(1.1);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .nav-btn:disabled:hover {
+            background: rgba(0, 255, 255, 0.2);
+            border-color: rgba(0, 255, 255, 0.5);
+            color: #00ffff;
+            transform: scale(1);
+        }
+
+        /* SVG 연결선 */
+        .org-connections {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .connection-line {
+            stroke: rgba(0, 255, 255, 0.4);
+            stroke-width: 2;
+            fill: none;
+            transition: all 0.3s;
+        }
+
+        /* 미니맵 */
+        .minimap-container {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 250px;
+            height: 180px;
+            background: rgba(10, 14, 26, 0.95);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 10px;
+            padding: 10px;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .minimap-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+        }
+
+        .minimap-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #00ffff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+        }
+
+        .admin-badge {
+            display: none;
+            position: fixed;
+            top: 200px;
+            left: 20px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            z-index: 1000;
+            animation: pulse 2s infinite;
+        }
+
+        .admin-badge.show {
+            display: block;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+            }
+            50% {
+                box-shadow: 0 4px 20px rgba(239, 68, 68, 0.8);
+            }
+        }
+
+        .minimap-home-btn {
+            width: 22px;
+            height: 22px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 11px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .minimap-home-btn:hover {
+            background: rgba(212, 175, 55, 0.2);
+            border-color: rgba(212, 175, 55, 0.5);
+            color: var(--we1-gold);
+            transform: scale(1.05);
+        }
+
+        .minimap-ref-btn {
+            width: 20px;
+            height: 20px;
+            background: transparent;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 4px;
+            color: #00ffff;
+            font-size: 9px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .minimap-ref-btn:hover {
+            background: rgba(212, 175, 55, 0.2);
+            border-color: rgba(212, 175, 55, 0.5);
+            color: var(--we1-gold);
+            transform: scale(1.05);
+        }
+
+        .minimap-toggle {
+            width: 20px;
+            height: 20px;
+            background: transparent;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 4px;
+            color: #00ffff;
+            font-size: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .minimap-toggle:hover {
+            background: rgba(0, 255, 255, 0.2);
+            border-color: rgba(212, 175, 55, 0.5);
+            color: var(--we1-gold);
+        }
+
+        .minimap-canvas {
+            width: 100%;
+            height: 140px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .minimap-viewport {
+            position: absolute;
+            border: 2px solid rgba(212, 175, 55, 0.8);
+            background: rgba(212, 175, 55, 0.1);
+            cursor: move;
+            z-index: 10;
+        }
+
+        .minimap-node {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(0, 255, 255, 0.6);
+            border-radius: 50%;
+        }
+
+        .minimap-node.root {
+            background: rgba(212, 175, 55, 0.9);
+            width: 6px;
+            height: 6px;
+        }
+
+        .minimap-container.minimized {
+            height: auto;
+            width: auto;
+        }
+
+        .minimap-container.minimized .minimap-canvas {
+            display: none;
+        }
+
+        /* 검색 박스 */
+        .search-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 300px;
+            background: rgba(10, 14, 26, 0.95);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .search-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+        }
+
+        .search-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #00ffff;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 6px;
+            color: #fff;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--we1-gold);
+        }
+
+        .search-results {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .search-result-item {
+            padding: 10px;
+            background: rgba(0, 255, 255, 0.05);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 6px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .search-result-item:hover {
+            background: rgba(0, 255, 255, 0.15);
+            border-color: var(--we1-gold);
+        }
+
+        .search-result-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: #00ffff;
+            margin-bottom: 4px;
+        }
+
+        .search-result-email {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .search-no-results {
+            text-align: center;
+            padding: 20px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 12px;
+        }
+
+        /* 줌/팬 컨트롤 */
+        .zoom-controls {
+            display: none;
+        }
+
+        /* 상세정보 모달 */
+        .detail-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2000;
+            background: var(--we1-bg-card);
+            border: 2px solid rgba(0, 255, 255, 0.5);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .detail-modal.show {
+            display: block;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1999;
+        }
+
+        .modal-overlay.show {
+            display: block;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 28px;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .modal-close:hover {
+            color: var(--we1-gold);
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .detail-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+        }
+
+        .detail-value {
+            color: #00ffff;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* 로딩 */
+        .loading {
+            text-align: center;
+            padding: 100px 20px;
+            color: #00ffff;
+            font-size: 16px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Malgun Gothic', '맑은 고딕', sans-serif;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(0, 255, 255, 0.2);
+            border-top: 4px solid #00ffff;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 에러 메시지 */
+        .error-message {
+            text-align: center;
+            padding: 60px 20px;
+            color: #ff00ff;
+        }
+    </style>
+</head>
+<body>
+    <!-- 관리자 배지 -->
+    <div class="admin-badge" id="adminBadge">
+        🔧 ADMIN MODE
+    </div>
+
+    <!-- 검색 박스 -->
+    <div class="search-container" id="searchContainer" style="display: none;">
+        <div class="search-header">
+            <span class="search-title">🔍 회원 검색</span>
+        </div>
+        <input type="text" class="search-input" id="searchInput" placeholder="회원명 또는 회원ID 입력..." autocomplete="off">
+        <div class="search-results" id="searchResults"></div>
+    </div>
+
+    <!-- 미니맵 -->
+    <div class="minimap-container" id="minimapContainer">
+        <div class="minimap-header">
+            <div class="minimap-title">
+                <button class="minimap-home-btn" onclick="goToHome()" title="홈으로">⌂</button>
+                <span>후원조직도</span>
+            </div>
+            <div style="display: flex; gap: 3px;">
+                <button class="minimap-ref-btn" onclick="goToReferralOrg()" title="추천조직도로 이동">▶</button>
+                <button class="minimap-toggle" id="minimapToggle" onclick="toggleMinimap()">−</button>
+            </div>
+        </div>
+        <div class="minimap-canvas" id="minimapCanvas">
+            <div class="minimap-viewport" id="minimapViewport"></div>
+        </div>
+    </div>
+
+    <!-- 조직도 -->
+    <div class="org-container">
+        <div id="orgChart" class="org-chart">
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                조직도를 불러오는 중...
+            </div>
+        </div>
+    </div>
+
+    <!-- 상세정보 모달 -->
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModal()"></div>
+    <div class="detail-modal" id="detailModal">
+        <span class="modal-close" onclick="closeModal()">&times;</span>
+        <div id="modalContent"></div>
+    </div>
+
+    <script>
+        // 관리자 권한 체크
+        let isAdmin = false;
+
+        async function checkAdminAuth() {
+            try {
+                // 절대 경로로 시도
+                const response = await fetch('/admin/api/auth.php?action=check', {
+                    credentials: 'include'
+                });
+
+                console.log('Auth API 응답 상태:', response.status);
+
+                const data = await response.json();
+                isAdmin = data.logged_in || false;
+
+                console.log('관리자 권한 체크 결과:', isAdmin, data);
+
+                if (isAdmin) {
+                    console.log('✅ 관리자 권한 확인됨');
+                    // 관리자 배지 표시
+                    const adminBadge = document.getElementById('adminBadge');
+                    if (adminBadge) {
+                        adminBadge.classList.add('show');
+                    }
+                    // 검색 박스 표시
+                    const searchContainer = document.getElementById('searchContainer');
+                    if (searchContainer) {
+                        searchContainer.style.display = 'block';
+                    }
+                    // 검색 이벤트 리스너 등록
+                    setupSearch();
+                } else {
+                    console.log('⚠️ 관리자 권한 없음');
+                }
+            } catch (error) {
+                console.log('❌ 관리자 권한 체크 실패:', error);
+                isAdmin = false;
+            }
+        }
+
+        // 파티클 생성
+        function createParticles() {
+            const container = document.getElementById('particles');
+            if (!container) return;
+
+            const particleCount = 30;
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 15) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // 조직도 로드
+        async function loadOrganizationTree() {
+            console.log('🔄 organization.html v2025-11-15-sponsor-position loaded');
+
+            let apiEndpoint, requestBody;
+
+            // 관리자 우선 체크
+            if (isAdmin) {
+                console.log('✅ 관리자 세션으로 조직도 로드');
+                apiEndpoint = '../admin/api/organization-tree.php?_=' + Date.now();
+                requestBody = {};
+            } else {
+                // 일반 회원 세션 체크
+                const token = localStorage.getItem('session_token');
+                if (!token) {
+                    console.log('❌ 토큰 없음, 관리자 아님');
+                    alert('로그인이 필요합니다.');
+                    window.location.href = 'login.html';
+                    return;
+                }
+                console.log('✅ 일반 회원 세션으로 조직도 로드');
+                apiEndpoint = '../api/organization/get-tree.php';
+                requestBody = { session_token: token };
+            }
+
+            try {
+                console.log('조직도 API 호출 중... isAdmin:', isAdmin);
+                console.log('API Endpoint:', apiEndpoint);
+                console.log('Request Body:', requestBody);
+
+                const response = await fetch(apiEndpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify(requestBody)
+                });
+
+                console.log('응답 상태:', response.status, response.statusText);
+
+                // 응답 텍스트 먼저 확인
+                const responseText = await response.text();
+                console.log('응답 텍스트:', responseText.substring(0, 500));
+
+                // JSON 파싱 시도
+                let result;
+                try {
+                    result = JSON.parse(responseText);
+                    console.log('조직도 전체 응답:', JSON.stringify(result, null, 2));
+                    if (result.data) {
+                        console.log('Root sponsor_position:', result.data.sponsor_position);
+                        if (result.data.children && result.data.children.length > 0) {
+                            console.log('First child full data:', result.data.children[0]);
+                        }
+                    }
+                } catch (parseError) {
+                    console.error('JSON 파싱 에러:', parseError);
+                    console.error('전체 응답:', responseText);
+                    throw new Error('서버 응답이 올바른 JSON 형식이 아닙니다.');
+                }
+
+                if (result.success && result.data) {
+                    renderOrganizationChart(result.data);
+                } else {
+                    document.getElementById('orgChart').innerHTML =
+                        '<div class="error-message">' + (result.message || '조직도를 불러올 수 없습니다.') + '</div>';
+                }
+            } catch (error) {
+                console.error('조직도 로드 오류:', error);
+                console.error('Error details:', {
+                    message: error.message,
+                    stack: error.stack,
+                    apiEndpoint: apiEndpoint
+                });
+                document.getElementById('orgChart').innerHTML =
+                    '<div class="error-message">네트워크 오류: ' + error.message + '<br>API: ' + apiEndpoint + '</div>';
+            }
+        }
+
+        // 글로벌 변수
+        let currentZoom = 1;
+        let currentOffsetX = 0;
+        let currentOffsetY = 0;
+        let currentRootNode = null; // 현재 루트로 표시되는 노드
+        let originalRootNode = null; // 최초 로그인한 사용자의 루트 노드
+        let nodeParentMap = new Map(); // 각 노드의 부모 노드 매핑
+        let allNodesFlat = []; // 모든 노드를 평면 배열로 저장 (검색용)
+
+        // 조직도 렌더링
+        function renderOrganizationChart(data, rootNode = null) {
+            console.log('렌더링 시작:', data);
+
+            const orgChart = document.getElementById('orgChart');
+            orgChart.innerHTML = '';
+
+            if (!data) {
+                orgChart.innerHTML = '<div class="error-message">데이터가 없습니다.</div>';
+                return;
+            }
+
+            // 최초 로드 시 원본 데이터 저장
+            if (!originalRootNode) {
+                originalRootNode = data;
+                // 모든 노드를 평면 배열로 저장 (검색용)
+                allNodesFlat = [];
+                flattenNodes(data);
+            }
+
+            // 현재 루트 설정
+            currentRootNode = rootNode || data;
+
+            // 부모 맵 구축
+            nodeParentMap.clear();
+            buildParentMap(originalRootNode, null);
+
+            // 바이너리 트리 레이아웃 설정
+            const nodeWidth = 110;
+            const nodeHeight = 80;
+            const horizontalGap = 40; // 좌우 간격
+            const verticalGap = 140;  // 상하 간격
+
+            const nodePositions = new Map();
+            const connections = [];
+
+            // 트리 깊이 계산
+            function getTreeDepth(node, depth = 0) {
+                if (!node || !node.children || node.children.length === 0) {
+                    return depth;
+                }
+                const childDepths = node.children.map(child => getTreeDepth(child, depth + 1));
+                return Math.max(...childDepths);
+            }
+
+            const treeDepth = getTreeDepth(currentRootNode);
+
+            // 서브트리의 너비 계산 (리프까지의 너비)
+            function getSubtreeWidth(node) {
+                if (!node) return 0;
+                if (!node.children || node.children.length === 0) {
+                    return nodeWidth + horizontalGap;
+                }
+
+                let totalWidth = 0;
+                node.children.forEach(child => {
+                    totalWidth += getSubtreeWidth(child);
+                });
+
+                return Math.max(totalWidth, nodeWidth + horizontalGap);
+            }
+
+            // 개선된 바이너리 트리 레이아웃 (Reingold-Tilford 알고리즘 변형)
+            function calculateOptimalPositions(node, depth = 0, leftBound = 0) {
+                if (!node) return { x: leftBound, width: 0 };
+
+                const y = depth * verticalGap;
+
+                // 자식이 없는 경우 (리프 노드)
+                if (!node.children || node.children.length === 0) {
+                    const x = leftBound + nodeWidth / 2;
+                    nodePositions.set(node.id, { x, y, node });
+                    return { x, width: nodeWidth + horizontalGap };
+                }
+
+                let childrenPositions = [];
+                let currentLeftBound = leftBound;
+
+                // 왼쪽 자식 처리
+                if (node.children[0]) {
+                    const leftResult = calculateOptimalPositions(node.children[0], depth + 1, currentLeftBound);
+                    childrenPositions.push({ child: node.children[0], x: leftResult.x });
+                    currentLeftBound += leftResult.width;
+                    connections.push({ parent: node, child: node.children[0] });
+                }
+
+                // 오른쪽 자식 처리
+                if (node.children[1]) {
+                    const rightResult = calculateOptimalPositions(node.children[1], depth + 1, currentLeftBound);
+                    childrenPositions.push({ child: node.children[1], x: rightResult.x });
+                    currentLeftBound += rightResult.width;
+                    connections.push({ parent: node, child: node.children[1] });
+                }
+
+                // 부모 노드는 자식들의 중간에 배치
+                let parentX;
+                if (childrenPositions.length === 2) {
+                    // 두 자식의 중간점
+                    parentX = (childrenPositions[0].x + childrenPositions[1].x) / 2;
+                } else if (childrenPositions.length === 1) {
+                    // 한 자식만 있으면 그 자식 위에 배치
+                    parentX = childrenPositions[0].x;
+                } else {
+                    parentX = leftBound + nodeWidth / 2;
+                }
+
+                nodePositions.set(node.id, { x: parentX, y, node });
+
+                const totalWidth = currentLeftBound - leftBound;
+                return { x: parentX, width: totalWidth };
+            }
+
+            // 레이아웃 계산 실행
+            const layoutResult = calculateOptimalPositions(currentRootNode, 0, 0);
+
+            // 충돌 감지 및 조정
+            function detectAndResolveCollisions() {
+                const levels = new Map(); // depth -> nodes[]
+
+                // 레벨별로 노드 그룹화
+                nodePositions.forEach((pos, nodeId) => {
+                    const depth = Math.round(pos.y / verticalGap);
+                    if (!levels.has(depth)) {
+                        levels.set(depth, []);
+                    }
+                    levels.get(depth).push(pos);
+                });
+
+                // 각 레벨에서 노드 정렬 후 충돌 체크
+                levels.forEach((nodesAtLevel, depth) => {
+                    nodesAtLevel.sort((a, b) => a.x - b.x);
+
+                    for (let i = 1; i < nodesAtLevel.length; i++) {
+                        const prev = nodesAtLevel[i - 1];
+                        const curr = nodesAtLevel[i];
+                        const minDistance = nodeWidth + horizontalGap;
+
+                        if (curr.x - prev.x < minDistance) {
+                            // 충돌 발생 - 오른쪽 노드를 이동
+                            const shift = minDistance - (curr.x - prev.x);
+                            shiftSubtree(curr.node, shift, depth);
+                        }
+                    }
+                });
+            }
+
+            // 서브트리 전체를 이동
+            function shiftSubtree(node, shiftAmount, fromDepth) {
+                const pos = Array.from(nodePositions.entries()).find(([id, p]) => p.node === node);
+                if (!pos) return;
+
+                const [nodeId, nodePos] = pos;
+                nodePos.x += shiftAmount;
+
+                // 자식들도 재귀적으로 이동
+                if (node.children && node.children.length > 0) {
+                    node.children.forEach(child => {
+                        shiftSubtree(child, shiftAmount, fromDepth + 1);
+                    });
+                }
+            }
+
+            // 충돌 해결 실행
+            detectAndResolveCollisions();
+
+            // 컨테이너 크기
+            const containerWidth = orgChart.parentElement.clientWidth;
+
+            // X 좌표 오프셋 - 중앙 정렬
+            const allX = Array.from(nodePositions.values()).map(p => p.x);
+            const minX = Math.min(...allX);
+            const maxX = Math.max(...allX);
+            const treeWidth = maxX - minX + nodeWidth;
+
+            // 여백 추가 (좌우상하 각 80px)
+            const edgePadding = 80;
+
+            // offsetX 계산 (중앙 정렬 시도)
+            let offsetX = (containerWidth - treeWidth) / 2 - minX;
+
+            // 트리가 컨테이너보다 크면 좌측 여백만 확보
+            if (offsetX < 0) {
+                offsetX = -minX + edgePadding;
+            } else {
+                // 트리가 컨테이너보다 작으면 중앙 정렬 + 여백
+                offsetX = offsetX + edgePadding;
+            }
+
+
+            // SVG 연결선 먼저 그리기
+            if (connections.length > 0) {
+                // SVG 크기를 여백 포함하여 계산
+                const minXCoord = 0;
+                const minYCoord = 0;
+                const maxXCoord = Math.max(...allX) + offsetX + nodeWidth + edgePadding;
+                const maxYCoord = Math.max(...Array.from(nodePositions.values()).map(p => p.y)) + nodeHeight + edgePadding * 2;
+
+                const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                svg.setAttribute('class', 'org-connections');
+                svg.setAttribute('width', maxXCoord);
+                svg.setAttribute('height', maxYCoord);
+                svg.style.position = 'absolute';
+                svg.style.left = '0px';
+                svg.style.top = '0px';
+
+                connections.forEach(conn => {
+                    const parentPos = nodePositions.get(conn.parent.id);
+                    const childPos = nodePositions.get(conn.child.id);
+
+                    const x1 = parentPos.x + offsetX + nodeWidth / 2;
+                    const y1 = parentPos.y + edgePadding + nodeHeight;
+                    const x2 = childPos.x + offsetX + nodeWidth / 2;
+                    const y2 = childPos.y + edgePadding;
+
+                    // 곡선 경로 (베지어 곡선)
+                    const midY = (y1 + y2) / 2;
+                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    const d = `M ${x1} ${y1} C ${x1} ${midY}, ${x2} ${midY}, ${x2} ${y2}`;
+                    path.setAttribute('d', d);
+                    path.setAttribute('class', 'connection-line');
+
+                    svg.appendChild(path);
+                });
+
+                orgChart.appendChild(svg);
+            }
+
+            // 노드 렌더링
+            nodePositions.forEach((pos, nodeId) => {
+                const node = pos.node;
+                const depth = Math.round(pos.y / verticalGap);
+
+                const card = document.createElement('div');
+
+                // 클래스 결정
+                let cardClasses = 'org-card';
+                if (depth === 0) {
+                    cardClasses += ' root';
+                }
+
+                // 로그인 사용자가 직접 추천한 노드인지 확인
+                // referral_id는 숫자 ID이므로 originalRootNode.id와 비교
+                const nodeParentForColor = nodeParentMap.get(node.id);
+                if (nodeParentForColor && nodeParentForColor.id === originalRootNode.id) {
+                    cardClasses += ' direct-referral';
+                }
+
+                card.className = cardClasses;
+                card.style.left = (pos.x + offsetX) + 'px';
+                card.style.top = (pos.y + edgePadding) + 'px';
+
+                const emoji = depth === 0 ? '👑' : '👤';
+                const packageBadge = node.package_code ? `<div class="card-badge">${node.package_code}</div>` : '';
+
+                // sponsor_position 표시 (1=왼쪽, 2=오른쪽)
+                const userId = node.user_id || 'Unknown';
+                const sponsorPosition = node.sponsor_position;
+                let positionIcon = '';
+
+                console.log('Node:', userId, 'sponsor_position:', sponsorPosition, 'type:', typeof sponsorPosition);
+
+                if (sponsorPosition == 1) {
+                    positionIcon = '◀';
+                } else if (sponsorPosition == 2) {
+                    positionIcon = '▶';
+                }
+
+                console.log('Position icon:', positionIcon);
+
+                // 네비게이션 버튼 표시 여부
+                const nodeParent = nodeParentMap.get(node.id);
+                const hasParent = nodeParent !== null && nodeParent !== undefined;
+                const hasChildren = node.children && node.children.length > 0;
+                const canGoUp = hasParent && currentRootNode.id !== originalRootNode.id;
+                const canGoDown = hasChildren;
+
+                // 조건에 맞는 버튼만 표시
+                let navButtons = '';
+                if (canGoUp || canGoDown) {
+                    const upButton = canGoUp ? '<button class="nav-btn nav-up" title="상위 노드로">▲</button>' : '';
+                    const downButton = canGoDown ? '<button class="nav-btn nav-down" title="이 노드를 루트로">▼</button>' : '';
+
+                    if (upButton || downButton) {
+                        navButtons = `
+                            <div class="nav-buttons">
+                                ${upButton}
+                                ${downButton}
+                            </div>
+                        `;
+                    }
+                }
+
+                card.innerHTML = `
+                    ${navButtons}
+                    <div class="card-avatar">${emoji}</div>
+                    <div class="card-user-id">${userId}</div>
+                    ${positionIcon ? `<div class="card-position">${positionIcon}</div>` : ''}
+                    <div class="card-stats">
+                        <span>${node.direct_referrals_count || 0}</span> / $<span>${(node.total_sales || 0).toFixed(0)}</span>
+                    </div>
+                    ${packageBadge}
+                `;
+
+                // 네비게이션 버튼 이벤트
+                const upBtn = card.querySelector('.nav-up');
+                const downBtn = card.querySelector('.nav-down');
+
+                if (upBtn) {
+                    upBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        navigateUp();
+                    });
+                }
+
+                if (downBtn) {
+                    downBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        navigateToNode(node);
+                    });
+                }
+
+                // 카드 클릭 - 상세정보 표시
+                card.addEventListener('click', () => showDetail(node));
+
+                orgChart.appendChild(card);
+            });
+
+            console.log('렌더링 완료');
+
+            // 미니맵 업데이트
+            setTimeout(() => {
+                updateMinimap();
+            }, 100);
+        }
+
+        // 부모 맵 구축
+        function buildParentMap(node, parent) {
+            nodeParentMap.set(node.id, parent);
+            if (node.children && node.children.length > 0) {
+                node.children.forEach(child => {
+                    buildParentMap(child, node);
+                });
+            }
+        }
+
+        // 노드를 평면 배열로 변환 (검색용)
+        function flattenNodes(node) {
+            if (!node) return;
+            allNodesFlat.push(node);
+            if (node.children && node.children.length > 0) {
+                node.children.forEach(child => flattenNodes(child));
+            }
+        }
+
+        // 특정 노드로 네비게이션
+        function navigateToNode(node) {
+            renderOrganizationChart(originalRootNode, node);
+        }
+
+        // 상위 노드로 네비게이션
+        function navigateUp() {
+            const parentNode = nodeParentMap.get(currentRootNode.id);
+            if (parentNode) {
+                renderOrganizationChart(originalRootNode, parentNode);
+            } else {
+                // 최상위로 돌아가기
+                renderOrganizationChart(originalRootNode, originalRootNode);
+            }
+        }
+
+        // 특정 노드 찾기 (전체 트리에서)
+        function findNodeById(tree, nodeId) {
+            if (tree.id === nodeId) {
+                return tree;
+            }
+            if (tree.children && tree.children.length > 0) {
+                for (let child of tree.children) {
+                    const found = findNodeById(child, nodeId);
+                    if (found) return found;
+                }
+            }
+            return null;
+        }
+
+        // 상세정보 모달 표시
+        function showDetail(node) {
+            const modal = document.getElementById('detailModal');
+            const overlay = document.getElementById('modalOverlay');
+            const content = document.getElementById('modalContent');
+
+            // 관리자 전용 버튼
+            const adminButtons = isAdmin ? `
+                <button onclick="editUser('${node.id}')"
+                        style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+                               color: white;
+                               border: none;
+                               padding: 8px 20px;
+                               border-radius: 8px;
+                               font-weight: 700;
+                               cursor: pointer;
+                               font-size: 13px;
+                               transition: all 0.2s;
+                               box-shadow: 0 2px 10px rgba(139, 92, 246, 0.3);"
+                        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 15px rgba(139, 92, 246, 0.5)';"
+                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 10px rgba(139, 92, 246, 0.3)';">
+                    🔧 관리자 수정
+                </button>
+            ` : '';
+
+            content.innerHTML = `
+                <h2 style="color: var(--we1-gold); margin-bottom: 10px; text-align: center;">
+                    👤 ${node.user_id || 'Unknown'}
+                </h2>
+                <div style="text-align: center; margin-bottom: 20px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                    <button onclick="copyUserId('${node.user_id || ''}')"
+                            style="background: var(--we1-gradient-primary);
+                                   color: var(--we1-navy-deep);
+                                   border: none;
+                                   padding: 8px 20px;
+                                   border-radius: 8px;
+                                   font-weight: 700;
+                                   cursor: pointer;
+                                   font-size: 13px;
+                                   transition: all 0.2s;
+                                   box-shadow: 0 2px 10px rgba(212, 175, 55, 0.3);"
+                            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 15px rgba(212, 175, 55, 0.5)';"
+                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 10px rgba(212, 175, 55, 0.3)';">
+                        📋 아이디 복사
+                    </button>
+                    <button onclick="openReferralSignup('${node.user_id || ''}')"
+                            style="background: linear-gradient(135deg, #10B981, #059669);
+                                   color: white;
+                                   border: none;
+                                   padding: 8px 20px;
+                                   border-radius: 8px;
+                                   font-weight: 700;
+                                   cursor: pointer;
+                                   font-size: 13px;
+                                   transition: all 0.2s;
+                                   box-shadow: 0 2px 10px rgba(16, 185, 129, 0.3);"
+                            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 15px rgba(16, 185, 129, 0.5)';"
+                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 10px rgba(16, 185, 129, 0.3)';">
+                        🚀 추천 회원가입
+                    </button>
+                    ${adminButtons}
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">이메일</span>
+                    <span class="detail-value">${node.email || '-'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">패키지</span>
+                    <span class="detail-value">${node.package_code || '없음'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">가입일</span>
+                    <span class="detail-value">${node.joined_date ? new Date(node.joined_date).toLocaleDateString('ko-KR') : '-'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">조직 위치</span>
+                    <span class="detail-value" style="font-size: 18px;">${node.sponsor_position == 1 ? '◀ 왼쪽' : node.sponsor_position == 2 ? '▶ 오른쪽' : '-'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">직접 추천</span>
+                    <span class="detail-value">${node.direct_referrals_count || 0}명</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">전체 추천</span>
+                    <span class="detail-value">${node.total_referrals || 0}명</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">본인 매출</span>
+                    <span class="detail-value">$${(node.total_sales || 0).toFixed(2)}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">팀 매출</span>
+                    <span class="detail-value">$${(node.team_sales || 0).toFixed(2)}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">직추천 매출</span>
+                    <span class="detail-value">$${(node.direct_referrals_sales || 0).toFixed(2)}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">누적 보너스</span>
+                    <span class="detail-value">$${(node.total_earnings || 0).toFixed(2)}</span>
+                </div>
+            `;
+
+            modal.classList.add('show');
+            overlay.classList.add('show');
+        }
+
+        // 모달 닫기
+        function closeModal() {
+            document.getElementById('detailModal').classList.remove('show');
+            document.getElementById('modalOverlay').classList.remove('show');
+        }
+
+        // 아이디 복사
+        function copyUserId(userId) {
+            if (!userId) {
+                alert('❌ 아이디 정보가 없습니다.');
+                return;
+            }
+
+            // Clipboard API 사용
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(userId).then(() => {
+                    // 버튼 찾기 및 상태 변경
+                    const btn = event.target;
+                    const originalText = btn.textContent;
+                    const originalBg = btn.style.background;
+                    const originalColor = btn.style.color;
+
+                    btn.textContent = '✅ 복사 완료!';
+                    btn.style.background = 'linear-gradient(135deg, #10B981, #059669)';
+                    btn.style.color = 'white';
+
+                    setTimeout(() => {
+                        btn.textContent = originalText;
+                        btn.style.background = originalBg;
+                        btn.style.color = originalColor;
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Clipboard API 실패:', err);
+                    fallbackCopy(userId);
+                });
+            } else {
+                // Fallback: 임시 input 생성
+                fallbackCopy(userId);
+            }
+        }
+
+        // Fallback 복사 방법
+        function fallbackCopy(userId) {
+            const tempInput = document.createElement('input');
+            tempInput.value = userId;
+            tempInput.style.position = 'fixed';
+            tempInput.style.left = '-9999px';
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            tempInput.setSelectionRange(0, 99999); // 모바일 지원
+
+            let success = false;
+            try {
+                success = document.execCommand('copy');
+            } catch (e) {
+                console.error('execCommand 실패:', e);
+            }
+
+            document.body.removeChild(tempInput);
+
+            if (success) {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                const originalBg = btn.style.background;
+                const originalColor = btn.style.color;
+
+                btn.textContent = '✅ 복사 완료!';
+                btn.style.background = 'linear-gradient(135deg, #10B981, #059669)';
+                btn.style.color = 'white';
+
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = originalBg;
+                    btn.style.color = originalColor;
+                }, 2000);
+            } else {
+                alert('❌ 복사에 실패했습니다.\n\n수동으로 복사해주세요:\n\n' + userId);
+            }
+        }
+
+        // 추천 회원가입 링크 열기
+        function openReferralSignup(userId) {
+            if (!userId) {
+                alert('❌ 아이디 정보가 없습니다.');
+                return;
+            }
+
+            // 추천 링크 생성 (referral + sponsor 모두 포함)
+            const signupUrl = `${window.location.origin}${window.location.pathname.replace('organization.html', 'signup.html')}?referral=${userId}&sponsor=${userId}`;
+
+            // 새 창에서 열기
+            window.open(signupUrl, '_blank');
+        }
+
+        // 관리자 전용: 사용자 수정
+        function editUser(userId) {
+            if (!isAdmin) {
+                alert('❌ 관리자 권한이 필요합니다.');
+                return;
+            }
+
+            // 관리자 사용자 관리 페이지로 이동
+            window.open(`/admin/users-manage.html?user_id=${userId}`, '_blank');
+        }
+
+        // 줌 기능
+        function zoomIn() {
+            currentZoom = Math.min(currentZoom + 0.2, 3);
+            applyZoom();
+        }
+
+        function zoomOut() {
+            currentZoom = Math.max(currentZoom - 0.2, 0.5);
+            applyZoom();
+        }
+
+        function resetZoom() {
+            currentZoom = 1;
+            currentOffsetX = 0;
+            currentOffsetY = 0;
+            applyZoom();
+        }
+
+        function applyZoom() {
+            const orgChart = document.getElementById('orgChart');
+            orgChart.style.transform = `scale(${currentZoom}) translate(${currentOffsetX}px, ${currentOffsetY}px)`;
+        }
+
+        // 로그아웃
+        function logout() {
+            if (confirm('로그아웃 하시겠습니까?')) {
+                localStorage.removeItem('session_token');
+                localStorage.removeItem('neural_user');
+                window.location.href = 'login.html';
+            }
+        }
+
+        // 홈으로 이동
+        function goToHome() {
+            window.location.href = 'dashboard.html';
+        }
+
+        // 추천 조직도로 이동
+        function goToReferralOrg() {
+            window.location.href = 'http://k-pumasi.com/html/organization_ref.html';
+        }
+
+        // 미니맵 토글
+        function toggleMinimap() {
+            const container = document.getElementById('minimapContainer');
+            const toggle = document.getElementById('minimapToggle');
+
+            if (container.classList.contains('minimized')) {
+                container.classList.remove('minimized');
+                toggle.textContent = '−';
+            } else {
+                container.classList.add('minimized');
+                toggle.textContent = '+';
+            }
+        }
+
+        // 미니맵 업데이트
+        function updateMinimap() {
+            const minimapCanvas = document.getElementById('minimapCanvas');
+            const minimapViewport = document.getElementById('minimapViewport');
+            const orgContainer = document.querySelector('.org-container');
+            const orgChart = document.getElementById('orgChart');
+
+            if (!minimapCanvas || !minimapViewport || !orgContainer || !orgChart) return;
+
+            // 기존 노드 제거
+            const existingNodes = minimapCanvas.querySelectorAll('.minimap-node');
+            existingNodes.forEach(node => node.remove());
+
+            // 모든 조직도 카드 가져오기
+            const orgCards = document.querySelectorAll('.org-card');
+            if (orgCards.length === 0) return;
+
+            // orgChart의 실제 컨텐츠 영역 계산 (패딩 포함)
+            const orgChartRect = orgChart.getBoundingClientRect();
+            const orgChartPadding = 40; // orgChart의 padding 값
+
+            // 조직도 전체 영역 계산 (실제 카드 위치 기준)
+            let minX = Infinity, maxX = -Infinity;
+            let minY = Infinity, maxY = -Infinity;
+
+            orgCards.forEach(card => {
+                const x = parseFloat(card.style.left) || 0;
+                const y = parseFloat(card.style.top) || 0;
+                const width = card.offsetWidth || 110;
+                const height = card.offsetHeight || 80;
+
+                minX = Math.min(minX, x);
+                maxX = Math.max(maxX, x + width);
+                minY = Math.min(minY, y);
+                maxY = Math.max(maxY, y + height);
+            });
+
+            // 실제 컨텐츠 영역 크기
+            const orgWidth = maxX - minX;
+            const orgHeight = maxY - minY;
+
+            // 미니맵 크기
+            const minimapWidth = minimapCanvas.clientWidth;
+            const minimapHeight = minimapCanvas.clientHeight;
+
+            // 스케일 계산 (여백 포함)
+            const scale = Math.min(
+                (minimapWidth - 20) / (orgWidth + 100),
+                (minimapHeight - 20) / (orgHeight + 100)
+            );
+
+            // 오프셋 (중앙 정렬)
+            const scaledWidth = orgWidth * scale;
+            const scaledHeight = orgHeight * scale;
+            const offsetX = (minimapWidth - scaledWidth) / 2;
+            const offsetY = (minimapHeight - scaledHeight) / 2;
+
+            // 각 노드를 미니맵에 표시
+            orgCards.forEach(card => {
+                const x = parseFloat(card.style.left) || 0;
+                const y = parseFloat(card.style.top) || 0;
+
+                const minimapNode = document.createElement('div');
+                minimapNode.className = 'minimap-node';
+                if (card.classList.contains('root')) {
+                    minimapNode.classList.add('root');
+                }
+
+                // 카드의 실제 위치를 미니맵 좌표로 변환
+                const minimapX = ((x - minX) * scale) + offsetX;
+                const minimapY = ((y - minY) * scale) + offsetY;
+
+                minimapNode.style.left = minimapX + 'px';
+                minimapNode.style.top = minimapY + 'px';
+
+                minimapCanvas.appendChild(minimapNode);
+            });
+
+            // 뷰포트 표시를 위한 글로벌 변수 저장
+            minimapScale = scale;
+            minimapMinX = minX;
+            minimapMinY = minY;
+            minimapOffsetX = offsetX;
+            minimapOffsetY = offsetY;
+            minimapOrgWidth = orgWidth;
+            minimapOrgHeight = orgHeight;
+
+            updateMinimapViewport(scale, minX, minY, offsetX, offsetY);
+        }
+
+        // 미니맵 뷰포트 업데이트
+        function updateMinimapViewport(scale, minX, minY, offsetX, offsetY) {
+            const minimapViewport = document.getElementById('minimapViewport');
+            const orgContainer = document.querySelector('.org-container');
+            const orgChart = document.getElementById('orgChart');
+
+            if (!minimapViewport || !orgContainer || !orgChart) return;
+
+            // 현재 스크롤 위치와 보이는 영역
+            const scrollLeft = orgContainer.scrollLeft;
+            const scrollTop = orgContainer.scrollTop;
+            const viewWidth = orgContainer.clientWidth;
+            const viewHeight = orgContainer.clientHeight;
+
+            // 전체 스크롤 가능한 크기
+            const scrollWidth = orgContainer.scrollWidth;
+            const scrollHeight = orgContainer.scrollHeight;
+
+            // 미니맵 캔버스 크기
+            const minimapCanvas = document.getElementById('minimapCanvas');
+            const minimapWidth = minimapCanvas.clientWidth;
+            const minimapHeight = minimapCanvas.clientHeight;
+
+            // 전체 컨텐츠 대비 현재 스크롤 위치의 비율
+            const scrollRatioX = scrollWidth > viewWidth ? scrollLeft / (scrollWidth - viewWidth) : 0;
+            const scrollRatioY = scrollHeight > viewHeight ? scrollTop / (scrollHeight - viewHeight) : 0;
+
+            // 미니맵에서 뷰포트가 이동 가능한 범위
+            const viewportWidth = viewWidth * scale;
+            const viewportHeight = viewHeight * scale;
+
+            // 전체 노드 영역의 크기 (미니맵에서)
+            const contentWidth = minimapOrgWidth * scale;
+            const contentHeight = minimapOrgHeight * scale;
+
+            // 뷰포트가 이동할 수 있는 최대 범위
+            const maxViewportX = contentWidth - viewportWidth;
+            const maxViewportY = contentHeight - viewportHeight;
+
+            // 스크롤 비율에 따라 뷰포트 위치 계산
+            const viewportX = offsetX + (scrollRatioX * maxViewportX);
+            const viewportY = offsetY + (scrollRatioY * maxViewportY);
+
+            minimapViewport.style.left = viewportX + 'px';
+            minimapViewport.style.top = viewportY + 'px';
+            minimapViewport.style.width = viewportWidth + 'px';
+            minimapViewport.style.height = viewportHeight + 'px';
+        }
+
+        // 스크롤 이벤트 리스너
+        let minimapScale, minimapMinX, minimapMinY, minimapOffsetX, minimapOffsetY, minimapOrgWidth, minimapOrgHeight;
+
+        function setupMinimapListeners() {
+            const orgContainer = document.querySelector('.org-container');
+
+            if (orgContainer) {
+                orgContainer.addEventListener('scroll', () => {
+                    if (minimapScale) {
+                        updateMinimapViewport(minimapScale, minimapMinX, minimapMinY, minimapOffsetX, minimapOffsetY);
+                    }
+                });
+            }
+
+            // 미니맵 뷰포트 드래그
+            const minimapViewport = document.getElementById('minimapViewport');
+            const minimapCanvas = document.getElementById('minimapCanvas');
+
+            if (minimapViewport && minimapCanvas) {
+                let isDragging = false;
+
+                minimapViewport.addEventListener('mousedown', (e) => {
+                    isDragging = true;
+                    e.preventDefault();
+                });
+
+                minimapCanvas.addEventListener('click', (e) => {
+                    const rect = minimapCanvas.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+
+                    // 클릭 위치로 스크롤
+                    if (minimapScale && orgContainer) {
+                        // 미니맵 좌표를 노드 좌표로 변환
+                        const nodeX = ((x - minimapOffsetX) / minimapScale) + minimapMinX;
+                        const nodeY = ((y - minimapOffsetY) / minimapScale) + minimapMinY;
+
+                        // 노드 좌표를 스크롤 좌표로 변환
+                        // visibleStartX = scrollLeft + minX이므로
+                        // nodeX = scrollLeft + minX일 때 화면 왼쪽에 보임
+                        // 화면 중앙에 보이려면: nodeX = scrollLeft + minX + viewWidth/2
+                        const scrollX = nodeX - minimapMinX - orgContainer.clientWidth / 2;
+                        const scrollY = nodeY - minimapMinY - orgContainer.clientHeight / 2;
+
+                        orgContainer.scrollTo({
+                            left: scrollX,
+                            top: scrollY,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (isDragging && minimapScale && orgContainer) {
+                        const rect = minimapCanvas.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+
+                        // 미니맵 좌표를 노드 좌표로 변환
+                        const nodeX = ((x - minimapOffsetX) / minimapScale) + minimapMinX;
+                        const nodeY = ((y - minimapOffsetY) / minimapScale) + minimapMinY;
+
+                        // 노드 좌표를 스크롤 좌표로 변환
+                        const scrollX = nodeX - minimapMinX - orgContainer.clientWidth / 2;
+                        const scrollY = nodeY - minimapMinY - orgContainer.clientHeight / 2;
+
+                        orgContainer.scrollLeft = scrollX;
+                        orgContainer.scrollTop = scrollY;
+                    }
+                });
+
+                document.addEventListener('mouseup', () => {
+                    isDragging = false;
+                });
+            }
+        }
+
+        // 검색 기능 설정
+        function setupSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const searchResults = document.getElementById('searchResults');
+
+            if (!searchInput) return;
+
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase().trim();
+
+                if (query.length < 2) {
+                    searchResults.innerHTML = '';
+                    return;
+                }
+
+                // 검색 실행
+                const results = allNodesFlat.filter(node => {
+                    const userId = (node.user_id || '').toLowerCase();
+                    const name = (node.name || '').toLowerCase();
+                    const email = (node.email || '').toLowerCase();
+
+                    return userId.includes(query) || name.includes(query) || email.includes(query);
+                });
+
+                // 결과 표시
+                if (results.length === 0) {
+                    searchResults.innerHTML = '<div class="search-no-results">검색 결과가 없습니다</div>';
+                } else {
+                    searchResults.innerHTML = results.slice(0, 10).map(node => `
+                        <div class="search-result-item" onclick="jumpToNode(${node.id})">
+                            <div class="search-result-name">${node.user_id || 'Unknown'}</div>
+                            <div class="search-result-email">${node.name || ''} ${node.email ? '• ' + node.email : ''}</div>
+                        </div>
+                    `).join('');
+                }
+            });
+        }
+
+        // 노드로 점프
+        function jumpToNode(nodeId) {
+            const node = allNodesFlat.find(n => n.id === nodeId);
+            if (node) {
+                console.log('Jumping to node:', node.user_id);
+                navigateToNode(node);
+
+                // 검색 입력 클리어
+                const searchInput = document.getElementById('searchInput');
+                const searchResults = document.getElementById('searchResults');
+                if (searchInput) searchInput.value = '';
+                if (searchResults) searchResults.innerHTML = '';
+            }
+        }
+
+        // 초기화
+        window.addEventListener('DOMContentLoaded', async () => {
+            createParticles();
+            await checkAdminAuth();
+
+            // 관리자 체크 후 조직도 로드
+            await new Promise(resolve => setTimeout(resolve, 100));
+            loadOrganizationTree();
+            setupMinimapListeners();
+        });
+    </script>
+</body>
+</html>

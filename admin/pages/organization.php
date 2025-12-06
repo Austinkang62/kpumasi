@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organization - Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+            background: #0f172a;
+            min-height: 100vh;
+        }
+
+        .admin-dashboard {
+            display: block;
+        }
+
+        .dashboard-content {
+            max-width: 100%;
+            margin: 0;
+            padding: 65px 0 0 0;
+        }
+
+        .org-frame-container {
+            width: 100%;
+            height: calc(100vh - 65px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .org-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-dashboard">
+        <?php include '../includes/header.php'; ?>
+
+        <div class="dashboard-content">
+            <div class="org-frame-container">
+                <iframe src="/html/organization.html" class="org-frame" id="orgFrame"></iframe>
+            </div>
+        </div>
+    </div>
+
+    
+</body>
+</html>

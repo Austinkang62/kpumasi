@@ -1,0 +1,1612 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>다계정 회원등록 - We One</title>
+    <link rel="stylesheet" href="../css/k-pumasi-modern.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .signup-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        .signup-card {
+            background: var(--we1-bg-card);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 60px 50px;
+            box-shadow: var(--we1-shadow-gold);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .signup-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--we1-gradient-primary);
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .kpumasi-logo-small {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            position: relative;
+        }
+
+        .brand-name {
+            font-size: 36px;
+            font-weight: 800;
+            font-family: 'Playfair Display', serif;
+            background: var(--we1-gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .brand-tagline {
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            color: var(--we1-text-secondary);
+            letter-spacing: 0.5px;
+        }
+
+        .gold-line {
+            width: 60px;
+            height: 2px;
+            background: var(--we1-gradient-primary);
+            margin: 25px auto 35px;
+            border-radius: 10px;
+        }
+
+        .form-title {
+            font-size: 26px;
+            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+            color: var(--we1-text-primary);
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .form-subtitle {
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            color: var(--we1-text-secondary);
+            margin-bottom: 35px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            color: var(--we1-text-primary);
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            transition: var(--we1-transition);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--we1-text-primary);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--we1-gold);
+            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .form-input::placeholder {
+            color: var(--we1-text-muted);
+        }
+
+        .form-input:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Select 드롭다운 옵션 스타일 */
+        .form-input option {
+            background: var(--we1-navy-deep);
+            color: var(--we1-text-primary);
+            padding: 12px;
+        }
+
+        .form-input option:hover {
+            background: rgba(212, 175, 55, 0.2);
+        }
+
+        .form-hint {
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            color: var(--we1-text-secondary);
+            margin-top: 6px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-group .form-input {
+            flex: 1;
+        }
+
+        .check-button {
+            padding: 14px 24px;
+            background: var(--we1-gradient-primary);
+            color: var(--we1-navy-deep);
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: var(--we1-transition);
+            white-space: nowrap;
+        }
+
+        .check-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+        }
+
+        .check-button.success {
+            background: #10B981;
+            color: white;
+        }
+
+        .check-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .check-button:disabled:hover {
+            box-shadow: none;
+        }
+
+        /* 버튼 그룹 */
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .btn-next, .btn-prev, .btn-submit {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: var(--we1-transition);
+        }
+
+        .btn-next, .btn-submit {
+            background: var(--we1-gradient-primary);
+            color: var(--we1-navy-deep);
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-next:hover, .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px rgba(212, 175, 55, 0.5);
+        }
+
+        .btn-next:disabled, .btn-submit:disabled {
+            background: #4A4A4A;
+            color: #8E8E93;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* 알림 */
+        .alert {
+            padding: 14px 18px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            display: none;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.15);
+            color: #FCA5A5;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.15);
+            color: #6EE7B7;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        /* 홈 링크 */
+        .home-link {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            z-index: 100;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: rgba(28, 28, 30, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 100px;
+            color: var(--we1-text-primary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            transition: var(--we1-transition);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .home-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.3);
+            border-color: var(--we1-gold);
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            color: var(--we1-text-secondary);
+        }
+
+        .login-link a {
+            color: var(--we1-gold);
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--we1-transition);
+        }
+
+        .login-link a:hover {
+            color: var(--we1-gold-light);
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .signup-card {
+                padding: 50px 35px;
+            }
+
+            .home-link {
+                top: 20px;
+                left: 20px;
+            }
+
+            .brand-name {
+                font-size: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 배경 -->
+    <div class="kpumasi-background">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+        <div id="particles"></div>
+    </div>
+
+    <!-- 홈 링크 -->
+    <a href="../index.html" class="home-link">
+        ← 홈으로
+    </a>
+
+    <!-- 회원가입 컨테이너 -->
+    <div class="signup-container fade-in-up">
+        <div class="signup-card">
+            <!-- 로고 -->
+            <div class="logo-container">
+                <div class="kpumasi-logo kpumasi-logo-small">
+                    <div class="logo-circle logo-circle-1"></div>
+                    <div class="logo-circle logo-circle-2"></div>
+                    <div class="logo-center" style="width: 40px; height: 40px; font-size: 18px;">W1</div>
+                </div>
+                <div class="brand-name">We One</div>
+                <div class="brand-tagline">Premium Network Platform</div>
+            </div>
+
+            <div class="gold-line"></div>
+
+            <!-- 알림 -->
+            <div class="alert alert-error" id="alertMessage"></div>
+
+            <!-- 회원가입 폼 -->
+            <form id="signupForm">
+                <h1 class="form-title">다계정 회원등록</h1>
+                <p class="form-subtitle">다계정 회원등록을 위한 정보를 입력하세요</p>
+                <p class="form-hint" style="text-align: center; margin-bottom: 30px; color: var(--we1-gold);">
+                    💡 회원코드는 시스템에서 자동으로 부여됩니다 (예: ABCD1234)
+                </p>
+
+                <div class="form-group">
+                    <label class="form-label" for="email">이메일</label>
+                    <input type="email" id="email" class="form-input" placeholder="example@email.com" required>
+                    <div class="form-hint" style="color: var(--we1-gold);">💡 테스트 모드: 이메일 인증 생략됨</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="password">비밀번호</label>
+                    <input type="password" id="password" class="form-input" placeholder="8자 이상 영문, 숫자, 특수문자 조합" required>
+                    <div class="form-hint">8자 이상 영문, 숫자, 특수문자 조합</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="passwordConfirm">비밀번호 확인</label>
+                    <input type="password" id="passwordConfirm" class="form-input" placeholder="비밀번호를 다시 입력하세요" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="bnbAddress">BSC 지갑주소 (선택)</label>
+                    <input type="text" id="bnbAddress" class="form-input" placeholder="0x... (테스트 모드: 빈칸 가능)">
+                    <div class="form-hint" style="color: var(--we1-gold);">💡 테스트 모드: 지갑주소 검증 생략됨</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="referralCode">추천코드 (선택)</label>
+                    <input type="text" id="referralCode" class="form-input" placeholder="추천인의 회원코드 (예: ABCD1234)" maxlength="8">
+                    <div class="form-hint">추천인의 회원코드를 입력하세요 (입력 시 자동 검증)</div>
+                    <div id="referralResult" style="margin-top: 10px; display: none;"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="sponsorCode">후원코드 (선택)</label>
+                    <div class="input-group">
+                        <input type="text" id="sponsorCode" class="form-input" placeholder="후원인의 회원코드 (예: ABCD1234)" maxlength="8">
+                        <button type="button" id="selectSponsorBtn" class="check-button" style="background: linear-gradient(135deg, #6366f1, #8b5cf6);" disabled>선택</button>
+                    </div>
+                    <div class="form-hint">'선택' 버튼으로 후원 가능한 회원 목록을 확인하세요</div>
+
+                    <!-- 후원 가능 회원 리스트 -->
+                    <div id="sponsorListContainer" style="display: none; margin-top: 12px; max-height: 300px; overflow-y: auto; border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 8px; background: rgba(0, 0, 0, 0.2);">
+                        <div style="padding: 10px; background: rgba(212, 175, 55, 0.1); border-bottom: 1px solid rgba(212, 175, 55, 0.2); position: sticky; top: 0; z-index: 10;">
+                            <div style="font-size: 13px; font-weight: 600; color: var(--we1-gold);">📋 후원 가능한 회원 목록</div>
+                            <div style="font-size: 11px; color: var(--we1-text-secondary); margin-top: 4px;">아이디를 클릭하면 자동으로 입력됩니다</div>
+                        </div>
+                        <div id="sponsorListContent" style="padding: 8px;">
+                            <!-- 동적으로 생성 -->
+                        </div>
+                    </div>
+
+                    <!-- 위치 선택 그룹 - 후원코드 확인 버튼 바로 아래에 표시 -->
+                    <div id="positionGroup" style="display: none; margin-top: 12px;">
+                        <!-- 로딩 상태 -->
+                        <div id="positionLoading" style="display: none; text-align: center; padding: 12px; color: var(--we1-text-secondary); font-size: 13px;">
+                            ⏳ 조회 중...
+                        </div>
+
+                        <!-- 에러 상태 -->
+                        <div id="positionError" style="display: none; padding: 10px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 8px; color: #FCA5A5; font-size: 13px;">
+                        </div>
+
+                        <!-- 조직도 시각화 - 미니멀 버전 -->
+                        <div id="positionTree" style="display: none; margin-top: 8px;">
+                            <!-- 후원인 정보 - 간소화 -->
+                            <div style="padding: 10px 12px; background: rgba(212, 175, 55, 0.08); border-radius: 8px; border: 1px solid rgba(212, 175, 55, 0.2); margin-bottom: 10px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <span style="font-size: 12px; color: var(--we1-text-secondary);">후원인</span>
+                                        <span style="font-size: 14px; font-weight: 700; color: var(--we1-gold); margin-left: 8px;" id="sponsorName"></span>
+                                    </div>
+                                    <div style="font-size: 11px; color: var(--we1-text-secondary);" id="sponsorStats"></div>
+                                </div>
+                            </div>
+
+                            <!-- 바이너리 트리 - 컴팩트 버전 -->
+                            <div style="display: flex; gap: 8px;">
+                                <!-- 좌측 위치 -->
+                                <div id="leftPosition" class="position-box" data-position="1" style="flex: 1; padding: 12px; border: 1.5px solid rgba(212, 175, 55, 0.25); border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.2s; background: rgba(255, 255, 255, 0.02);">
+                                    <div style="font-size: 20px; margin-bottom: 4px;">👈</div>
+                                    <div style="font-size: 13px; font-weight: 600; margin-bottom: 4px; color: var(--we1-text-primary);">좌측</div>
+                                    <div class="position-status" style="font-size: 11px; color: var(--we1-text-secondary);"></div>
+                                </div>
+
+                                <!-- 우측 위치 -->
+                                <div id="rightPosition" class="position-box" data-position="2" style="flex: 1; padding: 12px; border: 1.5px solid rgba(212, 175, 55, 0.25); border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.2s; background: rgba(255, 255, 255, 0.02);">
+                                    <div style="font-size: 20px; margin-bottom: 4px;">👉</div>
+                                    <div style="font-size: 13px; font-weight: 600; margin-bottom: 4px; color: var(--we1-text-primary);">우측</div>
+                                    <div class="position-status" style="font-size: 11px; color: var(--we1-text-secondary);"></div>
+                                </div>
+                            </div>
+
+                            <!-- 선택된 위치 표시 - 간소화 -->
+                            <div id="selectedPositionInfo" style="margin-top: 8px; padding: 8px 12px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 6px; color: #6EE7B7; font-size: 12px; display: none;">
+                                ✓ <span id="selectedPositionText"></span>
+                            </div>
+                        </div>
+
+                        <!-- Hidden input for selected position -->
+                        <input type="hidden" id="selectedPosition" name="position" value="">
+                    </div>
+                </div>
+
+                <!-- 다계정 개수 선택 -->
+                <div class="form-group">
+                    <label class="form-label" for="accountCount">등록 계정 개수</label>
+                    <select id="accountCount" class="form-input" style="cursor: pointer;">
+                        <option value="1" selected>1개 - $100</option>
+                        <option value="2">2개 - $200</option>
+                        <option value="3">3개 - $300</option>
+                        <option value="4">4개 - $400</option>
+                        <option value="5">5개 - $500</option>
+                        <option value="6">6개 - $600</option>
+                        <option value="7">7개 - $700</option>
+                        <option value="8">8개 - $800</option>
+                        <option value="9">9개 - $900</option>
+                        <option value="10">10개 - $1,000 🌟</option>
+                        <option value="15">15개 - $1,500</option>
+                        <option value="20">20개 - $2,000</option>
+                        <option value="25">25개 - $2,500</option>
+                        <option value="30">30개 - $3,000</option>
+                        <option value="40">40개 - $4,000</option>
+                        <option value="50">50개 - $5,000 💎</option>
+                        <option value="60">60개 - $6,000</option>
+                        <option value="70">70개 - $7,000</option>
+                        <option value="80">80개 - $8,000</option>
+                        <option value="90">90개 - $9,000</option>
+                        <option value="100">100개 - $10,000 👑</option>
+                    </select>
+
+                    <!-- 패키지 금액 및 계정 개수 확인 -->
+                    <div id="packageInfo" style="margin-top: 12px; padding: 16px; background: rgba(212, 175, 55, 0.15); border: 2px solid rgba(212, 175, 55, 0.5); border-radius: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span style="font-weight: 600; color: var(--we1-text-primary);">선택한 패키지:</span>
+                            <span id="packageName" style="font-size: 18px; font-weight: 700; color: var(--we1-gold);">Package $100</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span style="font-weight: 600; color: var(--we1-text-primary);">생성될 계정 수:</span>
+                            <span id="accountCountDisplay" style="font-size: 20px; font-weight: 800; color: var(--we1-gold);">1개</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-weight: 600; color: var(--we1-text-primary);">필요 금액:</span>
+                            <span id="packagePrice" style="font-size: 24px; font-weight: 800; color: var(--we1-gold);">$100</span>
+                        </div>
+                        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(212, 175, 55, 0.3); font-size: 13px; color: var(--we1-text-secondary);">
+                            💡 회원가입과 동시에 <strong id="accountCountText" style="color: var(--we1-gold);">1개</strong>의 계정이 자동으로 생성됩니다
+                        </div>
+                    </div>
+
+                    <!-- 바이너리 트리 구조 미리보기 -->
+                    <div id="treePreview" style="display: none; margin-top: 15px; padding: 15px; background: rgba(0, 0, 0, 0.3); border-radius: 12px; border: 1px solid rgba(212, 175, 55, 0.3);">
+                        <div style="font-size: 12px; font-weight: 600; color: var(--we1-text-secondary); margin-bottom: 10px; text-align: center;">
+                            🌳 생성될 바이너리 트리 구조 미리보기
+                        </div>
+                        <div id="treeStructure" style="font-family: monospace; font-size: 11px; color: var(--we1-text-primary); text-align: center; line-height: 1.8; white-space: pre;">
+                        </div>
+                    </div>
+
+                    <div class="form-hint" style="margin-top: 12px;">
+                        📌 다계정 선택 시 완전 바이너리 트리 구조로 자동 배치됩니다
+                    </div>
+                </div>
+
+                <!-- 추천방식 선택 -->
+                <div class="form-group">
+                    <label class="form-label" for="referralMethod">추천방식</label>
+                    <select id="referralMethod" class="form-input" style="cursor: pointer;">
+                        <option value="main_only" selected>대표자 전부 추천</option>
+                        <option value="cascade">내리추천</option>
+                    </select>
+
+                    <!-- 추천방식 설명 -->
+                    <div id="referralMethodInfo" style="margin-top: 12px; padding: 16px; background: rgba(59, 130, 246, 0.15); border: 2px solid rgba(59, 130, 246, 0.5); border-radius: 12px;">
+                        <div style="font-size: 14px; font-weight: 600; color: var(--we1-text-primary); margin-bottom: 8px;">
+                            📋 <span id="referralMethodTitle">대표자 전부 추천</span>
+                        </div>
+                        <div id="referralMethodDesc" style="font-size: 13px; color: var(--we1-text-secondary); line-height: 1.6;">
+                            모든 서브 계정이 대표 계정(메인)에게 추천을 받은 것으로 등록됩니다.
+                        </div>
+                    </div>
+
+                    <div class="form-hint" style="margin-top: 12px;">
+                        💡 추천방식에 따라 커미션 분배 구조가 달라집니다
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit" id="submitButton">가입완료</button>
+            </form>
+
+            <!-- 로그인 링크 -->
+            <div class="login-link">
+                이미 계정이 있으신가요? <a href="login.html">로그인</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== 점검 모드 화면 표시 함수 =====
+        function showMaintenanceMode() {
+            // 배경은 유지하고 컨테이너만 교체
+            const signupContainer = document.querySelector('.signup-container');
+
+            signupContainer.innerHTML = `
+                <div class="signup-card" style="text-align: center; padding: 80px 50px;">
+                    <!-- 점검 아이콘 -->
+                    <div style="margin-bottom: 30px;">
+                        <div style="width: 120px; height: 120px; background: linear-gradient(135deg, #F59E0B, #EF4444); border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 40px rgba(245, 158, 11, 0.4); animation: pulse 2s infinite;">
+                            <span style="font-size: 70px;">🔧</span>
+                        </div>
+                    </div>
+
+                    <!-- 제목 -->
+                    <h1 class="form-title" style="font-size: 32px; margin-bottom: 15px;">
+                        시스템 점검 중
+                    </h1>
+
+                    <div class="gold-line" style="margin: 25px auto;"></div>
+
+                    <!-- 메시지 -->
+                    <p style="font-size: 16px; color: var(--we1-text-secondary); line-height: 1.8; margin-bottom: 25px;">
+                        더 나은 서비스 제공을 위해<br>
+                        <strong style="color: var(--we1-gold);">회원가입 기능</strong>을 일시적으로 중단하였습니다.
+                    </p>
+
+                    <!-- 안내 박스 -->
+                    <div style="background: rgba(212, 175, 55, 0.1); border: 2px solid rgba(212, 175, 55, 0.3); border-radius: 16px; padding: 25px; margin: 30px 0;">
+                        <div style="font-size: 14px; color: var(--we1-text-primary); line-height: 1.8;">
+                            <strong style="color: var(--we1-gold); font-size: 15px;">📋 점검 사유</strong><br>
+                            <span style="color: var(--we1-text-secondary);">
+                                • 시스템 업그레이드 및 보안 강화<br>
+                                • 회원가입 프로세스 개선<br>
+                                • 안정성 향상 작업
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- 예상 시간 -->
+                    <div style="margin: 25px 0; padding: 15px; background: rgba(59, 130, 246, 0.1); border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.3);">
+                        <div style="font-size: 13px; color: #93C5FD; margin-bottom: 5px;">⏰ 예상 완료 시간</div>
+                        <div style="font-size: 16px; font-weight: 700; color: #60A5FA;">2025년 11월 12일 13:00</div>
+                    </div>
+
+                    <!-- 홈 버튼 -->
+                    <a href="../index.html" style="display: inline-block; margin-top: 30px; padding: 16px 40px; background: var(--we1-gradient-primary); color: var(--we1-navy-deep); border-radius: 12px; font-weight: 700; text-decoration: none; transition: all 0.3s; box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);">
+                        🏠 홈으로 돌아가기
+                    </a>
+
+                    <!-- 하단 안내 -->
+                    <p style="margin-top: 30px; font-size: 13px; color: var(--we1-text-muted);">
+                        불편을 드려 죄송합니다. 빠른 시일 내에 정상화하겠습니다.
+                    </p>
+                </div>
+
+                <style>
+                    @keyframes pulse {
+                        0%, 100% { transform: scale(1); }
+                        50% { transform: scale(1.05); }
+                    }
+                </style>
+            `;
+        }
+        // ===== 점검 모드 함수 끝 =====
+
+        // 파티클 생성
+        function createParticles() {
+            const container = document.getElementById('particles');
+            if (!container) return;
+
+            const particleCount = 25;
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 15) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // 전역 변수
+        let positionData = null;
+
+        // 페이지 로드
+        window.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+
+            // URL 파라미터에서 코드 읽기
+            const urlParams = new URLSearchParams(window.location.search);
+            const ref = urlParams.get('ref') || urlParams.get('referral');
+            const sponsor = urlParams.get('sponsor');
+
+            let autoFilledMessage = '';
+
+            // 추천코드 자동 입력 (URL에서 온 경우 읽기전용 + 자동검증)
+            if (ref) {
+                const referralCodeInput = document.getElementById('referralCode');
+                referralCodeInput.value = ref.toUpperCase();
+                referralCodeInput.readOnly = true; // 수정 불가
+                referralCodeInput.style.background = 'rgba(212, 175, 55, 0.1)';
+                referralCodeInput.style.borderColor = 'rgba(212, 175, 55, 0.5)';
+
+                autoFilledMessage += `추천코드: ${ref.toUpperCase()} (수정불가)`;
+
+                // 후원코드에도 추천코드를 기본값으로 자동 입력 (sponsor 파라미터가 없을 경우)
+                if (!sponsor) {
+                    const sponsorCodeInput = document.getElementById('sponsorCode');
+                    sponsorCodeInput.value = ref.toUpperCase();
+                    sponsorCodeInput.style.background = 'rgba(212, 175, 55, 0.05)';
+                    sponsorCodeInput.style.borderColor = 'rgba(212, 175, 55, 0.3)';
+
+                    // "선택" 버튼 활성화
+                    const selectSponsorBtn = document.getElementById('selectSponsorBtn');
+                    selectSponsorBtn.disabled = false;
+                    selectSponsorBtn.style.opacity = '1';
+
+                    autoFilledMessage += '\n';
+                    autoFilledMessage += `후원코드: ${ref.toUpperCase()} (기본값, 수정가능)`;
+                }
+
+                // 자동 검증 후 "선택" 버튼 활성화
+                setTimeout(() => {
+                    console.log('🔄 추천코드 자동 확인 중...');
+                    checkReferralCode();
+                }, 500);
+            }
+
+            // 후원코드 자동 입력 (sponsor 파라미터가 명시된 경우)
+            if (sponsor) {
+                const sponsorCodeInput = document.getElementById('sponsorCode');
+                sponsorCodeInput.value = sponsor.toUpperCase();
+                // readOnly 없음 - 수정 가능
+                sponsorCodeInput.style.background = 'rgba(212, 175, 55, 0.05)';
+                sponsorCodeInput.style.borderColor = 'rgba(212, 175, 55, 0.3)';
+
+                // "선택" 버튼 활성화
+                const selectSponsorBtn = document.getElementById('selectSponsorBtn');
+                selectSponsorBtn.disabled = false;
+                selectSponsorBtn.style.opacity = '1';
+
+                if (autoFilledMessage) {
+                    autoFilledMessage += '\n';
+                }
+                autoFilledMessage += `후원코드: ${sponsor.toUpperCase()} (수정가능)`;
+
+                // 자동 검증
+                setTimeout(() => {
+                    console.log('🔄 후원코드 자동 확인 중...');
+                    checkSponsorPosition(sponsor.toUpperCase());
+                }, 1000);
+            }
+
+            // 안내 메시지
+            if (autoFilledMessage) {
+                showAlert(`✨ 추천 링크로 접속하셨습니다!\n\n${autoFilledMessage}\n\n자동으로 검증 중입니다...`, 'success');
+            }
+
+            // ========== 추천코드 자동 검증 ==========
+            const referralCodeInput = document.getElementById('referralCode');
+            let referralCheckTimeout = null;
+
+            // 추천코드 검증 함수
+            async function checkReferralCode() {
+                // readOnly 필드는 수정할 수 없음
+                if (referralCodeInput.readOnly) {
+                    return;
+                }
+
+                const referralCode = referralCodeInput.value.trim().toUpperCase();
+
+                if (referralCode === '') {
+                    // 빈 값이면 결과 숨기기
+                    document.getElementById('referralResult').style.display = 'none';
+                    return;
+                }
+
+                if (referralCode.length !== 8) {
+                    // 8자리가 아니면 아직 검증하지 않음
+                    return;
+                }
+
+                // 대문자로 변환 후 저장
+                referralCodeInput.value = referralCode;
+
+                try {
+                    // 현재 페이지의 기준 경로 확인
+                    const currentPath = window.location.pathname;
+                    const basePath = currentPath.includes('/html/')
+                        ? '../api/auth/check-referral.php'
+                        : '/api/auth/check-referral.php';
+
+                    const apiUrl = `${basePath}?code=${encodeURIComponent(referralCode)}`;
+                    console.log('추천코드 API 호출:', apiUrl);
+
+                    const response = await fetch(apiUrl);
+                    const data = await response.json();
+
+                    const resultDiv = document.getElementById('referralResult');
+
+                    if (data.success) {
+                        // 성공 - 추천인 정보 표시
+                        resultDiv.innerHTML = `
+                            <div style="padding: 12px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; color: #6EE7B7;">
+                                <strong>✅ ${data.message}</strong><br>
+                                <small style="color: var(--we1-text-secondary); margin-top: 6px; display: block;">
+                                    회원코드: ${data.data.user_id} ${data.data.name ? '(' + data.data.name + ')' : ''}
+                                </small>
+                            </div>
+                        `;
+                        resultDiv.style.display = 'block';
+                        referralCodeInput.style.borderColor = '#10B981';
+
+                        // 후원코드 입력란에 추천코드 자동 기입
+                        const sponsorCodeInput = document.getElementById('sponsorCode');
+                        sponsorCodeInput.value = referralCode;
+
+                        // "선택" 버튼 활성화
+                        const selectSponsorBtn = document.getElementById('selectSponsorBtn');
+                        selectSponsorBtn.disabled = false;
+                        selectSponsorBtn.style.opacity = '1';
+                    } else {
+                        // 실패
+                        resultDiv.innerHTML = `
+                            <div style="padding: 12px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 12px; color: #FCA5A5;">
+                                <strong>❌ ${data.message}</strong>
+                            </div>
+                        `;
+                        resultDiv.style.display = 'block';
+                        referralCodeInput.style.borderColor = '#EF4444';
+                    }
+                } catch (error) {
+                    console.error('Check referral error:', error);
+                    const resultDiv = document.getElementById('referralResult');
+                    resultDiv.innerHTML = `
+                        <div style="padding: 12px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 12px; color: #FCA5A5;">
+                            <strong>❌ 조회 중 오류가 발생했습니다</strong>
+                        </div>
+                    `;
+                    resultDiv.style.display = 'block';
+                }
+            }
+
+            // 입력 시 자동 검증 (debounce 적용)
+            referralCodeInput.addEventListener('input', (e) => {
+                // 대문자 변환
+                e.target.value = e.target.value.toUpperCase();
+
+                // 이전 타이머 취소
+                if (referralCheckTimeout) {
+                    clearTimeout(referralCheckTimeout);
+                }
+
+                // 0.5초 후 검증
+                referralCheckTimeout = setTimeout(() => {
+                    checkReferralCode();
+                }, 500);
+            });
+
+            // ========== 후원 가능 회원 선택 버튼 ==========
+            const selectSponsorBtn = document.getElementById('selectSponsorBtn');
+            const sponsorCodeInput = document.getElementById('sponsorCode');
+
+            selectSponsorBtn.addEventListener('click', async () => {
+                // 현재 후원코드 입력란의 값을 기준으로 조회
+                const currentSponsorCode = sponsorCodeInput.value.trim().toUpperCase();
+
+                if (!currentSponsorCode) {
+                    showAlert('후원코드를 입력해주세요', 'error');
+                    sponsorCodeInput.focus();
+                    return;
+                }
+
+                // 버튼 상태 변경
+                selectSponsorBtn.disabled = true;
+                selectSponsorBtn.textContent = '조회 중...';
+
+                try {
+                    // 현재 페이지의 기준 경로 확인 (auth 폴더 사용 - 임시)
+                    const currentPath = window.location.pathname;
+                    const basePath = currentPath.includes('/html/')
+                        ? '../api/auth/get-sponsor-list.php'
+                        : '/api/auth/get-sponsor-list.php';
+
+                    const apiUrl = `${basePath}?referral_id=${encodeURIComponent(currentSponsorCode)}`;
+                    console.log('현재 경로:', currentPath);
+                    console.log('API 경로:', basePath);
+                    console.log('후원 리스트 API 호출:', apiUrl);
+
+                    const response = await fetch(apiUrl);
+
+                    console.log('응답 상태:', response.status, response.statusText);
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+
+                    const data = await response.json();
+                    console.log('후원 리스트 응답:', data);
+
+                    if (data.success) {
+                        console.log('sponsor_list:', data.data.sponsor_list);
+                        console.log('total_count:', data.data.total_count);
+
+                        // 리스트가 있는지 확인
+                        if (!data.data.sponsor_list || data.data.sponsor_list.length === 0) {
+                            showAlert('후원 가능한 자리가 없습니다', 'info');
+                            selectSponsorBtn.disabled = false;
+                            selectSponsorBtn.textContent = '선택';
+                            return;
+                        }
+
+                        // 리스트 표시
+                        showSponsorList(data.data.sponsor_list);
+                        selectSponsorBtn.textContent = '✓ 목록 표시';
+                        selectSponsorBtn.disabled = false;
+                    } else {
+                        showAlert(data.message || '조회 실패', 'error');
+                        selectSponsorBtn.disabled = false;
+                        selectSponsorBtn.textContent = '선택';
+                    }
+                } catch (error) {
+                    console.error('Sponsor list error:', error);
+                    showAlert('조회 중 오류가 발생했습니다', 'error');
+                    selectSponsorBtn.disabled = false;
+                    selectSponsorBtn.textContent = '선택';
+                }
+            });
+
+            // ========== 후원코드 입력 시 대문자 변환 및 선택 버튼 활성화 ==========
+            sponsorCodeInput.addEventListener('input', (e) => {
+                e.target.value = e.target.value.toUpperCase();
+
+                // 후원코드 입력란에 값이 있으면 "선택" 버튼 활성화
+                const selectSponsorBtn = document.getElementById('selectSponsorBtn');
+                if (e.target.value.trim().length > 0) {
+                    selectSponsorBtn.disabled = false;
+                    selectSponsorBtn.style.opacity = '1';
+                } else {
+                    selectSponsorBtn.disabled = true;
+                    selectSponsorBtn.style.opacity = '0.5';
+                }
+            });
+
+            // 위치 박스 클릭 이벤트
+            document.querySelectorAll('.position-box').forEach(box => {
+                box.addEventListener('click', () => {
+                    const position = box.getAttribute('data-position');
+                    if (!box.classList.contains('occupied')) {
+                        selectPosition(position);
+                    }
+                });
+            });
+
+            // 계정 개수 변경 시 패키지 정보 업데이트
+            document.getElementById('accountCount').addEventListener('change', (e) => {
+                updatePackageInfo(parseInt(e.target.value));
+            });
+
+            // 추천방식 변경 시 설명 업데이트
+            document.getElementById('referralMethod').addEventListener('change', (e) => {
+                updateReferralMethodInfo(e.target.value);
+            });
+        });
+
+        // 패키지 정보 업데이트
+        function updatePackageInfo(accountCount) {
+            const price = accountCount * 100;
+            const packageName = accountCount === 1
+                ? `Package $${price} (1 Account)`
+                : `Package $${price.toLocaleString()} (${accountCount} Accounts)`;
+
+            document.getElementById('packageName').textContent = packageName;
+            document.getElementById('packagePrice').textContent = `$${price.toLocaleString()}`;
+
+            // 계정 개수 표시 업데이트
+            document.getElementById('accountCountDisplay').textContent = `${accountCount}개`;
+            document.getElementById('accountCountText').textContent = `${accountCount}개`;
+
+            // 바이너리 트리 미리보기 업데이트
+            updateTreePreview(accountCount);
+
+            // 콘솔에 선택 정보 출력 (확인용)
+            console.log('🔢 계정 개수 선택됨:', accountCount);
+            console.log('💰 필요 금액:', `$${price}`);
+            console.log('📦 패키지명:', packageName);
+        }
+
+        // 추천방식 설명 업데이트
+        function updateReferralMethodInfo(method) {
+            const titleEl = document.getElementById('referralMethodTitle');
+            const descEl = document.getElementById('referralMethodDesc');
+
+            if (method === 'main_only') {
+                titleEl.textContent = '대표자 전부 추천';
+                descEl.innerHTML = `
+                    모든 서브 계정이 대표 계정(메인)에게 추천을 받은 것으로 등록됩니다.<br>
+                    <strong style="color: var(--we1-gold);">예시:</strong> 3개 계정 선택 시, 서브1과 서브2가 모두 메인에게 추천받음
+                `;
+            } else if (method === 'cascade') {
+                titleEl.textContent = '내리추천';
+                descEl.innerHTML = `
+                    서브 계정들이 순차적으로 상위 계정에게 추천을 받은 것으로 등록됩니다.<br>
+                    <strong style="color: var(--we1-gold);">예시:</strong> 3개 계정 선택 시, 서브1은 메인에게, 서브2는 서브1에게 추천받음
+                `;
+            }
+
+            console.log('📋 추천방식 선택됨:', method);
+        }
+
+        // 후원 가능 회원 리스트 표시
+        function showSponsorList(sponsorList) {
+            const container = document.getElementById('sponsorListContainer');
+            const content = document.getElementById('sponsorListContent');
+
+            if (!sponsorList || sponsorList.length === 0) {
+                content.innerHTML = `
+                    <div style="padding: 20px; text-align: center; color: var(--we1-text-secondary);">
+                        후원 가능한 자리가 없습니다
+                    </div>
+                `;
+                container.style.display = 'block';
+                return;
+            }
+
+            // 리스트 HTML 생성
+            let html = '';
+            sponsorList.forEach((item, index) => {
+                const depthBadge = `<span style="display: inline-block; padding: 2px 8px; background: rgba(212, 175, 55, 0.2); border-radius: 4px; font-size: 11px; margin-right: 8px;">${item.depth}</span>`;
+                const positionBadge = `<span style="display: inline-block; padding: 2px 8px; background: ${item.position === 'left' ? 'rgba(59, 130, 246, 0.2)' : 'rgba(168, 85, 247, 0.2)'}; border-radius: 4px; font-size: 11px; color: ${item.position === 'left' ? '#60a5fa' : '#c084fc'};">${item.position_text}</span>`;
+
+                html += `
+                    <div class="sponsor-list-item" data-user-id="${item.user_id}" data-position="${item.position_code}"
+                         style="padding: 10px 12px; margin: 6px 0; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 8px; cursor: pointer; transition: all 0.2s;"
+                         onmouseover="this.style.background='rgba(212, 175, 55, 0.1)'; this.style.borderColor='var(--we1-gold)';"
+                         onmouseout="this.style.background='rgba(255, 255, 255, 0.03)'; this.style.borderColor='rgba(212, 175, 55, 0.2)';">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                ${depthBadge}
+                                <span style="font-family: 'Courier New', monospace; font-weight: 700; color: var(--we1-gold); font-size: 14px;">${item.user_id}</span>
+                                ${positionBadge}
+                            </div>
+                            <div style="font-size: 11px; color: var(--we1-text-secondary);">
+                                클릭하여 선택
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            content.innerHTML = html;
+            container.style.display = 'block';
+
+            // 클릭 이벤트 추가
+            document.querySelectorAll('.sponsor-list-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const userId = item.getAttribute('data-user-id');
+                    const position = item.getAttribute('data-position'); // 1=좌, 2=우
+
+                    console.log('🎯 리스트 항목 클릭:', userId, '위치:', position);
+
+                    // 후원코드 입력 (DOM에서 직접 가져오기)
+                    const sponsorInput = document.getElementById('sponsorCode');
+                    sponsorInput.value = userId;
+                    console.log('✅ 후원코드 입력됨:', sponsorInput.value);
+
+                    // 리스트 숨기기
+                    container.style.display = 'none';
+
+                    // 자동으로 위치 확인 후 해당 위치 자동 선택
+                    console.log('🔄 위치 확인 시작...');
+                    checkSponsorPositionAndSelect(userId, position);
+                });
+            });
+        }
+
+        // 바이너리 트리 미리보기 업데이트
+        function updateTreePreview(accountCount) {
+            const treePreview = document.getElementById('treePreview');
+            const treeStructure = document.getElementById('treeStructure');
+
+            if (accountCount === 1) {
+                treePreview.style.display = 'none';
+                return;
+            }
+
+            treePreview.style.display = 'block';
+
+            // 트리 구조 텍스트 생성
+            let treeText = '';
+            if (accountCount === 2) {
+                treeText = `       👑 #1 (대표)
+      /
+    #2`;
+            } else if (accountCount === 3) {
+                treeText = `       👑 #1 (대표)
+      /          \\
+    #2            #3`;
+            } else if (accountCount === 4) {
+                treeText = `       👑 #1 (대표)
+      /          \\
+    #2            #3
+   /
+ #4`;
+            } else if (accountCount === 5) {
+                treeText = `       👑 #1 (대표)
+      /          \\
+    #2            #3
+   /  \\
+ #4    #5`;
+            } else if (accountCount === 6) {
+                treeText = `       👑 #1 (대표)
+      /          \\
+    #2            #3
+   /  \\          /
+ #4    #5      #6`;
+            } else if (accountCount === 7) {
+                treeText = `       👑 #1 (대표)
+      /          \\
+    #2            #3
+   /  \\          /  \\
+ #4    #5      #6    #7`;
+            }
+
+            treeStructure.textContent = treeText;
+        }
+
+        // 후원인 위치 확인
+        async function checkSponsorPosition(sponsorCode) {
+            const positionGroup = document.getElementById('positionGroup');
+            const positionLoading = document.getElementById('positionLoading');
+            const positionError = document.getElementById('positionError');
+            const positionTree = document.getElementById('positionTree');
+
+            // 초기화
+            positionGroup.style.display = 'block';
+            positionLoading.style.display = 'block';
+            positionError.style.display = 'none';
+            positionTree.style.display = 'none';
+            document.getElementById('selectedPositionInfo').style.display = 'none';
+            document.getElementById('selectedPosition').value = '';
+
+            try {
+                // 현재 페이지의 기준 경로 확인
+                const currentPath = window.location.pathname;
+                const basePath = currentPath.includes('/html/')
+                    ? '../api/organization/check-position.php'
+                    : '/api/organization/check-position.php';
+
+                const apiUrl = `${basePath}?sponsor_id=${encodeURIComponent(sponsorCode)}`;
+                console.log('현재 경로:', currentPath);
+                console.log('API 호출:', apiUrl);
+
+                const response = await fetch(apiUrl);
+                console.log('응답 상태:', response.status, response.statusText);
+
+                // 응답 텍스트를 먼저 확인
+                const responseText = await response.text();
+                console.log('응답 텍스트:', responseText);
+
+                if (!response.ok) {
+                    positionLoading.style.display = 'none';
+                    positionError.innerHTML = `HTTP 오류: ${response.status} ${response.statusText}<br><small>${responseText}</small>`;
+                    positionError.style.display = 'block';
+                    return;
+                }
+
+                // JSON 파싱 시도
+                let data;
+                try {
+                    data = JSON.parse(responseText);
+                    console.log('응답 데이터:', data);
+                } catch (parseError) {
+                    positionLoading.style.display = 'none';
+                    positionError.innerHTML = `JSON 파싱 오류<br><small>${responseText.substring(0, 200)}</small>`;
+                    positionError.style.display = 'block';
+                    return;
+                }
+
+                positionLoading.style.display = 'none';
+
+                if (!data.success) {
+                    let errorMsg = data.message || '조회 실패';
+                    if (data.error) {
+                        errorMsg += `<br><small style="color: #FCA5A5;">${data.error}</small>`;
+                    }
+                    positionError.innerHTML = errorMsg;
+                    positionError.style.display = 'block';
+                    return;
+                }
+
+                // 데이터 저장
+                positionData = data.data;
+
+                // 후원인 정보 표시
+                document.getElementById('sponsorName').textContent =
+                    `${positionData.sponsor.user_id} ${positionData.sponsor.name ? '(' + positionData.sponsor.name + ')' : ''}`;
+                document.getElementById('sponsorStats').textContent =
+                    `레벨 ${positionData.sponsor.level} | 좌측: ${positionData.statistics.left_count}명 | 우측: ${positionData.statistics.right_count}명`;
+
+                // 좌측 위치 상태
+                const leftBox = document.getElementById('leftPosition');
+                const leftStatus = leftBox.querySelector('.position-status');
+
+                if (positionData.positions.left.available) {
+                    leftBox.classList.remove('occupied');
+                    leftBox.classList.add('available');
+                    leftBox.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+                    leftBox.style.background = 'rgba(16, 185, 129, 0.05)';
+                    leftBox.style.cursor = 'pointer';
+                    leftBox.style.opacity = '1';
+                    leftBox.style.pointerEvents = 'auto';
+                    leftStatus.innerHTML = '<span style="color: #10B981;">✓ 가능</span>';
+                } else {
+                    leftBox.classList.add('occupied');
+                    leftBox.classList.remove('available');
+                    leftBox.style.borderColor = 'rgba(239, 68, 68, 0.2)';
+                    leftBox.style.background = 'rgba(239, 68, 68, 0.03)';
+                    leftBox.style.cursor = 'not-allowed';
+                    leftBox.style.opacity = '0.4';
+                    leftBox.style.pointerEvents = 'none'; // 클릭 완전 차단
+                    const occupiedBy = positionData.positions.left.occupied_by;
+                    leftStatus.innerHTML = `<span style="color: #EF4444;">✕ 사용중</span>`;
+                }
+
+                // 우측 위치 상태
+                const rightBox = document.getElementById('rightPosition');
+                const rightStatus = rightBox.querySelector('.position-status');
+
+                if (positionData.positions.right.available) {
+                    rightBox.classList.remove('occupied');
+                    rightBox.classList.add('available');
+                    rightBox.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+                    rightBox.style.background = 'rgba(16, 185, 129, 0.05)';
+                    rightBox.style.cursor = 'pointer';
+                    rightBox.style.opacity = '1';
+                    rightBox.style.pointerEvents = 'auto';
+                    rightStatus.innerHTML = '<span style="color: #10B981;">✓ 가능</span>';
+                } else {
+                    rightBox.classList.add('occupied');
+                    rightBox.classList.remove('available');
+                    rightBox.style.borderColor = 'rgba(239, 68, 68, 0.2)';
+                    rightBox.style.background = 'rgba(239, 68, 68, 0.03)';
+                    rightBox.style.cursor = 'not-allowed';
+                    rightBox.style.opacity = '0.4';
+                    rightBox.style.pointerEvents = 'none'; // 클릭 완전 차단
+                    const occupiedBy = positionData.positions.right.occupied_by;
+                    rightStatus.innerHTML = `<span style="color: #EF4444;">✕ 사용중</span>`;
+                }
+
+                // 트리 표시
+                positionTree.style.display = 'block';
+
+                // 자동으로 빈 자리가 하나만 있으면 선택
+                if (positionData.positions.left.available && !positionData.positions.right.available) {
+                    selectPosition('1');
+                } else if (!positionData.positions.left.available && positionData.positions.right.available) {
+                    selectPosition('2');
+                }
+
+                return true; // 성공
+
+            } catch (error) {
+                console.error('Check position error:', error);
+                positionLoading.style.display = 'none';
+
+                // 상세한 에러 메시지 표시
+                let errorMessage = '조회 중 오류가 발생했습니다. 네트워크를 확인해주세요.';
+
+                // 개발 모드에서 상세 에러 표시
+                if (error.message) {
+                    errorMessage += `\n\n상세 정보: ${error.message}`;
+                }
+
+                positionError.innerHTML = errorMessage.replace(/\n/g, '<br>');
+                positionError.style.display = 'block';
+                return false; // 실패
+            }
+        }
+
+        // 후원 위치 확인 후 자동 선택 (리스트에서 선택한 경우)
+        async function checkSponsorPositionAndSelect(userId, targetPosition) {
+            console.log('📍 checkSponsorPositionAndSelect 호출:', userId, targetPosition);
+
+            // 먼저 위치 정보 로드
+            const success = await checkSponsorPosition(userId);
+
+            console.log('📍 checkSponsorPosition 결과:', success);
+
+            if (success) {
+                // 위치 정보가 로드되면 해당 위치 자동 선택
+                console.log('✅ 위치 자동 선택:', targetPosition === '1' ? '좌측' : '우측');
+                setTimeout(() => {
+                    selectPosition(targetPosition);
+                }, 300);
+            } else {
+                console.error('❌ 위치 정보 로드 실패');
+            }
+        }
+
+        // 위치 선택
+        function selectPosition(position) {
+            // 모든 박스에서 선택 해제
+            document.querySelectorAll('.position-box').forEach(box => {
+                box.style.transform = 'scale(1)';
+                box.style.boxShadow = 'none';
+            });
+
+            // 선택된 박스 강조
+            const selectedBox = position === '1' ?
+                document.getElementById('leftPosition') :
+                document.getElementById('rightPosition');
+
+            if (selectedBox.classList.contains('occupied')) {
+                return; // 이미 차있는 자리는 선택 불가
+            }
+
+            selectedBox.style.transform = 'scale(1.05)';
+            selectedBox.style.boxShadow = '0 0 20px rgba(212, 175, 55, 0.5)';
+            selectedBox.style.borderColor = 'var(--we1-gold)';
+
+            // Hidden input 업데이트
+            document.getElementById('selectedPosition').value = position;
+
+            // 선택 정보 표시 - 간소화
+            const positionText = position === '1' ? '좌측 선택됨' : '우측 선택됨';
+            document.getElementById('selectedPositionText').textContent = positionText;
+            document.getElementById('selectedPositionInfo').style.display = 'block';
+        }
+
+        // 회원가입 제출
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // 폼 검증
+            const password = document.getElementById('password').value;
+            const passwordConfirm = document.getElementById('passwordConfirm').value;
+            const email = document.getElementById('email').value;
+            const bnbAddress = document.getElementById('bnbAddress').value;
+
+            // 비밀번호 검증
+            if (!password || password.length < 8) {
+                showAlert('비밀번호는 8자 이상 입력해주세요', 'error');
+                return;
+            }
+
+            if (password !== passwordConfirm) {
+                showAlert('비밀번호가 일치하지 않습니다', 'error');
+                return;
+            }
+
+            // 이메일 검증
+            if (!email || !email.includes('@')) {
+                showAlert('올바른 이메일을 입력해주세요', 'error');
+                return;
+            }
+
+            // 테스트 모드: BSC 지갑주소 검증 생략 (빈 값 허용)
+            // 테스트 모드: 인증 코드 검증 생략
+
+            const button = document.getElementById('submitButton');
+            button.disabled = true;
+            button.textContent = '처리중...';
+
+            try {
+                const sponsorCode = document.getElementById('sponsorCode').value.trim();
+                const selectedPositionValue = document.getElementById('selectedPosition').value;
+
+                // 후원코드가 있는데 위치 선택이 안되어 있으면 에러
+                if (sponsorCode && !selectedPositionValue) {
+                    showAlert('❌ 후원인 코드를 입력한 경우 반드시 좌/우 위치를 선택해주세요!', 'error');
+                    button.textContent = '가입완료';
+                    button.disabled = false;
+
+                    // 후원코드 입력란으로 스크롤
+                    document.getElementById('sponsorCode').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    return;
+                }
+
+                const accountCount = parseInt(document.getElementById('accountCount').value);
+
+                // 디버깅 로그
+                console.log('===== 회원가입 폼 데이터 =====');
+                console.log('선택한 계정 개수:', accountCount);
+                console.log('accountCount 요소 값:', document.getElementById('accountCount').value);
+
+                const formData = {
+                    password: password,
+                    email: email,
+                    bnb_address: bnbAddress || '0x0000000000000000000000000000000000000000', // 테스트 모드: 기본값
+                    referral_id: document.getElementById('referralCode').value || null,
+                    sponsor_id: sponsorCode || null,
+                    sponsor_position: selectedPositionValue || null, // 1=좌측, 2=우측
+                    account_count: accountCount, // 다계정 개수 (1~7)
+                    verification_code: '000000' // 테스트 모드: 더미 코드
+                };
+
+                console.log('전송할 폼 데이터:', formData);
+
+                // 확인 알림 (디버깅용)
+                if (!confirm(`⚠️ 확인 필요\n\n생성될 계정 수: ${accountCount}개\n필요 금액: $${accountCount * 100}\n\n이대로 진행하시겠습니까?`)) {
+                    button.textContent = '가입완료';
+                    button.disabled = false;
+                    return;
+                }
+
+                // 현재 페이지의 기준 경로 확인
+                const currentPath = window.location.pathname;
+                const registerApiPath = currentPath.includes('/html/')
+                    ? '../api/auth/register.php'
+                    : '/api/auth/register.php';
+
+                console.log('회원가입 API 호출:', registerApiPath);
+
+                const response = await fetch(registerApiPath, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                console.log('응답 상태:', response.status, response.statusText);
+
+                // 응답 텍스트 먼저 확인
+                const responseText = await response.text();
+                console.log('응답 텍스트:', responseText.substring(0, 500));
+
+                // JSON 파싱 시도
+                let data;
+                try {
+                    data = JSON.parse(responseText);
+                    console.log('파싱된 응답:', data);
+                } catch (parseError) {
+                    console.error('JSON 파싱 에러:', parseError);
+                    console.error('전체 응답:', responseText);
+                    throw new Error('서버 응답이 올바른 JSON 형식이 아닙니다: ' + responseText.substring(0, 200));
+                }
+
+                // 서버 응답 로그
+                console.log('===== 서버 응답 =====');
+                console.log('성공 여부:', data.success);
+                console.log('메시지:', data.message);
+                console.log('응답 데이터:', data.data);
+                if (data.data) {
+                    console.log('- 대표 계정:', data.data.user_id);
+                    console.log('- 계정 개수:', data.data.account_count);
+                    console.log('- 전체 계정:', data.data.all_accounts);
+                }
+                console.log('===================');
+
+                if (data.success) {
+                    const userId = data.data?.user_id || '회원코드';
+                    const email = data.data?.email || '';
+                    const accountCount = data.data?.account_count || 1;
+                    const allAccounts = data.data?.all_accounts || [userId];
+
+                    console.log(`✅ 회원가입 성공! ${accountCount}개 계정 생성됨:`, allAccounts);
+
+                    // 기존 알림 숨기기
+                    document.getElementById('alertMessage').style.display = 'none';
+
+                    // 회원가입 성공 팝업 표시 (모든 계정 정보 포함)
+                    showSuccessPopup(userId, email, accountCount, allAccounts);
+                } else {
+                    showAlert(data.message || '회원가입에 실패했습니다', 'error');
+                    button.textContent = '가입완료';
+                    button.disabled = false;
+                }
+            } catch (error) {
+                console.error('Signup error:', error);
+                showAlert('네트워크 오류가 발생했습니다', 'error');
+                button.textContent = '가입완료';
+                button.disabled = false;
+            }
+        });
+
+        // 알림 표시
+        function showAlert(message, type) {
+            const alert = document.getElementById('alertMessage');
+            alert.textContent = message;
+            alert.className = 'alert alert-' + type;
+            alert.style.display = 'block';
+
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 5000);
+        }
+
+        // 회원가입 성공 팝업
+        function showSuccessPopup(userId, email, accountCount = 1, allAccounts = []) {
+            // 다중 계정 목록 HTML 생성
+            let accountListHTML = '';
+            if (accountCount > 1) {
+                accountListHTML = `
+                    <div style="margin-bottom: 20px; padding: 18px; background: rgba(255, 255, 255, 0.04); border-radius: 12px; border: 1px solid rgba(212, 175, 55, 0.2);">
+                        <div style="font-size: 12px; color: var(--we1-text-secondary); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; text-align: center;">
+                            생성된 전체 계정 (${accountCount}개)
+                        </div>
+                        <div style="max-height: 180px; overflow-y: auto;">
+                            ${allAccounts.map((acc, index) => `
+                                <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; margin: 6px 0; background: ${index === 0 ? 'rgba(212, 175, 55, 0.15)' : 'rgba(255, 255, 255, 0.03)'}; border-radius: 8px; border: 1px solid ${index === 0 ? 'var(--we1-gold)' : 'rgba(212, 175, 55, 0.2)'};">
+                                    <div>
+                                        <span style="font-size: 10px; color: var(--we1-text-secondary); margin-right: 8px;">${index === 0 ? '👑 대표' : `#${index + 1}`}</span>
+                                        <span style="font-family: 'Courier New', monospace; font-weight: 700; color: ${index === 0 ? 'var(--we1-gold)' : 'var(--we1-text-primary)'}; font-size: 14px;">${acc}</span>
+                                    </div>
+                                    <button onclick="copyToClipboard('${acc}')" style="background: rgba(212, 175, 55, 0.2); color: var(--we1-gold); border: 1px solid rgba(212, 175, 55, 0.4); padding: 4px 10px; border-radius: 6px; font-size: 11px; cursor: pointer; font-weight: 600;">복사</button>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(212, 175, 55, 0.2); font-size: 11px; color: var(--we1-text-secondary); text-align: center; line-height: 1.6;">
+                            💡 모든 계정이 <strong style="color: var(--we1-gold);">${allAccounts[0]}</strong>을 정점으로 바이너리 트리 구조로 배치되었습니다
+                        </div>
+                    </div>
+                `;
+            }
+
+            // 오버레이와 팝업 HTML 생성
+            const popupHTML = `
+                <div id="successOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); display: flex; align-items: center; justify-content: center; z-index: 10000; animation: fadeIn 0.3s; overflow-y: auto; padding: 20px;">
+                    <div style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 24px; padding: 50px 40px; max-width: 520px; width: 90%; box-shadow: 0 25px 80px rgba(0, 0, 0, 0.6); border: 2px solid var(--we1-gold); position: relative; animation: slideUp 0.4s; margin: auto;">
+
+                        <!-- 성공 아이콘 -->
+                        <div style="text-align: center; margin-bottom: 25px;">
+                            <div style="width: 100px; height: 100px; background: linear-gradient(135deg, #10B981, #059669); border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 40px rgba(16, 185, 129, 0.4); animation: bounceIn 0.6s;">
+                                <span style="font-size: 60px; color: white; font-weight: bold;">✓</span>
+                            </div>
+                        </div>
+
+                        <!-- 타이틀 -->
+                        <h2 style="font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 800; background: var(--we1-gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center; margin-bottom: 8px;">
+                            회원가입 완료!
+                        </h2>
+                        <p style="text-align: center; color: var(--we1-text-secondary); font-size: 15px; margin-bottom: 35px; line-height: 1.5;">
+                            환영합니다! 🎉<br>${accountCount > 1 ? `<strong style="color: var(--we1-gold);">${accountCount}개</strong>의 계정이 생성되었습니다` : '회원코드가 생성되었습니다'}
+                        </p>
+
+                        <!-- 대표 회원코드 박스 -->
+                        <div style="background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(212, 175, 55, 0.05)); border: 2px solid var(--we1-gold); border-radius: 16px; padding: 25px; margin-bottom: 20px; box-shadow: 0 8px 25px rgba(212, 175, 55, 0.15);">
+                            <div style="text-align: center;">
+                                <div style="font-size: 11px; color: var(--we1-text-secondary); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; font-weight: 600;">
+                                    ${accountCount > 1 ? '👑 대표 계정 아이디' : '로그인 아이디'}
+                                </div>
+                                <div style="font-size: 42px; font-weight: 900; font-family: 'Courier New', monospace; color: var(--we1-gold); letter-spacing: 4px; margin-bottom: 18px; text-shadow: 0 2px 10px rgba(212, 175, 55, 0.3);">
+                                    ${userId}
+                                </div>
+                                <button onclick="copyUserId('${userId}')" style="background: var(--we1-gradient-primary); color: var(--we1-navy-deep); border: none; padding: 12px 28px; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; transition: all 0.2s; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);">
+                                    📋 아이디 복사
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 다중 계정 목록 -->
+                        ${accountListHTML}
+
+                        <!-- 이메일 정보 -->
+                        <div style="text-align: center; margin-bottom: 25px; padding: 14px; background: rgba(255, 255, 255, 0.04); border-radius: 10px; border: 1px solid rgba(212, 175, 55, 0.2);">
+                            <div style="font-size: 11px; color: var(--we1-text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px;">등록 이메일</div>
+                            <div style="font-size: 15px; color: var(--we1-text-primary); font-weight: 600;">${email}</div>
+                        </div>
+
+                        <!-- 안내 메시지 -->
+                        <div style="background: rgba(239, 68, 68, 0.1); border-left: 4px solid #EF4444; padding: 14px 18px; border-radius: 8px; margin-bottom: 30px;">
+                            <div style="font-size: 13px; color: #FCA5A5; line-height: 1.7;">
+                                <strong style="display: block; margin-bottom: 6px;">⚠️ 중요 안내</strong>
+                                위의 <strong style="color: var(--we1-gold);">${accountCount > 1 ? '대표 ' : ''}${userId}</strong> 아이디를 <strong>반드시 저장</strong>하세요!<br>
+                                로그인 시 이메일이 아닌 <strong>아이디</strong>를 사용합니다.
+                            </div>
+                        </div>
+
+                        <!-- 로그인 버튼 -->
+                        <button onclick="goToLoginWithId('${userId}')" style="width: 100%; background: var(--we1-gradient-primary); color: var(--we1-navy-deep); border: none; padding: 18px; border-radius: 14px; font-size: 17px; font-weight: 800; cursor: pointer; transition: all 0.3s; box-shadow: 0 6px 25px rgba(212, 175, 55, 0.4); font-family: 'Inter', sans-serif;">
+                            로그인 페이지로 이동 →
+                        </button>
+
+                        <div style="text-align: center; margin-top: 15px; font-size: 12px; color: var(--we1-text-secondary);">
+                            아이디가 자동으로 입력됩니다
+                        </div>
+                    </div>
+                </div>
+
+                <style>
+                    @keyframes fadeIn {
+                        from { opacity: 0; }
+                        to { opacity: 1; }
+                    }
+                    @keyframes slideUp {
+                        from { transform: translateY(40px); opacity: 0; }
+                        to { transform: translateY(0); opacity: 1; }
+                    }
+                    @keyframes bounceIn {
+                        0% { transform: scale(0); }
+                        50% { transform: scale(1.1); }
+                        100% { transform: scale(1); }
+                    }
+                </style>
+            `;
+
+            // body에 추가
+            document.body.insertAdjacentHTML('beforeend', popupHTML);
+        }
+
+        // 아이디 복사 함수
+        function copyUserId(userId) {
+            navigator.clipboard.writeText(userId).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+
+                btn.textContent = '✓ 복사 완료!';
+                btn.style.background = 'linear-gradient(135deg, #10B981, #059669)';
+                btn.style.color = 'white';
+
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = 'var(--we1-gradient-primary)';
+                    btn.style.color = 'var(--we1-navy-deep)';
+                }, 2000);
+            }).catch(err => {
+                alert('복사에 실패했습니다. 아이디를 수동으로 복사해주세요.');
+            });
+        }
+
+        // 클립보드 복사 (다중 계정용)
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+
+                btn.textContent = '✓';
+                btn.style.background = 'rgba(16, 185, 129, 0.3)';
+                btn.style.borderColor = '#10B981';
+
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = 'rgba(212, 175, 55, 0.2)';
+                    btn.style.borderColor = 'rgba(212, 175, 55, 0.4)';
+                }, 1500);
+            }).catch(err => {
+                alert('복사에 실패했습니다.');
+            });
+        }
+
+        // 로그인 페이지로 아이디와 함께 이동
+        function goToLoginWithId(userId) {
+            // URL 파라미터로 아이디 전달
+            window.location.href = `login.html?id=${encodeURIComponent(userId)}`;
+        }
+
+    </script>
+</body>
+</html>

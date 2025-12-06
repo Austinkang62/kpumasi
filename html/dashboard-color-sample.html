@@ -1,0 +1,1790 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dashboard (소프트 다크 샘플) - K-Pumasi</title>
+    <script src="../js/auth-check.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+            background: #1a1f35;
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* 배경 그라데이션 애니메이션 - 소프트 다크 버전 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background:
+                radial-gradient(circle at 20% 50%, rgba(212, 175, 55, 0.18) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(120, 80, 200, 0.18) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(100, 180, 255, 0.12) 0%, transparent 50%);
+            animation: gradientShift 15s ease infinite;
+            z-index: 0;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(-5%, -5%) rotate(5deg); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 100%;
+            padding: 0;
+        }
+
+        /* 헤더 */
+        .header {
+            background: rgba(30, 35, 55, 0.9);
+            backdrop-filter: blur(20px);
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #d4af37 0%, #f4e5a1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .menu-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .menu-btn:active {
+            transform: scale(0.95);
+        }
+
+        .menu-btn span {
+            width: 20px;
+            height: 2px;
+            background: #d4af37;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        /* 드롭다운 메뉴 */
+        .dropdown-menu {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            background: linear-gradient(135deg, #1a2a3a, #2c3e50);
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            min-width: 220px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s;
+            z-index: 9999;
+            overflow: hidden;
+        }
+
+        .dropdown-menu.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            padding: 14px 20px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(212, 175, 55, 0.15);
+            color: #d4af37;
+            padding-left: 25px;
+        }
+
+        .dropdown-item .icon {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+
+        /* 메인 콘텐츠 */
+        .main-content {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* 사용자 웰컴 카드 */
+        .welcome-card {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(212, 175, 55, 0.05) 100%);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.2) 0%, transparent 70%);
+            border-radius: 50%;
+            transform: translate(30%, -30%);
+        }
+
+        .welcome-text {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 8px;
+        }
+
+        .user-id {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #d4af37 0%, #f4e5a1 50%, #d4af37 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        /* 잔액 카드 */
+        .balance-card {
+            background: linear-gradient(135deg, #252b45 0%, #1e2538 100%);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 24px;
+            padding: 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .balance-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.08) 0%, transparent 50%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .balance-header {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .balance-amount {
+            font-size: 42px;
+            font-weight: 900;
+            color: #d4af37;
+            margin-bottom: 20px;
+            text-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .balance-split {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .balance-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .balance-item:active {
+            transform: scale(0.98);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .balance-item-label {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .balance-item-amount {
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        /* 통계 그리드 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: rgba(35, 40, 60, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .stat-card:active {
+            transform: scale(0.97);
+        }
+
+        .stat-card:active::before {
+            opacity: 1;
+        }
+
+        .stat-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+            filter: drop-shadow(0 2px 8px rgba(212, 175, 55, 0.3));
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 6px;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.4;
+        }
+
+        /* 보너스 타입 섹션 */
+        .section-header {
+            font-size: 18px;
+            font-weight: 700;
+            color: #d4af37;
+            margin: 32px 0 16px;
+            padding: 0 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bonus-scroll {
+            display: flex;
+            gap: 16px;
+            overflow-x: auto;
+            padding: 4px;
+            margin: 0 -20px;
+            padding: 4px 20px 20px 20px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .bonus-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .bonus-card {
+            min-width: 280px;
+            background: linear-gradient(135deg, rgba(35, 40, 60, 0.9) 0%, rgba(25, 30, 45, 0.95) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bonus-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--bonus-color, #d4af37), transparent);
+        }
+
+        .bonus-card.referral { --bonus-color: #10B981; }
+        .bonus-card.edge { --bonus-color: #3B82F6; }
+        .bonus-card.matching { --bonus-color: #8B5CF6; }
+        .bonus-card.rollup { --bonus-color: #F59E0B; }
+
+        .bonus-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .bonus-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--bonus-color, #d4af37), rgba(0, 0, 0, 0.2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .bonus-info h3 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .bonus-info p {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .bonus-amount {
+            font-size: 36px;
+            font-weight: 900;
+            color: var(--bonus-color, #d4af37);
+            margin-bottom: 6px;
+        }
+
+        .bonus-count {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* 모달 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a2a3a, #2c3e50);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #d4af37;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 28px;
+            cursor: pointer;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(90deg);
+        }
+
+        /* 리스트 */
+        .list-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .list-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(212, 175, 55, 0.5);
+        }
+
+        .list-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .list-item-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .list-item-badge {
+            padding: 5px 12px;
+            background: rgba(212, 175, 55, 0.2);
+            border: 1px solid #d4af37;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #d4af37;
+        }
+
+        .list-item-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+
+        /* 상세 정보 */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .detail-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        /* 버튼 */
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #d4af37, #f4d03f);
+            color: #0f2027;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        /* 추천 링크 */
+        .referral-box {
+            background: rgba(76, 175, 80, 0.1);
+            border: 2px solid #4caf50;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .referral-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 10px;
+        }
+
+        .referral-link-box {
+            display: flex;
+            gap: 10px;
+        }
+
+        .referral-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 12px 15px;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .btn-copy {
+            padding: 12px 25px;
+            background: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-copy:hover {
+            background: #45a049;
+            transform: scale(1.05);
+        }
+
+        .btn-referral-signup {
+            flex: 1;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-referral-signup:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        /* 공지사항 */
+        .notice-section {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .notice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .notice-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #d4af37;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .notice-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .notice-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notice-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(212, 175, 55, 0.5);
+            transform: translateX(5px);
+        }
+
+        .notice-item-content {
+            flex: 1;
+        }
+
+        .notice-item-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .notice-item-date {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .notice-badge {
+            background: #f44336;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .notice-empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* 하단 여백 */
+        .bottom-spacer {
+            height: 40px;
+        }
+
+        /* 태블릿 이상 */
+        @media (min-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .bonus-scroll {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                overflow-x: visible;
+            }
+
+            .bonus-card {
+                min-width: auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 컬러 샘플 안내 배너 -->
+    <div style="position: fixed; top: 0; left: 0; right: 0; background: linear-gradient(135deg, #10b981, #059669); color: white; text-align: center; padding: 12px; font-weight: 600; z-index: 10000; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+        🎨 소프트 다크 컬러 샘플 (기존보다 밝은 다크모드)
+    </div>
+    <div class="container" style="padding-top: 48px;">
+        <!-- 헤더 -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">K-Pumasi</div>
+                <button class="menu-btn" onclick="toggleMenu()">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+
+                <!-- 드롭다운 메뉴 -->
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <div class="dropdown-item" onclick="showOrganization()">
+                        <span class="icon">🌳</span>
+                        <span>조직도</span>
+                    </div>
+                    <div class="dropdown-item" onclick="showWithdrawalForm()">
+                        <span class="icon">💸</span>
+                        <span>출금 신청</span>
+                    </div>
+                    <div class="dropdown-item" onclick="showReferralLink()">
+                        <span class="icon">🔗</span>
+                        <span>추천 링크</span>
+                    </div>
+                    <div class="dropdown-item" onclick="showBonusHistory()">
+                        <span class="icon">🎁</span>
+                        <span>보너스 내역</span>
+                    </div>
+                    <div class="dropdown-item" onclick="goToSignup()">
+                        <span class="icon">✨</span>
+                        <span>회원가입</span>
+                    </div>
+                    <div class="dropdown-item" onclick="location.href='purchase.html'">
+                        <span class="icon">🛒</span>
+                        <span>패키지 구매</span>
+                    </div>
+                    <div class="dropdown-item" onclick="showProfileEdit()">
+                        <span class="icon">⚙️</span>
+                        <span>정보 변경</span>
+                    </div>
+                    <div class="dropdown-item" onclick="logout()" style="border-top: 2px solid rgba(244, 67, 54, 0.3); background: rgba(244, 67, 54, 0.05);">
+                        <span class="icon">🚪</span>
+                        <span>로그아웃</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- 메인 콘텐츠 -->
+        <main class="main-content">
+            <!-- 웰컴 카드 -->
+            <div class="welcome-card">
+                <div class="welcome-text">환영합니다 👋</div>
+                <div class="user-id" id="userCode">-</div>
+            </div>
+
+            <!-- 잔액 카드 -->
+            <div class="balance-card">
+                <div class="balance-header">💰 현재 수익</div>
+                <div class="balance-amount" id="totalBalanceDisplay">ℙ0.00</div>
+                <div class="balance-split">
+                    <div class="balance-item">
+                        <div class="balance-item-label">💵 캐시 (USDT)</div>
+                        <div class="balance-item-amount" id="cashBalance">ℙ0.00</div>
+                    </div>
+                    <div class="balance-item">
+                        <div class="balance-item-label">🤖 포인트</div>
+                        <div class="balance-item-amount" id="avatarPoints">ℙ0.00</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 통계 그리드 -->
+            <div class="stats-grid">
+                <div class="stat-card" onclick="showReferralList()">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-value" id="referralCount">0</div>
+                    <div class="stat-label">추천인 수</div>
+                </div>
+
+                <div class="stat-card" onclick="showOrganization()">
+                    <div class="stat-icon">🌳</div>
+                    <div class="stat-value" id="downlineCount">0</div>
+                    <div class="stat-label" id="downlineLevel">최대 0단계</div>
+                </div>
+
+                <div class="stat-card" onclick="showAvatarList()">
+                    <div class="stat-icon">🤖</div>
+                    <div class="stat-value" id="avatarCount">0</div>
+                    <div class="stat-label">아바타 수</div>
+                </div>
+
+                <div class="stat-card" onclick="showEarningsDetail()">
+                    <div class="stat-icon">💎</div>
+                    <div class="stat-value" id="totalEarningsShort">ℙ0</div>
+                    <div class="stat-label">총 수익</div>
+                </div>
+            </div>
+
+            <!-- 보너스 타입 -->
+            <div class="section-header">
+                💎 보너스 타입별
+            </div>
+            <div class="bonus-scroll">
+                <div class="bonus-card referral">
+                    <div class="bonus-header">
+                        <div class="bonus-icon">👥</div>
+                        <div class="bonus-info">
+                            <h3>추천 보너스</h3>
+                            <p>직접 추천 25%</p>
+                        </div>
+                    </div>
+                    <div class="bonus-amount" id="referralBonusAmount">ℙ0</div>
+                    <div class="bonus-count" id="referralBonusCount">0건</div>
+                </div>
+
+                <div class="bonus-card edge">
+                    <div class="bonus-header">
+                        <div class="bonus-icon">⚡</div>
+                        <div class="bonus-info">
+                            <h3>엣지 보너스</h3>
+                            <p>전환점 25%</p>
+                        </div>
+                    </div>
+                    <div class="bonus-amount" id="edgeBonusAmount">ℙ0</div>
+                    <div class="bonus-count" id="edgeBonusCount">0건</div>
+                </div>
+
+                <div class="bonus-card matching">
+                    <div class="bonus-header">
+                        <div class="bonus-icon">🤝</div>
+                        <div class="bonus-info">
+                            <h3>매칭 보너스</h3>
+                            <p>엣지 매칭 25%</p>
+                        </div>
+                    </div>
+                    <div class="bonus-amount" id="matchingBonusAmount">ℙ0</div>
+                    <div class="bonus-count" id="matchingBonusCount">0건</div>
+                </div>
+
+                <div class="bonus-card rollup">
+                    <div class="bonus-header">
+                        <div class="bonus-icon">📊</div>
+                        <div class="bonus-info">
+                            <h3>롤업 보너스</h3>
+                            <p>레벨당 ℙ1</p>
+                        </div>
+                    </div>
+                    <div class="bonus-amount" id="rollupBonusAmount">ℙ0</div>
+                    <div class="bonus-count" id="rollupBonusCount">0건</div>
+                </div>
+            </div>
+
+            <!-- 공지사항 -->
+            <div class="notice-section" style="margin-top: 30px;">
+                <div class="notice-header">
+                    <div class="notice-title">📢 공지사항</div>
+                </div>
+                <div class="notice-list" id="noticeList">
+                    <div class="notice-empty">공지사항을 불러오는 중...</div>
+                </div>
+            </div>
+
+            <div class="bottom-spacer"></div>
+        </main>
+    </div>
+
+    <!-- 모달: 추천인 리스트 -->
+    <div class="modal" id="modalReferralList">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">👥 나의 추천인 리스트</div>
+                <button class="modal-close" onclick="closeModal('modalReferralList')">&times;</button>
+            </div>
+            <div id="referralListContent"></div>
+        </div>
+    </div>
+
+    <!-- 모달: 추천인 상세 정보 -->
+    <div class="modal" id="modalReferralDetail">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">👤 추천인 상세 정보</div>
+                <button class="modal-close" onclick="closeModal('modalReferralDetail')">&times;</button>
+            </div>
+            <div id="referralDetailContent"></div>
+        </div>
+    </div>
+
+    <!-- 모달: 아바타 리스트 -->
+    <div class="modal" id="modalAvatarList">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">🤖 나의 아바타 리스트</div>
+                <button class="modal-close" onclick="closeModal('modalAvatarList')">&times;</button>
+            </div>
+            <div id="avatarListContent"></div>
+        </div>
+    </div>
+
+    <!-- 모달: 수익 상세 -->
+    <div class="modal" id="modalEarnings">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">💰 수익 상세 내역</div>
+                <button class="modal-close" onclick="closeModal('modalEarnings')">&times;</button>
+            </div>
+            <div id="earningsContent"></div>
+        </div>
+    </div>
+
+    <!-- 모달: 인출 상세 -->
+    <div class="modal" id="modalWithdrawals">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">💸 인출 상세 내역</div>
+                <button class="modal-close" onclick="closeModal('modalWithdrawals')">&times;</button>
+            </div>
+            <div id="withdrawalsContent"></div>
+        </div>
+    </div>
+
+    <!-- 모달: 추천 링크 -->
+    <div class="modal" id="modalReferralLink">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">🔗 나의 추천 링크</div>
+                <button class="modal-close" onclick="closeModal('modalReferralLink')">&times;</button>
+            </div>
+            <div class="referral-box">
+                <div class="referral-label">이 링크를 공유하여 친구를 초대하세요</div>
+                <div class="referral-link-box">
+                    <input type="text" class="referral-input" id="referralLinkInput" readonly>
+                    <button class="btn-copy" onclick="copyReferralLink()">복사</button>
+                </div>
+                <div style="margin-top: 15px; display: flex; gap: 10px;">
+                    <button class="btn-referral-signup" onclick="goToSignupWithRef()">
+                        ✨ 추천가입
+                    </button>
+                </div>
+                <div style="margin-top: 15px; font-size: 13px; color: rgba(255,255,255,0.6);">
+                    이 링크로 가입한 회원은 자동으로 내 추천인으로 등록됩니다.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 모달: 공지사항 상세 -->
+    <div class="modal" id="modalNoticeDetail">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">📢 공지사항</div>
+                <button class="modal-close" onclick="closeModal('modalNoticeDetail')">&times;</button>
+            </div>
+            <div id="noticeDetailContent"></div>
+        </div>
+    </div>
+
+    <!-- 모달: 정보 변경 -->
+    <div class="modal" id="modalProfileEdit">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">⚙️ 회원 정보 변경</div>
+                <button class="modal-close" onclick="closeModal('modalProfileEdit')">&times;</button>
+            </div>
+            <div id="profileEditContent">
+                <form id="profileEditForm" onsubmit="updateProfile(event)">
+                    <div class="detail-item" style="margin-bottom: 25px;">
+                        <label class="detail-label" style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600;">
+                            📧 이메일
+                        </label>
+                        <input type="email" id="editEmail"
+                               style="width: 100%; padding: 12px 15px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; color: #fff; font-size: 14px;"
+                               placeholder="새 이메일 주소" required>
+                        <div style="font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 5px;">
+                            현재: <span id="currentEmail" style="color: #d4af37;">-</span>
+                        </div>
+                    </div>
+
+                    <div class="detail-item" style="margin-bottom: 25px;">
+                        <label class="detail-label" style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600;">
+                            💼 BSC 지갑주소 (USDT 출금용)
+                        </label>
+                        <input type="text" id="editBnbAddress"
+                               style="width: 100%; padding: 12px 15px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; color: #fff; font-size: 13px; font-family: monospace;"
+                               placeholder="0x로 시작하는 42자리 주소" required>
+                        <div style="font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 5px; word-break: break-all;">
+                            현재: <span id="currentBnbAddress" style="color: #d4af37;">-</span>
+                        </div>
+                    </div>
+
+                    <div style="border-top: 1px solid rgba(255,255,255,0.1); margin: 30px 0;"></div>
+
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="font-size: 16px; color: #d4af37; margin-bottom: 15px;">🔒 비밀번호 변경</h4>
+                    </div>
+
+                    <div class="detail-item" style="margin-bottom: 25px;">
+                        <label class="detail-label" style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600;">
+                            현재 비밀번호
+                        </label>
+                        <input type="password" id="currentPassword"
+                               style="width: 100%; padding: 12px 15px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; color: #fff; font-size: 14px;"
+                               placeholder="현재 비밀번호 입력 (필수)" required>
+                    </div>
+
+                    <div class="detail-item" style="margin-bottom: 25px;">
+                        <label class="detail-label" style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600;">
+                            새 비밀번호
+                        </label>
+                        <input type="password" id="newPassword"
+                               style="width: 100%; padding: 12px 15px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; color: #fff; font-size: 14px;"
+                               placeholder="새 비밀번호 (8자 이상, 변경 시에만 입력)">
+                        <div style="font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 5px;">
+                            비밀번호를 변경하지 않으려면 비워두세요
+                        </div>
+                    </div>
+
+                    <div class="detail-item" style="margin-bottom: 25px;">
+                        <label class="detail-label" style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600;">
+                            새 비밀번호 확인
+                        </label>
+                        <input type="password" id="newPasswordConfirm"
+                               style="width: 100%; padding: 12px 15px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; color: #fff; font-size: 14px;"
+                               placeholder="새 비밀번호 재입력">
+                    </div>
+
+                    <div style="background: rgba(255,193,7,0.1); border-left: 4px solid #ffc107; padding: 15px; border-radius: 8px; margin-bottom: 25px;">
+                        <div style="font-size: 13px; color: rgba(255,255,255,0.8); line-height: 1.6;">
+                            ⚠️ <strong>중요</strong><br>
+                            • 정보 변경을 위해 현재 비밀번호가 필요합니다<br>
+                            • 비밀번호를 변경하지 않으려면 새 비밀번호란을 비워두세요<br>
+                            • USDT 지갑주소는 출금 시 사용되므로 정확히 입력하세요
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary">💾 저장</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('modalProfileEdit')">취소</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 전역 변수
+        let userData = null;
+
+        // 페이지 로드 시
+        window.addEventListener('load', async () => {
+            await loadDashboardData();
+        });
+
+        // 대시보드 데이터 로드
+        async function loadDashboardData() {
+            const sessionToken = localStorage.getItem('session_token');
+
+            if (!sessionToken) {
+                alert('로그인이 필요합니다.');
+                location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const response = await fetch(`../api/user/get-profile.php?session_token=${sessionToken}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    userData = result.data;
+                    updateDashboard(userData);
+                    loadNotices();
+                    loadBonusSummary();
+                } else {
+                    console.error('API Error:', result);
+                    alert('데이터 로드 실패: ' + result.message +
+                          (result.error_detail ? '\n상세: ' + result.error_detail : ''));
+                    if (result.message.includes('세션') || result.message.includes('인증')) {
+                        localStorage.removeItem('session_token');
+                        location.href = 'login.html';
+                    }
+                }
+            } catch (error) {
+                console.error('데이터 로드 오류:', error);
+                alert('데이터 로드 중 오류가 발생했습니다: ' + error.message);
+            }
+        }
+
+        // 공지사항 로드
+        async function loadNotices() {
+            try {
+                const response = await fetch('../api/notices/get-list.php');
+                const result = await response.json();
+
+                const noticeList = document.getElementById('noticeList');
+
+                if (result.success && result.data && result.data.length > 0) {
+                    noticeList.innerHTML = result.data.slice(0, 5).map(notice => {
+                        const isNew = isNoticeNew(notice.created_at);
+                        return `
+                            <div class="notice-item" onclick="showNoticeDetail(${notice.id})">
+                                <div class="notice-item-content">
+                                    <div class="notice-item-title">${escapeHtml(notice.title)}</div>
+                                    <div class="notice-item-date">${formatDate(notice.created_at)}</div>
+                                </div>
+                                ${isNew ? '<span class="notice-badge">NEW</span>' : ''}
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    noticeList.innerHTML = '<div class="notice-empty">등록된 공지사항이 없습니다</div>';
+                }
+            } catch (error) {
+                console.error('공지사항 로드 오류:', error);
+                document.getElementById('noticeList').innerHTML = '<div class="notice-empty">공지사항을 불러올 수 없습니다</div>';
+            }
+        }
+
+        // 보너스 타입별 요약 로드
+        async function loadBonusSummary() {
+            const sessionToken = localStorage.getItem('session_token');
+            try {
+                const response = await fetch(`../api/bonus/get-summary.php?session_token=${sessionToken}`);
+                const result = await response.json();
+
+                if (result.success && result.data) {
+                    const data = result.data;
+
+                    document.getElementById('referralBonusAmount').textContent =
+                        'ℙ' + parseFloat(data.total_referral_bonus || 0).toFixed(2);
+                    document.getElementById('referralBonusCount').textContent =
+                        (data.referral_count || 0) + '건';
+
+                    document.getElementById('edgeBonusAmount').textContent =
+                        'ℙ' + parseFloat(data.total_edge_bonus || 0).toFixed(2);
+                    document.getElementById('edgeBonusCount').textContent =
+                        (data.edge_count || 0) + '건';
+
+                    document.getElementById('matchingBonusAmount').textContent =
+                        'ℙ' + parseFloat(data.total_matching_bonus || 0).toFixed(2);
+                    document.getElementById('matchingBonusCount').textContent =
+                        (data.matching_count || 0) + '건';
+
+                    document.getElementById('rollupBonusAmount').textContent =
+                        'ℙ' + parseFloat(data.total_rollup_bonus || 0).toFixed(2);
+                    document.getElementById('rollupBonusCount').textContent =
+                        (data.rollup_count || 0) + '건';
+                }
+            } catch (error) {
+                console.error('보너스 요약 로드 오류:', error);
+            }
+        }
+
+        // 공지사항 상세 보기
+        async function showNoticeDetail(noticeId) {
+            try {
+                const response = await fetch(`../api/notices/get-detail.php?id=${noticeId}`);
+                const result = await response.json();
+
+                if (result.success && result.data) {
+                    const notice = result.data;
+
+                    document.getElementById('noticeDetailContent').innerHTML = `
+                        <div style="margin-bottom: 20px;">
+                            <h3 style="color: #d4af37; margin-bottom: 10px;">${escapeHtml(notice.title)}</h3>
+                            <div style="color: rgba(255,255,255,0.6); font-size: 13px; margin-bottom: 20px;">
+                                ${formatDate(notice.created_at)}
+                            </div>
+                            <div style="color: #fff; line-height: 1.8; white-space: pre-wrap;">
+                                ${escapeHtml(notice.content)}
+                            </div>
+                        </div>
+                    `;
+
+                    openModal('modalNoticeDetail');
+                } else {
+                    alert('공지사항을 불러올 수 없습니다.');
+                }
+            } catch (error) {
+                console.error('공지사항 상세 로드 오류:', error);
+                alert('공지사항을 불러올 수 없습니다.');
+            }
+        }
+
+        // 날짜 포맷
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diff = now - date;
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+            if (days === 0) {
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                if (hours === 0) {
+                    const minutes = Math.floor(diff / (1000 * 60));
+                    return `${minutes}분 전`;
+                }
+                return `${hours}시간 전`;
+            } else if (days < 7) {
+                return `${days}일 전`;
+            }
+
+            return date.toLocaleDateString('ko-KR');
+        }
+
+        function isNoticeNew(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diff = now - date;
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            return days < 3;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // 대시보드 업데이트
+        function updateDashboard(data) {
+            document.getElementById('userCode').textContent = data.user_id;
+
+            document.getElementById('referralCount').textContent = data.total_referrals || 0;
+            document.getElementById('downlineCount').textContent = data.total_downline || 0;
+            document.getElementById('downlineLevel').textContent = `최대 ${data.max_level || 0}단계`;
+            document.getElementById('avatarCount').textContent = data.total_avatars || 0;
+
+            const availableBonus = parseFloat(data.available_bonus || 0);
+            const avatarPoints = parseFloat(data.avatar_points || 0);
+            const totalBalance = availableBonus + avatarPoints;
+
+            document.getElementById('cashBalance').textContent = `ℙ${availableBonus.toFixed(2)}`;
+            document.getElementById('avatarPoints').textContent = `ℙ${avatarPoints.toFixed(2)}`;
+            document.getElementById('totalBalanceDisplay').textContent = `ℙ${totalBalance.toFixed(2)}`;
+            document.getElementById('totalEarningsShort').textContent = `ℙ${(parseFloat(data.total_bonus || 0) / 1000).toFixed(1)}K`;
+
+            const referralLink = `${window.location.origin}/html/signup.html?ref=${data.user_id}`;
+            document.getElementById('referralLinkInput').value = referralLink;
+        }
+
+        // 추천인 리스트 표시
+        async function showReferralList() {
+            openModal('modalReferralList');
+
+            const sessionToken = localStorage.getItem('session_token');
+
+            try {
+                const response = await fetch(`../api/dashboard/get-referrals.php?session_token=${sessionToken}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    const content = document.getElementById('referralListContent');
+
+                    if (!result.data.referrals || result.data.referrals.length === 0) {
+                        content.innerHTML = '<p style="text-align:center;color:rgba(255,255,255,0.5);">아직 추천인이 없습니다.</p>';
+                        return;
+                    }
+
+                    content.innerHTML = result.data.referrals.map(ref => `
+                        <div class="list-item" onclick="showReferralDetail('${ref.user_id}')">
+                            <div class="list-item-header">
+                                <div class="list-item-title">${ref.user_id}</div>
+                                <div class="list-item-badge">${ref.package_name || '미구매'}</div>
+                            </div>
+                            <div class="list-item-info">
+                                <div>가입일: ${ref.created_at}</div>
+                                <div>총 수익: P${parseFloat(ref.total_bonus || 0).toFixed(2)}</div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('추천인 리스트 로드 오류:', error);
+            }
+        }
+
+        // 추천인 상세 정보 표시
+        async function showReferralDetail(userId) {
+            closeModal('modalReferralList');
+            openModal('modalReferralDetail');
+
+            const sessionToken = localStorage.getItem('session_token');
+
+            try {
+                const response = await fetch(`../api/dashboard/get-referral-detail.php?session_token=${sessionToken}&user_id=${userId}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    const ref = result.data.user_info;
+                    const content = document.getElementById('referralDetailContent');
+
+                    content.innerHTML = `
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <div class="detail-label">회원 코드</div>
+                                <div class="detail-value">${ref.user_id}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">이메일</div>
+                                <div class="detail-value">${ref.email || '-'}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">패키지</div>
+                                <div class="detail-value">${ref.package_name || '미구매'}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">가입일</div>
+                                <div class="detail-value">${ref.created_at}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">총 수익</div>
+                                <div class="detail-value">P${parseFloat(ref.total_bonus || 0).toFixed(2)}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">출금 가능</div>
+                                <div class="detail-value">P${parseFloat(ref.available_bonus || 0).toFixed(2)}</div>
+                            </div>
+                        </div>
+
+                        <div class="btn-group">
+                            <button class="btn btn-primary" onclick="transferCash('${ref.user_id}')">
+                                캐시 이동
+                            </button>
+                            <button class="btn btn-secondary" onclick="registerWithReferral('${ref.user_id}')">
+                                이 코드로 등록
+                            </button>
+                            <button class="btn btn-secondary" onclick="closeModal('modalReferralDetail')">
+                                닫기
+                            </button>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('추천인 상세 로드 오류:', error);
+            }
+        }
+
+        async function transferCash(toUserId) {
+            const amount = prompt(`${toUserId}에게 이동할 캐시 금액을 입력하세요:`);
+
+            if (!amount || parseFloat(amount) <= 0) {
+                alert('유효한 금액을 입력하세요.');
+                return;
+            }
+
+            if (!confirm(`P${amount}를 ${toUserId}에게 이동하시겠습니까?`)) {
+                return;
+            }
+
+            const sessionToken = localStorage.getItem('session_token');
+
+            try {
+                const response = await fetch('../api/dashboard/transfer-cash.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        session_token: sessionToken,
+                        to_user_id: toUserId,
+                        amount: parseFloat(amount)
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('캐시 이동이 완료되었습니다.');
+                    closeModal('modalReferralDetail');
+                    loadDashboardData();
+                } else {
+                    alert('캐시 이동 실패: ' + result.message);
+                }
+            } catch (error) {
+                console.error('캐시 이동 오류:', error);
+                alert('캐시 이동 중 오류가 발생했습니다.');
+            }
+        }
+
+        function registerWithReferral(userId) {
+            if (confirm(`${userId} 코드로 회원가입 페이지로 이동하시겠습니까?`)) {
+                location.href = `signup.html?ref=${userId}`;
+            }
+        }
+
+        async function showAvatarList() {
+            openModal('modalAvatarList');
+
+            const sessionToken = localStorage.getItem('session_token');
+
+            try {
+                const response = await fetch(`../api/dashboard/get-avatars.php?session_token=${sessionToken}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    const content = document.getElementById('avatarListContent');
+
+                    if (!result.data.avatars || result.data.avatars.length === 0) {
+                        content.innerHTML = '<p style="text-align:center;color:rgba(255,255,255,0.5);">아직 아바타가 생성되지 않았습니다.</p>';
+                        return;
+                    }
+
+                    content.innerHTML = result.data.avatars.map(avatar => `
+                        <div class="list-item">
+                            <div class="list-item-header">
+                                <div class="list-item-title">🤖 ${avatar.user_id}</div>
+                                <div class="list-item-badge">BTC 적립</div>
+                            </div>
+                            <div class="list-item-info">
+                                <div>생성일: ${avatar.created_date}</div>
+                                <div>BTC 적립: ${parseFloat(avatar.btc_accumulated || 0).toFixed(8)}</div>
+                                <div>누적 수익: P${parseFloat(avatar.total_bonus || 0).toFixed(2)}</div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('아바타 리스트 로드 오류:', error);
+            }
+        }
+
+        async function showEarningsDetail() {
+            openModal('modalEarnings');
+
+            const sessionToken = localStorage.getItem('session_token');
+
+            try {
+                const response = await fetch(`../api/dashboard/get-earnings-detail.php?session_token=${sessionToken}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    const content = document.getElementById('earningsContent');
+
+                    if (!result.data.bonuses || result.data.bonuses.length === 0) {
+                        content.innerHTML = '<p style="text-align:center;color:rgba(255,255,255,0.5);">수익 내역이 없습니다.</p>';
+                        return;
+                    }
+
+                    content.innerHTML = result.data.bonuses.map(bonus => `
+                        <div class="list-item">
+                            <div class="list-item-header">
+                                <div class="list-item-title">${bonus.bonus_type_name}</div>
+                                <div class="list-item-badge" style="color:#4caf50;border-color:#4caf50;">
+                                    +P${parseFloat(bonus.amount).toFixed(2)}
+                                </div>
+                            </div>
+                            <div class="list-item-info">
+                                <div>날짜: ${bonus.created_date}</div>
+                                <div>레벨: ${bonus.level || '-'}</div>
+                                <div>발생처: ${bonus.from_user_code || '-'}</div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('수익 내역 로드 오류:', error);
+            }
+        }
+
+        async function showWithdrawalDetail() {
+            openModal('modalWithdrawals');
+
+            const sessionToken = localStorage.getItem('session_token');
+
+            try {
+                const response = await fetch(`../api/dashboard/get-withdrawals-detail.php?session_token=${sessionToken}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    const content = document.getElementById('withdrawalsContent');
+
+                    if (!result.data.withdrawals || result.data.withdrawals.length === 0) {
+                        content.innerHTML = '<p style="text-align:center;color:rgba(255,255,255,0.5);">인출 내역이 없습니다.</p>';
+                        return;
+                    }
+
+                    const statusColors = {
+                        'pending': '#ff9800',
+                        'approved': '#2196f3',
+                        'processing': '#9c27b0',
+                        'completed': '#4caf50',
+                        'rejected': '#f44336'
+                    };
+
+                    content.innerHTML = result.data.withdrawals.map(wd => `
+                        <div class="list-item">
+                            <div class="list-item-header">
+                                <div class="list-item-title">P${parseFloat(wd.amount).toFixed(2)}</div>
+                                <div class="list-item-badge" style="color:${statusColors[wd.status]};border-color:${statusColors[wd.status]};">
+                                    ${wd.status_name}
+                                </div>
+                            </div>
+                            <div class="list-item-info">
+                                <div>신청일: ${wd.created_date}</div>
+                                <div>수수료: P${parseFloat(wd.fee || 0).toFixed(2)}</div>
+                                <div>실수령: P${parseFloat(wd.net_amount || 0).toFixed(2)}</div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('인출 내역 로드 오류:', error);
+            }
+        }
+
+        function showOrganization() {
+            location.href = 'organization.html';
+        }
+
+        function showWithdrawalForm() {
+            location.href = 'withdrawal.html';
+        }
+
+        function showReferralLink() {
+            openModal('modalReferralLink');
+        }
+
+        function copyReferralLink() {
+            const input = document.getElementById('referralLinkInput');
+            input.select();
+            document.execCommand('copy');
+            alert('추천 링크가 복사되었습니다!');
+        }
+
+        function goToSignupWithRef() {
+            if (userData && userData.user_id) {
+                const signupUrl = `signup.html?ref=${userData.user_id}`;
+                window.open(signupUrl, '_blank');
+            } else {
+                alert('사용자 정보를 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
+            }
+        }
+
+        function goToSignup() {
+            if (userData && userData.user_id) {
+                const signupUrl = `signup.html?ref=${userData.user_id}`;
+                window.open(signupUrl, '_blank');
+            } else {
+                window.open('signup.html', '_blank');
+            }
+        }
+
+        function showBonusHistory() {
+            showEarningsDetail();
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function logout() {
+            if (confirm('로그아웃 하시겠습니까?')) {
+                localStorage.removeItem('session_token');
+                location.href = 'login.html';
+            }
+        }
+
+        function toggleMenu() {
+            const menu = document.getElementById('dropdownMenu');
+            menu.classList.toggle('active');
+        }
+
+        document.addEventListener('click', (e) => {
+            const menu = document.getElementById('dropdownMenu');
+            const menuBtn = document.querySelector('.menu-btn');
+
+            if (menu && menuBtn && !menu.contains(e.target) && !menuBtn.contains(e.target)) {
+                menu.classList.remove('active');
+            }
+        });
+
+        function showProfileEdit() {
+            if (!userData) {
+                alert('사용자 정보를 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
+                return;
+            }
+
+            try {
+                const currentEmailEl = document.getElementById('currentEmail');
+                const currentBnbAddressEl = document.getElementById('currentBnbAddress');
+                const editEmailEl = document.getElementById('editEmail');
+                const editBnbAddressEl = document.getElementById('editBnbAddress');
+
+                if (currentEmailEl) currentEmailEl.textContent = userData.email || '-';
+                if (currentBnbAddressEl) currentBnbAddressEl.textContent = userData.bnb_address || '-';
+
+                if (editEmailEl) editEmailEl.value = userData.email || '';
+                if (editBnbAddressEl) editBnbAddressEl.value = userData.bnb_address || '';
+
+                const currentPasswordEl = document.getElementById('currentPassword');
+                const newPasswordEl = document.getElementById('newPassword');
+                const newPasswordConfirmEl = document.getElementById('newPasswordConfirm');
+
+                if (currentPasswordEl) currentPasswordEl.value = '';
+                if (newPasswordEl) newPasswordEl.value = '';
+                if (newPasswordConfirmEl) newPasswordConfirmEl.value = '';
+
+                openModal('modalProfileEdit');
+            } catch (error) {
+                alert('모달을 여는 중 오류가 발생했습니다: ' + error.message);
+            }
+        }
+
+        async function updateProfile(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('editEmail').value.trim();
+            const bnbAddress = document.getElementById('editBnbAddress').value.trim();
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const newPasswordConfirm = document.getElementById('newPasswordConfirm').value;
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert('올바른 이메일 형식을 입력해주세요.');
+                return;
+            }
+
+            const bnbAddressRegex = /^0x[a-fA-F0-9]{40}$/;
+            if (!bnbAddressRegex.test(bnbAddress)) {
+                alert('올바른 BSC 지갑주소를 입력해주세요 (0x로 시작하는 42자)');
+                return;
+            }
+
+            if (!currentPassword) {
+                alert('현재 비밀번호를 입력해주세요.');
+                return;
+            }
+
+            if (newPassword) {
+                if (newPassword.length < 8) {
+                    alert('새 비밀번호는 8자 이상이어야 합니다.');
+                    return;
+                }
+
+                if (newPassword !== newPasswordConfirm) {
+                    alert('새 비밀번호가 일치하지 않습니다.');
+                    return;
+                }
+            }
+
+            if (!confirm('회원 정보를 변경하시겠습니까?')) {
+                return;
+            }
+
+            const sessionToken = localStorage.getItem('session_token');
+
+            try {
+                const response = await fetch('../api/user/update-profile.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        session_token: sessionToken,
+                        email: email,
+                        bnb_address: bnbAddress,
+                        current_password: currentPassword,
+                        new_password: newPassword || null
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('회원 정보가 성공적으로 변경되었습니다.');
+                    closeModal('modalProfileEdit');
+                    await loadDashboardData();
+                } else {
+                    alert('정보 변경 실패: ' + result.message);
+                }
+            } catch (error) {
+                console.error('프로필 업데이트 오류:', error);
+                alert('정보 변경 중 오류가 발생했습니다.');
+            }
+        }
+
+        // 스크롤 스냅 효과
+        const bonusScroll = document.querySelector('.bonus-scroll');
+        if (bonusScroll && window.innerWidth < 768) {
+            bonusScroll.style.scrollSnapType = 'x mandatory';
+            bonusScroll.querySelectorAll('.bonus-card').forEach(card => {
+                card.style.scrollSnapAlign = 'start';
+            });
+        }
+    </script>
+</body>
+</html>

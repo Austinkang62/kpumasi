@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아바타 생성 관리 - K-Pumasi Admin</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #0f172a;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            padding: 25px 30px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px -8px rgba(0,0,0,0.3);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            color: #f8fafc;
+            font-size: 1.8em;
+            font-weight: 700;
+        }
+
+        h1 .icon {
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .back-btn {
+            padding: 10px 20px;
+            background: rgba(59, 130, 246, 0.1);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: rgba(59, 130, 246, 0.2);
+        }
+
+        .info-box {
+            background: rgba(59, 130, 246, 0.1);
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            color: #93c5fd;
+        }
+
+        .info-box h2 {
+            color: #60a5fa;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .info-box p {
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+
+        .info-box strong {
+            color: #93c5fd;
+        }
+
+        .section {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 32px -8px rgba(0,0,0,0.3);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .section h2 {
+            color: #34d399;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+            border-bottom: 2px solid rgba(52, 211, 153, 0.3);
+            padding-bottom: 10px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .feature-card {
+            background: rgba(15, 23, 42, 0.5);
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px -8px rgba(0,0,0,0.4);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .feature-card h3 {
+            color: #fbbf24;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .feature-card p {
+            color: #94a3b8;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .feature-card .btn {
+            width: 100%;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .feature-card .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+        }
+
+        .feature-card .btn.success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .feature-card .btn.success:hover {
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+        }
+
+        .feature-card .btn.warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+
+        .feature-card .btn.warning:hover {
+            box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
+        }
+
+        .rules-list {
+            background: rgba(15, 23, 42, 0.5);
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 4px solid #10b981;
+            margin-top: 20px;
+        }
+
+        .rules-list h3 {
+            color: #34d399;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .rules-list ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .rules-list li {
+            color: #cbd5e1;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            line-height: 1.6;
+        }
+
+        .rules-list li:last-child {
+            border-bottom: none;
+        }
+
+        .rules-list li::before {
+            content: "✓ ";
+            color: #10b981;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .status-badge.auto {
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .status-badge.manual {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .cron-setup {
+            background: rgba(251, 191, 36, 0.1);
+            border: 2px solid rgba(251, 191, 36, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+
+        .cron-setup h3 {
+            color: #fbbf24;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .cron-setup code {
+            display: block;
+            background: rgba(15, 23, 42, 0.8);
+            padding: 15px;
+            border-radius: 8px;
+            color: #93c5fd;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+
+        .cron-setup p {
+            color: #cbd5e1;
+            line-height: 1.6;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><span class="icon">🤖</span>아바타 생성 관리</h1>
+            <div style="display: flex; gap: 10px;">
+                <a href="../index.html" class="back-btn">← 돌아가기</a>
+                <a href="../avatar-genealogy.html" class="back-btn">🤖 아바타 족보</a>
+            </div>
+        </header>
+
+        <div class="info-box">
+            <h2>📋 아바타 자동 생성 시스템 (완전 배치 방식)</h2>
+            <p><strong>작동 방식:</strong> Avatar Points가 $100 이상 적립된 회원의 아바타를 자동으로 생성합니다.</p>
+            <p><strong>배치 처리:</strong> 1일 6회 (매 4시간마다) Cron Job이 자동 실행되어 대기 중인 모든 아바타를 생성합니다.</p>
+            <p><strong>장점:</strong> Lock 충돌 제로, 완벽한 안정성, 자동 재시도, 간편한 유지보수</p>
+            <p><strong>스케줄:</strong> 0시, 4시, 8시, 12시, 16시, 20시 (하루 6회)</p>
+        </div>
+
+        <!-- 방안 1: 자동 생성 (Cron Job) -->
+        <div class="section">
+            <h2>🔄 방안 1: 자동 생성 (Cron Job) <span class="status-badge auto">자동화</span></h2>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>📡 Cron Job 테스트</h3>
+                    <p>Cron Job이 정상 작동하는지 즉시 테스트합니다. 브라우저에서 직접 실행하여 로그를 확인할 수 있습니다.</p>
+                    <a href="../cron-mini.php?key=avatar_cron_2024" target="_blank" class="btn">테스트 실행</a>
+                </div>
+
+                <div class="feature-card">
+                    <h3>📖 Cron 설정 가이드</h3>
+                    <p>Cafe24 호스팅에서 Cron Job을 설정하는 방법을 자세히 안내합니다. 최초 1회만 설정하면 됩니다.</p>
+                    <a href="../CRON_SETUP.md" download class="btn">가이드 다운로드</a>
+                </div>
+
+                <div class="feature-card">
+                    <h3>⏰ Cron 주기 정보</h3>
+                    <p><strong>현재 설정:</strong> 1일 6회 (매 4시간)<br>
+                    <strong>실행 시간:</strong> 0시, 4시, 8시, 12시, 16시, 20시<br>
+                    <strong>처리 방식:</strong> Avatar Points >= $100 회원 일괄 처리<br>
+                    <strong>최대 지연:</strong> 4시간 (자동 처리)</p>
+                </div>
+            </div>
+
+            <div class="cron-setup">
+                <h3>🔧 Cafe24 Cron 설정 방법 (요약)</h3>
+                <p><strong>1단계:</strong> Cafe24 관리자 → 호스팅 관리 → 예약작업(Cron)</p>
+                <p><strong>2단계:</strong> 실행 주기 입력 (1일 6회 - 매 4시간마다)</p>
+                <code>0 */4 * * *</code>
+                <p><strong>3단계:</strong> 실행 명령 입력</p>
+                <code>/usr/bin/curl -s "https://ai22.mycafe24.com/admin/cron-mini.php?key=avatar_cron_2024"</code>
+            </div>
+        </div>
+
+        <!-- 수동 테스트 및 확인 -->
+        <div class="section">
+            <h2>🛠️ 수동 테스트 및 확인 <span class="status-badge manual">선택사항</span></h2>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>📊 대기 현황 확인</h3>
+                    <p>생성 대기 중인 회원 목록을 확인합니다. Avatar Points >= $100인 회원과 생성 가능한 아바타 개수를 조회합니다.</p>
+                    <a href="../test-cron.php" target="_blank" class="btn">현황 확인</a>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🎛️ 수동 생성 (UI)</h3>
+                    <p>대기 목록 확인 후 버튼 클릭으로 실행합니다. 실시간 로그를 제공하며, 진행 상황을 모니터링할 수 있습니다.</p>
+                    <a href="../avatar-manual.php" target="_blank" class="btn success">수동 생성 페이지</a>
+                </div>
+
+                <div class="feature-card">
+                    <h3>📊 사용 가이드</h3>
+                    <p><strong>정상 운영:</strong> Cron Job이 1일 6회 자동 처리<br>
+                    <strong>현황 확인:</strong> 대기 회원 수 조회<br>
+                    <strong>긴급 처리:</strong> 수동 생성 페이지 사용<br>
+                    <strong>권장사항:</strong> 가급적 Cron 자동 실행 활용</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 아바타 생성 규칙 -->
+        <div class="section">
+            <h2>📐 아바타 생성 규칙</h2>
+
+            <div class="rules-list">
+                <h3>생성 조건</h3>
+                <ul>
+                    <li>Avatar Points가 $100 이상 적립된 회원</li>
+                    <li>$100당 아바타 1개 생성 (예: $250 → 2개 생성, $50 잔액)</li>
+                    <li>is_avatar = 0 (일반 회원만, 아바타 제외)</li>
+                    <li>deleted_at IS NULL (삭제되지 않은 회원만)</li>
+                </ul>
+            </div>
+
+            <div class="rules-list">
+                <h3>Avatar Points 적립 방식</h3>
+                <ul>
+                    <li>모든 보너스의 35%가 Avatar Points로 적립</li>
+                    <li>나머지 65%는 현금(캐시)으로 지급</li>
+                    <li>보너스 종류: Referral(추천), Edge(엣지), Matching(매칭), Rollup(롤업)</li>
+                    <li>4가지 보너스 모두 65%/35% 분리 적용</li>
+                </ul>
+            </div>
+
+            <div class="rules-list">
+                <h3>생성 프로세스</h3>
+                <ul>
+                    <li>아바타 계정 생성 (user_id: AVA00001, AVA00002, ...)</li>
+                    <li>Binary Tree 스필오버 위치 배치 (BFS 알고리즘)</li>
+                    <li>부모 회원의 Avatar Points $100 차감</li>
+                    <li>아바타에 $100 매출 자동 기록</li>
+                    <li>4가지 보너스 자동 계산 및 지급</li>
+                    <li>트랜잭션으로 안전하게 처리 (실패 시 자동 롤백)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 파일 정보 -->
+        <div class="section">
+            <h2>📁 관련 파일</h2>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🔄 배치 처리 스크립트</h3>
+                    <p><code style="color: #60a5fa;">cron-mini.php</code></p>
+                    <p style="font-size: 0.9em; margin-top: 10px;">1일 6회 실행. 아바타 생성 + 보너스 지급 통합. 웹/Cron 실행 가능.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🔍 현황 확인</h3>
+                    <p><code style="color: #60a5fa;">test-cron.php</code></p>
+                    <p style="font-size: 0.9em; margin-top: 10px;">Avatar Points >= $100 대기 회원 조회. 생성 가능 개수 확인.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>💰 매출 입력 API</h3>
+                    <p><code style="color: #60a5fa;">api/sales-input.php</code></p>
+                    <p style="font-size: 0.9em; margin-top: 10px;">아바타 생성 로직 제거. 매출만 기록, Cron이 배치 처리.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>📖 설정 가이드</h3>
+                    <p><code style="color: #60a5fa;">CRON_SETUP.md</code></p>
+                    <p style="font-size: 0.9em; margin-top: 10px;">Cafe24 Cron 설정 방법, 문제 해결, 운영 가이드.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🎨 관리 페이지</h3>
+                    <p><code style="color: #60a5fa;">pages/avatar-generator.html</code></p>
+                    <p style="font-size: 0.9em; margin-top: 10px;">이 페이지. 시스템 개요 및 모든 기능 통합 관리.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 플로팅 메뉴 -->
+    <div class="hamburger-icon" id="adminHamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <script src="../js/popup-menu.js"></script>
+    <script>
+        // 플로팅 메뉴 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburger = document.getElementById('adminHamburger');
+            if (hamburger && typeof AdminPopupMenu !== 'undefined') {
+                AdminPopupMenu.init(hamburger);
+            }
+        });
+    </script>
+</body>
+</html>

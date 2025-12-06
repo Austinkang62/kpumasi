@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>데이터베이스 백업 관리 - K-Pumasi Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .card {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            color: #333;
+            margin-bottom: 16px;
+            font-size: 18px;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 8px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.3s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            background: #45a049;
+        }
+
+        .btn-secondary {
+            background: #2196F3;
+        }
+
+        .btn-secondary:hover {
+            background: #0b7dda;
+        }
+
+        .btn-danger {
+            background: #f44336;
+        }
+
+        .btn-danger:hover {
+            background: #da190b;
+        }
+
+        .cron-command {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 16px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin: 16px 0;
+        }
+
+        .file-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            transition: background 0.2s;
+        }
+
+        .file-item:hover {
+            background: #f8f9fa;
+        }
+
+        .file-name {
+            font-family: 'Courier New', monospace;
+            color: #333;
+            font-size: 13px;
+        }
+
+        .file-info {
+            color: #666;
+            font-size: 12px;
+        }
+
+        .file-actions a {
+            color: #2196F3;
+            text-decoration: none;
+            margin-left: 10px;
+            font-size: 13px;
+        }
+
+        .file-actions a:hover {
+            text-decoration: underline;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .alert {
+            padding: 16px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #17a2b8;
+        }
+
+        .log-viewer {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 16px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+
+        #loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4CAF50;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗄️ 데이터베이스 백업 관리</h1>
+            <p class="subtitle">자동 백업 시스템 관리 및 모니터링</p>
+        </div>
+
+        <!-- 백업 통계 -->
+        <div class="card">
+            <h2>📊 백업 상태</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">총 백업 파일</div>
+                    <div class="info-value" id="totalBackups">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">최근 백업</div>
+                    <div class="info-value" id="lastBackup" style="font-size: 14px;">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">총 용량</div>
+                    <div class="info-value" id="totalSize">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">자동 백업</div>
+                    <div class="info-value">
+                        <span class="status status-success">매일 3AM</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 빠른 작업 -->
+        <div class="card">
+            <h2>⚡ 빠른 작업</h2>
+            <button class="btn" onclick="runBackupNow()">지금 백업 실행</button>
+            <a class="btn btn-secondary" href="/database/backups/backup.log" target="_blank">백업 로그 보기</a>
+            <a class="btn btn-secondary" href="/database/schema-current.sql" download>최신 스키마 다운로드</a>
+            <button class="btn btn-secondary" onclick="loadBackupList()">백업 목록 새로고침</button>
+        </div>
+
+        <!-- Cron 설정 -->
+        <div class="card">
+            <h2>⏰ Cron 설정 (자동 백업)</h2>
+            <div class="alert alert-info">
+                <strong>매일 새벽 3시 자동 백업</strong><br>
+                Cafe24 관리자 페이지 또는 SSH에서 다음 명령어를 cron에 추가하세요.
+            </div>
+            <div class="cron-command">0 3 * * * /usr/bin/php /ai22/www/database/auto-backup-schema.php >> /ai22/www/database/backups/cron.log 2>&1</div>
+            <p style="margin-top: 12px; color: #666; font-size: 14px;">
+                💡 설정 방법: Cafe24 관리자 > 호스팅 관리 > Cron 작업
+            </p>
+        </div>
+
+        <!-- 백업 파일 목록 -->
+        <div class="card">
+            <h2>📁 백업 파일 목록</h2>
+            <div id="loading">
+                <div class="spinner"></div>
+                <div>로딩 중...</div>
+            </div>
+            <div id="backupList" class="file-list">
+                <p style="color: #666; text-align: center; padding: 20px;">
+                    "백업 목록 새로고침" 버튼을 클릭하여 목록을 불러오세요.
+                </p>
+            </div>
+        </div>
+
+        <!-- 최근 로그 -->
+        <div class="card">
+            <h2>📝 최근 백업 로그</h2>
+            <button class="btn btn-secondary" onclick="loadLog()">로그 새로고침</button>
+            <div id="logContent" class="log-viewer" style="margin-top: 16px;">
+                "로그 새로고침" 버튼을 클릭하여 로그를 불러오세요.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 백업 실행
+        function runBackupNow() {
+            if (!confirm('지금 백업을 실행하시겠습니까?')) return;
+
+            const btn = event.target;
+            btn.disabled = true;
+            btn.textContent = '백업 실행 중...';
+
+            window.open('/database/auto-backup-schema.php?manual', '_blank');
+
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.textContent = '지금 백업 실행';
+                alert('백업이 완료되었습니다. 새 창에서 결과를 확인하세요.');
+                loadBackupList();
+            }, 3000);
+        }
+
+        // 백업 목록 로드
+        async function loadBackupList() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('backupList').innerHTML = '';
+
+            try {
+                const response = await fetch('/database/api/list-backups.php');
+                const data = await response.json();
+
+                document.getElementById('loading').style.display = 'none';
+
+                if (data.success) {
+                    displayBackupList(data.files);
+                    updateStats(data.stats);
+                } else {
+                    document.getElementById('backupList').innerHTML =
+                        `<p style="color: #f44336; text-align: center; padding: 20px;">
+                            오류: ${data.error}
+                        </p>`;
+                }
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('backupList').innerHTML =
+                    `<p style="color: #f44336; text-align: center; padding: 20px;">
+                        로딩 실패: ${error.message}
+                    </p>`;
+            }
+        }
+
+        function displayBackupList(files) {
+            const list = document.getElementById('backupList');
+
+            if (!files || files.length === 0) {
+                list.innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">백업 파일이 없습니다.</p>';
+                return;
+            }
+
+            list.innerHTML = files.map(file => `
+                <div class="file-item">
+                    <div>
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-info">${file.date} | ${file.size}</div>
+                    </div>
+                    <div class="file-actions">
+                        <a href="${file.path}" download>다운로드</a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateStats(stats) {
+            if (stats) {
+                document.getElementById('totalBackups').textContent = stats.total || '0';
+                document.getElementById('lastBackup').textContent = stats.latest || '-';
+                document.getElementById('totalSize').textContent = stats.size || '0 MB';
+            }
+        }
+
+        // 로그 로드
+        async function loadLog() {
+            const logDiv = document.getElementById('logContent');
+            logDiv.textContent = '로그 로딩 중...';
+
+            try {
+                const response = await fetch('/database/backups/backup.log');
+                const text = await response.text();
+
+                // 마지막 50줄만 표시
+                const lines = text.split('\n').slice(-50).join('\n');
+                logDiv.textContent = lines || '로그가 비어있습니다.';
+            } catch (error) {
+                logDiv.textContent = `로그 로딩 실패: ${error.message}`;
+            }
+        }
+
+        // 페이지 로드 시 자동 실행
+        // window.addEventListener('load', loadBackupList);
+    </script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+[
+    {
+        "user_id": "AVA00001",
+        "id": 365,
+        "edge_receiver": "UQPN2282",
+        "edge_receiver_id": 39,
+        "matching_receiver": "SHCN5583",
+        "matching_receiver_id": 38,
+        "missing_edge": true,
+        "missing_matching": true
+    },
+    {
+        "user_id": "AVA00004",
+        "id": 368,
+        "edge_receiver": "pumasiai",
+        "edge_receiver_id": 1,
+        "matching_receiver": "pumasiai",
+        "matching_receiver_id": 1,
+        "missing_edge": false,
+        "missing_matching": true
+    },
+    {
+        "user_id": "AVA00016",
+        "id": 380,
+        "edge_receiver": "pumasiai",
+        "edge_receiver_id": 1,
+        "matching_receiver": "pumasiai",
+        "matching_receiver_id": 1,
+        "missing_edge": false,
+        "missing_matching": true
+    },
+    {
+        "user_id": "AVA00044",
+        "id": 434,
+        "edge_receiver": "WROK4845",
+        "edge_receiver_id": 579,
+        "matching_receiver": "pumasiai",
+        "matching_receiver_id": 1,
+        "missing_edge": true,
+        "missing_matching": false
+    },
+    {
+        "user_id": "AVA00045",
+        "id": 534,
+        "edge_receiver": "WROK4845",
+        "edge_receiver_id": 579,
+        "matching_receiver": "pumasiai",
+        "matching_receiver_id": 1,
+        "missing_edge": true,
+        "missing_matching": false
+    }
+]

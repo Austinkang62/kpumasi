@@ -1,0 +1,300 @@
+<div class="dashboard-header">
+    <h1><a href="/admin/index.php" style="color: #f8fafc; text-decoration: none;">📊 Admin</a></h1>
+    <div class="header-nav">
+        <a href="/admin/pages/avatar-generator.php" class="avatar-menu-link" style="background: rgba(139, 92, 246, 0.2); border-color: rgba(139, 92, 246, 0.4); color: #a78bfa; position: relative;">
+            🤖 아바타생성
+            <span class="pending-badge" id="avatarPendingBadge" style="display: none;">0</span>
+        </a>
+        <button class="batch-create-btn" id="batchCreateBtn" onclick="batchCreateAvatars()" style="display: none;" title="일괄 생성">
+            ⚡ 일괄생성
+        </button>
+        <a href="/admin/pages/pending-registrations.php" style="background: rgba(245, 158, 11, 0.2); border-color: rgba(245, 158, 11, 0.4); color: #fbbf24;">📝 가입승인</a>
+        <a href="/admin/user-bonus-received.php" style="background: rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.4); color: #10b981;">📊 받는 보너스</a>
+        <a href="/admin/bonus-rank.php" style="background: rgba(251, 191, 36, 0.2); border-color: rgba(251, 191, 36, 0.4); color: #fbbf24;">🏆 랭킹</a>
+        <a href="/admin/member-financial.php" style="background: rgba(139, 92, 246, 0.2); border-color: rgba(139, 92, 246, 0.4); color: #a78bfa;">💰 회원재무</a>
+        <a href="/html/organization.html">Organization</a>
+        <a href="/admin/pages/settings.php" class="settings-icon" title="Settings">⚙️</a>
+        <div class="hamburger-icon" id="adminHamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+</div>
+
+<style>
+    .dashboard-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        padding: 8px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.5);
+        border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+        z-index: 1000;
+        height: 50px;
+    }
+
+    .dashboard-header h1 {
+        color: #f8fafc;
+        font-size: 1em;
+        font-weight: 700;
+    }
+
+    .dashboard-header h1 a:hover {
+        color: #93c5fd;
+        transition: color 0.2s;
+    }
+
+    .header-nav {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .header-nav a {
+        padding: 6px 14px;
+        background: rgba(59, 130, 246, 0.1);
+        color: #60a5fa;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 0.8em;
+        font-weight: 500;
+        transition: all 0.2s;
+        border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+
+    .header-nav a:hover {
+        background: rgba(59, 130, 246, 0.2);
+        color: #93c5fd;
+    }
+
+    .hamburger-icon {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 24px;
+        height: 18px;
+        cursor: pointer;
+        padding: 4px;
+        transition: all 0.3s;
+    }
+
+    .hamburger-icon span {
+        display: block;
+        width: 100%;
+        height: 2px;
+        background: #60a5fa;
+        border-radius: 2px;
+        transition: all 0.3s;
+    }
+
+    .hamburger-icon:hover span {
+        background: #93c5fd;
+    }
+
+    .hamburger-icon.active span:nth-child(1) {
+        transform: translateY(8px) rotate(45deg);
+    }
+
+    .hamburger-icon.active span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .hamburger-icon.active span:nth-child(3) {
+        transform: translateY(-8px) rotate(-45deg);
+    }
+
+    body {
+        padding-top: 50px;
+    }
+
+    /* 아바타 대기 배지 */
+    .pending-badge {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: #ef4444;
+        color: #fff;
+        border-radius: 10px;
+        padding: 2px 6px;
+        font-size: 0.7em;
+        font-weight: 700;
+        min-width: 18px;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+        animation: pulse-badge 2s ease-in-out infinite;
+    }
+
+    .pending-badge.warning {
+        background: #f59e0b;
+    }
+
+    .pending-badge.success {
+        background: #10b981;
+    }
+
+    @keyframes pulse-badge {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+    }
+
+    /* 일괄 생성 버튼 */
+    .batch-create-btn {
+        padding: 6px 14px;
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: #fff;
+        border: 1px solid rgba(16, 185, 129, 0.4);
+        border-radius: 5px;
+        font-size: 0.8em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        animation: pulse-button 2s ease-in-out infinite;
+    }
+
+    .batch-create-btn:hover {
+        background: linear-gradient(135deg, #059669, #047857);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    }
+
+    .batch-create-btn:disabled {
+        background: rgba(100, 116, 139, 0.2);
+        border-color: rgba(100, 116, 139, 0.3);
+        color: #64748b;
+        cursor: not-allowed;
+        animation: none;
+    }
+
+    @keyframes pulse-button {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+        50% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+    }
+
+    /* 아바타 메뉴 링크 호버 툴팁 */
+    .avatar-menu-link {
+        position: relative;
+    }
+
+    .avatar-menu-link:hover::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        bottom: -35px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(15, 23, 42, 0.95);
+        color: #e2e8f0;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 0.75em;
+        white-space: nowrap;
+        z-index: 1001;
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+</style>
+
+<script>
+// 아바타 대기 수 조회 및 업데이트
+async function updateAvatarPendingCount() {
+    try {
+        const response = await fetch('/admin/api/avatar-pending-count.php?_=' + Date.now());
+        const data = await response.json();
+
+        if (data.success) {
+            const badge = document.getElementById('avatarPendingBadge');
+            const button = document.getElementById('batchCreateBtn');
+            const link = document.querySelector('.avatar-menu-link');
+
+            if (data.count > 0) {
+                // 배지 표시
+                badge.textContent = data.count;
+                badge.style.display = 'block';
+
+                // 색상 변경
+                if (data.count >= 6) {
+                    badge.className = 'pending-badge'; // 빨간색
+                } else if (data.count >= 3) {
+                    badge.className = 'pending-badge warning'; // 노란색
+                } else {
+                    badge.className = 'pending-badge success'; // 녹색
+                }
+
+                // 일괄 생성 버튼 활성화
+                button.style.display = 'block';
+                button.disabled = false;
+
+                // 툴팁 설정
+                link.setAttribute('data-tooltip',
+                    `${data.count}명 대기 중 (${data.total_avatars}개 생성 가능, $${data.total_value.toLocaleString()})`
+                );
+            } else {
+                // 대기 없음
+                badge.style.display = 'none';
+                button.style.display = 'none';
+                link.removeAttribute('data-tooltip');
+            }
+        }
+    } catch (error) {
+        console.error('아바타 대기 수 조회 실패:', error);
+    }
+}
+
+// 일괄 생성 함수
+async function batchCreateAvatars() {
+    const button = document.getElementById('batchCreateBtn');
+    const badge = document.getElementById('avatarPendingBadge');
+    const count = parseInt(badge.textContent || 0);
+
+    if (count === 0) {
+        alert('생성할 아바타가 없습니다.');
+        return;
+    }
+
+    if (!confirm(`${count}명의 대기 중인 아바타를 일괄 생성하시겠습니까?`)) {
+        return;
+    }
+
+    // 버튼 비활성화
+    button.disabled = true;
+    button.textContent = '⏳ 생성 중...';
+
+    try {
+        // 백그라운드 실행
+        const response = await fetch('/admin/avatar-auto-execute.php?key=auto_trigger_2024&_=' + Date.now());
+
+        // 3초 후 상태 갱신
+        setTimeout(async () => {
+            await updateAvatarPendingCount();
+            button.textContent = '⚡ 일괄생성';
+            alert('아바타 생성이 완료되었습니다.\n\n생성된 아바타는 아바타 생성 페이지에서 확인하세요.');
+        }, 3000);
+
+    } catch (error) {
+        console.error('일괄 생성 실패:', error);
+        alert('아바타 생성 중 오류가 발생했습니다.');
+        button.disabled = false;
+        button.textContent = '⚡ 일괄생성';
+    }
+}
+
+// 페이지 로드 시 및 10초마다 갱신
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Header loaded, initializing avatar pending count...');
+    updateAvatarPendingCount();
+    setInterval(updateAvatarPendingCount, 10000); // 10초마다
+});
+
+// 즉시 실행 (DOMContentLoaded 이전에도 시도)
+if (document.readyState === 'loading') {
+    console.log('Document still loading...');
+} else {
+    console.log('Document already loaded, running immediately...');
+    updateAvatarPendingCount();
+}
+</script>

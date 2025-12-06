@@ -1,0 +1,36 @@
+# 민감한 정보
+config/database.php
+config/config.local.php
+*.env
+
+# 로그 파일
+*.log
+error_log
+debug.log
+
+# 캐시 파일
+cache/
+opcache/
+*.cache
+
+# 임시 파일
+*.tmp
+*.temp
+*.swp
+*.bak
+*.old
+
+# OS 생성 파일
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE 설정
+.vscode/
+.idea/
+*.sublime-*
+
+# 백업 파일
+backup/
+*.backup
+*_backup.*

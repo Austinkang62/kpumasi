@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Login - AI BTC BOT</title>
+    <script src="js/language.js"></script>
+    <script src="js/language-selector.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #000;
+            color: #fff;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 신경망 배경 애니메이션 */
+        .neural-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background: radial-gradient(ellipse at center, #0a0a1f 0%, #000000 100%);
+        }
+
+        .neural-grid {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes gridPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+
+        /* 펄스 노드들 */
+        .pulse-node {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #00ffff;
+            box-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff;
+            animation: nodePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes nodePulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(2);
+                opacity: 0.5;
+            }
+        }
+
+        .neural-connections {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* 로그인 컨테이너 */
+        .login-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 450px;
+            padding: 20px;
+        }
+
+        /* 로고 */
+        .login-logo {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .neural-logo {
+            width: 80px;
+            height: 80px;
+            position: relative;
+            margin: 0 auto 20px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .neural-logo:hover {
+            transform: scale(1.1);
+        }
+
+        .logo-ring {
+            position: absolute;
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: ringRotate 4s linear infinite;
+        }
+
+        .logo-ring:nth-child(1) {
+            width: 100%;
+            height: 100%;
+            border-top-color: #00ffff;
+            animation-duration: 3s;
+        }
+
+        .logo-ring:nth-child(2) {
+            width: 80%;
+            height: 80%;
+            top: 10%;
+            left: 10%;
+            border-right-color: #ff00ff;
+            animation-duration: 4s;
+            animation-direction: reverse;
+        }
+
+        .logo-ring:nth-child(3) {
+            width: 60%;
+            height: 60%;
+            top: 20%;
+            left: 20%;
+            border-bottom-color: #ffff00;
+            animation-duration: 5s;
+        }
+
+        .logo-core {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, #00ffff 0%, transparent 70%);
+            border-radius: 50%;
+            animation: corePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes ringRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes corePulse {
+            0%, 100% {
+                box-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff;
+            }
+            50% {
+                box-shadow: 0 0 40px #00ffff, 0 0 80px #00ffff;
+            }
+        }
+
+        .login-title {
+            font-size: 28px;
+            font-weight: 300;
+            letter-spacing: 6px;
+            background: linear-gradient(45deg, #00ffff, #ff00ff, #ffff00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .login-subtitle {
+            font-size: 12px;
+            letter-spacing: 2px;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+        }
+
+        /* 로그인 폼 */
+        .login-form {
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.05), rgba(255, 0, 255, 0.05));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 255, 255, 0.1);
+            animation: formFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes formFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .form-group {
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 2px;
+            color: rgba(0, 255, 255, 0.9);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 18px 24px;
+            background: rgba(0, 255, 255, 0.08);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            transition: all 0.3s;
+            outline: none;
+        }
+
+        .form-input:focus {
+            background: rgba(0, 255, 255, 0.12);
+            border-color: #00ffff;
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.3), inset 0 0 10px rgba(0, 255, 255, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+            font-weight: 300;
+        }
+
+        /* 로그인 버튼 */
+        .login-button {
+            width: 100%;
+            padding: 16px;
+            background: transparent;
+            border: 2px solid #00ffff;
+            border-radius: 50px;
+            color: #00ffff;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(0, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .login-button:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .login-button span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-button:hover {
+            background: #00ffff;
+            color: #000;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+        }
+
+        /* 링크 */
+        .form-links {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+            font-size: 13px;
+        }
+
+        .form-link {
+            color: rgba(0, 255, 255, 0.7);
+            text-decoration: none;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+        }
+
+        .form-link:hover {
+            color: #00ffff;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        /* 하단 링크 */
+        .bottom-link {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.5);
+            letter-spacing: 1px;
+        }
+
+        .bottom-link a {
+            color: #00ffff;
+            text-decoration: none;
+            margin-left: 5px;
+            transition: all 0.3s;
+        }
+
+        .bottom-link a:hover {
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        /* 백 버튼 */
+        .back-button {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: #00ffff;
+            font-size: 20px;
+            z-index: 100;
+        }
+
+        .back-button:hover {
+            background: rgba(0, 255, 255, 0.2);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+            transform: scale(1.05);
+            border-color: #00ffff;
+        }
+
+        /* 모바일 반응형 */
+        @media (max-width: 768px) {
+            .login-container {
+                max-width: 90%;
+            }
+
+            .login-form {
+                padding: 30px 25px;
+            }
+
+            .login-title {
+                font-size: 24px;
+                letter-spacing: 4px;
+            }
+
+            .back-button {
+                top: 20px;
+                left: 20px;
+                width: 45px;
+                height: 45px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-form {
+                padding: 25px 20px;
+            }
+
+            .login-title {
+                font-size: 20px;
+                letter-spacing: 3px;
+            }
+
+            .form-links {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+
+        }
+    </style>
+</head>
+<body>
+    <!-- 신경망 배경 -->
+    <div class="neural-background">
+        <div class="neural-grid"></div>
+    </div>
+
+    <!-- 펄스 노드들 -->
+    <div class="neural-connections" id="neuralConnections"></div>
+
+    <!-- 백 버튼 -->
+    <a href="index.html" class="back-button">←</a>
+
+    <!-- 언어 선택기 (Fixed Position) -->
+    <div id="languageSelectorContainer"></div>
+
+    <!-- 로그인 컨테이너 -->
+    <div class="login-container">
+        <!-- 로고 -->
+        <div class="login-logo">
+            <div class="neural-logo" onclick="location.href='index.html'">
+                <div class="logo-ring"></div>
+                <div class="logo-ring"></div>
+                <div class="logo-ring"></div>
+                <div class="logo-core"></div>
+            </div>
+            <h1 class="login-title">NEURAL</h1>
+            <p class="login-subtitle" data-lang="login.subtitle">Pulse Network System</p>
+        </div>
+
+        <!-- 로그인 폼 -->
+        <form class="login-form" onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label class="form-label" data-lang="login.userId">ID</label>
+                <input
+                    type="text"
+                    class="form-input"
+                    data-lang-placeholder="login.userIdPlaceholder"
+                    placeholder="Enter your ID"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" data-lang="login.password">Password</label>
+                <input
+                    type="password"
+                    class="form-input"
+                    data-lang-placeholder="login.passwordPlaceholder"
+                    placeholder="••••••••"
+                    required
+                >
+            </div>
+
+            <button type="submit" class="login-button">
+                <span data-lang="login.loginButton">Login</span>
+            </button>
+
+            <div class="form-links">
+                <a href="#" class="form-link" data-lang="login.forgotPassword">Forgot Password?</a>
+            </div>
+
+
+        </form>
+
+        <div class="bottom-link">
+            <span data-lang="login.noAccount">Don't have an account?</span>
+            <a href="signup.html" data-lang="login.signupHere">Sign Up</a>
+        </div>
+    </div>
+
+    <!-- API 클라이언트 로드 -->
+    <script src="api-client.js"></script>
+    <script>
+        // 신경망 노드 생성
+        function createNeuralNodes() {
+            const container = document.getElementById('neuralConnections');
+            const nodeCount = 20;
+
+            for (let i = 0; i < nodeCount; i++) {
+                const node = document.createElement('div');
+                node.className = 'pulse-node';
+                node.style.left = Math.random() * 100 + '%';
+                node.style.top = Math.random() * 100 + '%';
+                node.style.animationDelay = Math.random() * 2 + 's';
+                container.appendChild(node);
+            }
+        }
+
+        // 로그인 처리
+        async function handleLogin(event) {
+            event.preventDefault();
+
+            const userId = event.target[0].value.trim();
+            const password = event.target[1].value;
+
+            if (!userId || !password) {
+                alert('Please enter ID and password');
+                return;
+            }
+
+            // 로그인 버튼 비활성화
+            const submitButton = event.target.querySelector('.login-button');
+            const submitButtonText = submitButton.querySelector('span');
+            const originalText = submitButtonText.textContent;
+
+            submitButton.disabled = true;
+            submitButtonText.textContent = 'Logging in...';
+
+            // API 호출
+            const response = await APIClient.login(userId, password);
+
+            if (response.success) {
+                // 세션 저장
+                SessionManager.setSession(response.data.token, response.data.user);
+
+                alert('Login successful!\nWelcome, ' + response.data.user.name);
+
+                // 대시보드로 이동
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1000);
+            } else {
+                alert(response.data.message || 'Login failed. Please check your credentials.');
+                submitButton.disabled = false;
+                submitButtonText.textContent = originalText;
+            }
+        }
+
+        // 언어 선택기 초기화
+        if (window.LanguageSelector) {
+            LanguageSelector.init('languageSelectorContainer');
+        }
+
+        // 초기화
+        window.addEventListener('DOMContentLoaded', () => {
+            createNeuralNodes();
+
+            // 이미 로그인한 경우 대시보드로 리다이렉트
+            if (SessionManager.isLoggedIn()) {
+                window.location.href = 'dashboard.html';
+            }
+        });
+    </script>
+</body>
+</html>

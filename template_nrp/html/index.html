@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI BTC BOT - 미래형 마케팅</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="version" content="1760507689">
+    <script src="js/language.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #000;
+            color: #fff;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 신경망 배경 애니메이션 */
+        .neural-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background: radial-gradient(ellipse at center, #0a0a1f 0%, #000000 100%);
+        }
+
+        .neural-grid {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes gridPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+
+        /* 펄스 노드들 */
+        .pulse-node {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #00ffff;
+            box-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff;
+            animation: nodePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes nodePulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(2);
+                opacity: 0.5;
+            }
+        }
+
+        /* 메인 컨테이너 */
+        .container {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            padding: 0;
+        }
+
+        
+
+        /* 헤더 - 플로팅 네비게이션 */
+        .floating-nav {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            gap: 10px;
+            padding: 10px 20px;
+            background: rgba(0, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 50px;
+            z-index: 100;
+            animation: floatNav 3s ease-in-out infinite;
+        }
+
+        @keyframes floatNav {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-5px); }
+        }
+
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(0, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .nav-dot.active {
+            width: 30px;
+            background: #00ffff;
+            box-shadow: 0 0 20px #00ffff;
+        }
+
+        /* 네비게이션 팝업 메뉴 */
+        .nav-popup-menu {
+            position: fixed;
+            top: 70px;
+            left: 50%;
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(255, 0, 255, 0.1));
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 15px;
+            z-index: 99;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transform: translateX(-50%) translateY(-20px) scale(0.9);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 20px 60px rgba(0, 255, 255, 0.2);
+            min-width: 200px;
+            overflow: visible;
+        }
+
+        .nav-popup-menu.show {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transform: translateX(-50%) translateY(0) scale(1);
+        }
+
+        .nav-menu-item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0;
+            padding: 12px 20px;
+            margin: 5px 0;
+            background: rgba(0, 255, 255, 0.05);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 12px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: visible;
+        }
+
+        .nav-menu-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 0;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(0, 255, 255, 0.2), rgba(255, 0, 255, 0.2));
+            transition: width 0.4s;
+            z-index: -1;
+        }
+
+        .nav-menu-item:hover::before {
+            width: 100%;
+        }
+
+        .nav-menu-item:hover {
+            border-color: #00ffff;
+            transform: translateX(5px);
+            box-shadow: 0 5px 20px rgba(0, 255, 255, 0.3);
+        }
+
+        .nav-menu-icon {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00ffff;
+            box-shadow: 0 0 10px #00ffff;
+            animation: iconPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes iconPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+        }
+
+        .nav-menu-item:nth-child(1) { animation: slideIn 0.3s ease-out 0.1s backwards; }
+        .nav-menu-item:nth-child(2) { animation: slideIn 0.3s ease-out 0.2s backwards; }
+        .nav-menu-item:nth-child(3) { animation: slideIn 0.3s ease-out 0.3s backwards; }
+        .nav-menu-item:nth-child(4) { animation: slideIn 0.3s ease-out 0.4s backwards; }
+        .nav-menu-item:nth-child(5) { animation: slideIn 0.3s ease-out 0.5s backwards; }
+        .nav-menu-item:nth-child(6) { animation: slideIn 0.3s ease-out 0.6s backwards; }
+        .nav-menu-item:nth-child(7) { animation: slideIn 0.3s ease-out 0.7s backwards; }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* 메뉴 타이틀 */
+        .menu-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .menu-arrow {
+            font-size: 12px;
+            transition: transform 0.3s;
+            position: absolute;
+            right: 20px;
+        }
+
+        .nav-menu-item.expanded .menu-arrow {
+            transform: rotate(180deg);
+        }
+
+        /* 서브메뉴 */
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 0;
+        }
+
+        .submenu.show {
+            max-height: 500px;
+        }
+
+        .submenu-item {
+            padding: 10px 15px 10px 30px;
+            margin: 3px 0;
+            background: rgba(0, 255, 255, 0.03);
+            border-left: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 8px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .submenu-item:hover {
+            background: rgba(0, 255, 255, 0.1);
+            border-left-color: #00ffff;
+            color: #00ffff;
+            padding-left: 35px;
+        }
+
+        /* 히어로 섹션 */
+        .hero-section {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        .neural-logo {
+            width: 120px;
+            height: 120px;
+            position: relative;
+            margin-bottom: 40px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .neural-logo:hover {
+            transform: scale(1.1);
+        }
+
+        .logo-ring {
+            position: absolute;
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: ringRotate 4s linear infinite;
+        }
+
+        .logo-ring:nth-child(1) {
+            width: 100%;
+            height: 100%;
+            border-top-color: #00ffff;
+            animation-duration: 3s;
+        }
+
+        .logo-ring:nth-child(2) {
+            width: 80%;
+            height: 80%;
+            top: 10%;
+            left: 10%;
+            border-right-color: #ff00ff;
+            animation-duration: 4s;
+            animation-direction: reverse;
+        }
+
+        .logo-ring:nth-child(3) {
+            width: 60%;
+            height: 60%;
+            top: 20%;
+            left: 20%;
+            border-bottom-color: #ffff00;
+            animation-duration: 5s;
+        }
+
+        .logo-core {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, #00ffff 0%, transparent 70%);
+            border-radius: 50%;
+            animation: corePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes ringRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes corePulse {
+            0%, 100% {
+                box-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff;
+            }
+            50% {
+                box-shadow: 0 0 40px #00ffff, 0 0 80px #00ffff;
+            }
+        }
+
+        .hero-title {
+            font-size: 36px;
+            font-weight: 300;
+            letter-spacing: 8px;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #00ffff, #ff00ff, #ffff00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: titleGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        .hero-subtitle {
+            font-size: 14px;
+            letter-spacing: 3px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 60px;
+            text-align: center;
+        }
+
+        /* 3D 카드 스택 */
+        .card-stack {
+            position: relative;
+            width: 100%;
+            max-width: 420px;
+            height: 320px;
+            perspective: 1500px;
+        }
+
+        .neural-card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.15), rgba(255, 0, 255, 0.15));
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 35px;
+            padding: 40px 35px;
+            cursor: pointer;
+            transition: all 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform-style: preserve-3d;
+            box-shadow: 0 10px 40px rgba(0, 255, 255, 0.2);
+        }
+
+        .neural-card:nth-child(1) {
+            z-index: 3;
+            transform: translateY(0) scale(1);
+        }
+
+        .neural-card:nth-child(2) {
+            z-index: 2;
+            transform: translateY(20px) scale(0.95);
+            opacity: 0.7;
+        }
+
+        .neural-card:nth-child(3) {
+            z-index: 1;
+            transform: translateY(40px) scale(0.9);
+            opacity: 0.4;
+        }
+
+        .neural-card:hover {
+            transform: translateY(-15px) scale(1.05) rotateX(3deg);
+            box-shadow: 0 40px 80px rgba(0, 255, 255, 0.4), 0 0 40px rgba(0, 255, 255, 0.2);
+            border-color: #00ffff;
+        }
+
+        .card-number {
+            font-size: 72px;
+            font-weight: 800;
+            background: linear-gradient(45deg, #00ffff, #ff00ff, #ffff00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            text-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+            animation: numberPulse 3s ease-in-out infinite;
+        }
+        
+        @keyframes numberPulse {
+            0%, 100% { opacity: 0.9; }
+            50% { opacity: 1; }
+        }
+
+        .card-title {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            letter-spacing: 3px;
+            color: #fff;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+
+        .card-desc {
+            font-size: 17px;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.85);
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
+
+        /* 펄스 버튼 */
+        .pulse-button {
+            position: fixed;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 16px 50px;
+            background: transparent;
+            border: 2px solid #00ffff;
+            border-radius: 50px;
+            color: #00ffff;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 3px;
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s;
+            overflow: hidden;
+            white-space: nowrap;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+        }
+
+        /* 모바일 반응형 */
+        @media (max-width: 768px) {
+            .card-stack {
+                max-width: 340px;
+                height: 280px;
+                margin-bottom: 80px;
+            }
+
+            .neural-card {
+                padding: 32px 28px;
+            }
+
+            .card-number {
+                font-size: 60px;
+                margin-bottom: 16px;
+            }
+
+            .card-title {
+                font-size: 24px;
+                margin-bottom: 12px;
+            }
+
+            .card-desc {
+                font-size: 15px;
+                line-height: 1.7;
+            }
+
+            .pulse-button {
+                bottom: 50px;
+                padding: 14px 40px;
+                font-size: 13px;
+                letter-spacing: 2px;
+            }
+
+            .hero-section {
+                padding: 20px 15px 100px;
+            }
+
+            .hero-subtitle {
+                margin-bottom: 40px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card-stack {
+                max-width: 300px;
+                height: 240px;
+                margin-bottom: 80px;
+            }
+
+            .neural-card {
+                padding: 28px 22px;
+            }
+
+            .card-number {
+                font-size: 52px;
+                margin-bottom: 12px;
+            }
+
+            .card-title {
+                font-size: 20px;
+                margin-bottom: 10px;
+            }
+
+            .card-desc {
+                font-size: 14px;
+                line-height: 1.6;
+            }
+
+            .pulse-button {
+                bottom: 40px;
+                padding: 12px 35px;
+                font-size: 12px;
+                letter-spacing: 2px;
+            }
+
+            .hero-section {
+                padding: 20px 15px 90px;
+            }
+        }
+
+        .pulse-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(0, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .pulse-button:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .pulse-button span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .pulse-button:hover {
+            background: #00ffff;
+            color: #000;
+            box-shadow: 0 0 50px #00ffff, 0 0 100px rgba(0, 255, 255, 0.5);
+            transform: translateX(-50%) scale(1.05);
+        }
+
+        /* 신경망 연결선 */
+        .neural-connections {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .connection-line {
+            position: absolute;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #00ffff, transparent);
+            animation: lineFlow 3s linear infinite;
+            opacity: 0.3;
+        }
+
+        @keyframes lineFlow {
+            0% { transform: scaleX(0); opacity: 0; }
+            50% { opacity: 0.5; }
+            100% { transform: scaleX(1); opacity: 0; }
+        }
+
+        /* 데이터 스트림 */
+        .data-stream {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1;
+        }
+
+        .data-bit {
+            width: 3px;
+            height: 20px;
+            background: linear-gradient(180deg, #00ffff, transparent);
+            animation: dataDrop 2s ease-in infinite;
+        }
+
+        .data-bit:nth-child(2) { animation-delay: 0.3s; }
+        .data-bit:nth-child(3) { animation-delay: 0.6s; }
+        .data-bit:nth-child(4) { animation-delay: 0.9s; }
+
+        @keyframes dataDrop {
+            0% { opacity: 0; transform: translateY(-20px); }
+            50% { opacity: 1; }
+            100% { opacity: 0; transform: translateY(20px); }
+        }
+
+        /* 홀로그래픽 텍스트 */
+        .holo-text {
+            position: relative;
+            display: inline-block;
+        }
+
+        .holo-text::after {
+            content: attr(data-text);
+            position: absolute;
+            left: 2px;
+            top: 2px;
+            color: #00ffff;
+            opacity: 0.5;
+            mix-blend-mode: screen;
+            animation: glitch 3s infinite;
+        }
+
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(2px, -2px); }
+            60% { transform: translate(-2px, -2px); }
+            80% { transform: translate(2px, 2px); }
+        }
+
+        /* 터치 인터랙션 피드백 */
+        .touch-ripple {
+            position: fixed;
+            border: 2px solid #00ffff;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: rippleEffect 1s ease-out forwards;
+            z-index: 9999;
+        }
+
+        @keyframes rippleEffect {
+            0% {
+                width: 0;
+                height: 0;
+                opacity: 1;
+            }
+            100% {
+                width: 100px;
+                height: 100px;
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 신경망 배경 -->
+    <div class="neural-background">
+        <div class="neural-grid"></div>
+    </div>
+
+    <!-- 펄스 노드들 -->
+    <div class="neural-connections" id="neuralConnections"></div>
+
+    <!-- 데이터 스트림 -->
+    <div class="data-stream">
+        <div class="data-bit"></div>
+        <div class="data-bit"></div>
+        <div class="data-bit"></div>
+        <div class="data-bit"></div>
+    </div>
+
+    <!-- 플로팅 네비게이션 -->
+    <nav class="floating-nav" id="floatingNav">
+        <div class="nav-dot active"></div>
+        <div class="nav-dot"></div>
+        <div class="nav-dot"></div>
+        <div class="nav-dot"></div>
+    </nav>
+
+
+<!-- 네비게이션 팝업 메뉴 (popup-menu.js에서 동적으로 로드됨) -->
+    <!-- 메인 컨테이너 -->
+    <div class="container">
+        <!-- 히어로 섹션 -->
+        <section class="hero-section">
+            <!-- 신경망 로고 -->
+            <div class="neural-logo">
+                <div class="logo-ring"></div>
+                <div class="logo-ring"></div>
+                <div class="logo-ring"></div>
+                <div class="logo-core"></div>
+            </div>
+
+            <h1 class="hero-title holo-text" data-text="NEURAL">NEURAL</h1>
+            <p class="hero-subtitle" data-lang="index.subtitle">PULSE NETWORK SYSTEM</p>
+
+            <!-- 3D 카드 스택 -->
+            <div class="card-stack">
+                <div class="neural-card">
+                    <div class="card-number">01</div>
+                    <div class="card-title" data-lang="index.card1Title">양자 마케팅</div>
+                    <div class="card-desc" data-lang="index.card1Desc">
+                        신경망 기반 예측 알고리즘으로<br>
+                        미래의 고객을 먼저 만나세요
+                    </div>
+                </div>
+                <div class="neural-card">
+                    <div class="card-number">02</div>
+                    <div class="card-title" data-lang="index.card2Title">펄스 분석</div>
+                    <div class="card-desc" data-lang="index.card2Desc">
+                        실시간 데이터 펄스로<br>
+                        시장의 심장박동을 감지합니다
+                    </div>
+                </div>
+                <div class="neural-card">
+                    <div class="card-number">03</div>
+                    <div class="card-title" data-lang="index.card3Title">홀로그램 UI</div>
+                    <div class="card-desc" data-lang="index.card3Desc">
+                        차원을 초월한 인터페이스로<br>
+                        새로운 경험을 창조합니다
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 펄스 액션 버튼 -->
+    <button class="pulse-button" onclick="location.href='login.html'">
+        <span data-lang="index.startButton">START PULSE</span>
+    </button>
+
+    <script>
+        // 신경망 노드 생성
+        function createNeuralNodes() {
+            const container = document.getElementById('neuralConnections');
+            const nodeCount = 20;
+
+            for (let i = 0; i < nodeCount; i++) {
+                const node = document.createElement('div');
+                node.className = 'pulse-node';
+                node.style.left = Math.random() * 100 + '%';
+                node.style.top = Math.random() * 100 + '%';
+                node.style.animationDelay = Math.random() * 2 + 's';
+                container.appendChild(node);
+
+                // 연결선 생성
+                if (i % 3 === 0) {
+                    const line = document.createElement('div');
+                    line.className = 'connection-line';
+                    line.style.left = Math.random() * 100 + '%';
+                    line.style.top = Math.random() * 100 + '%';
+                    line.style.width = Math.random() * 200 + 100 + 'px';
+                    line.style.transform = `rotate(${Math.random() * 360}deg)`;
+                    line.style.animationDelay = Math.random() * 3 + 's';
+                    container.appendChild(line);
+                }
+            }
+        }
+
+        // 카드 스택 인터랙션
+        function setupCardStack() {
+            const cards = document.querySelectorAll('.neural-card');
+            let currentIndex = 0;
+            let isAnimating = false;
+
+            // 자동 회전 기능 - 7초마다 (충분한 읽기 시간)
+            setInterval(() => {
+                if (!isAnimating) {
+                    rotateCards();
+                }
+            }, 7000);
+
+            function rotateCards() {
+                isAnimating = true;
+
+                // 부드러운 바운스 효과로 카드 전환
+                cards.forEach((c, i) => {
+                    const offset = (i - currentIndex + cards.length) % cards.length;
+                    c.style.zIndex = cards.length - offset;
+
+                    // 더 역동적인 변환 효과
+                    if (offset === 0) {
+                        // 맨 앞 카드 - 강조
+                        c.style.transform = `translateY(0) scale(1) rotateX(0deg)`;
+                        c.style.opacity = 1;
+                        c.style.boxShadow = '0 30px 60px rgba(0, 255, 255, 0.3)';
+                    } else if (offset === 1) {
+                        // 중간 카드
+                        c.style.transform = `translateY(20px) scale(0.95) rotateX(-2deg)`;
+                        c.style.opacity = 0.7;
+                        c.style.boxShadow = '0 20px 40px rgba(0, 255, 255, 0.15)';
+                    } else {
+                        // 뒷 카드
+                        c.style.transform = `translateY(40px) scale(0.9) rotateX(-4deg)`;
+                        c.style.opacity = 0.4;
+                        c.style.boxShadow = '0 10px 20px rgba(0, 255, 255, 0.05)';
+                    }
+                });
+
+                currentIndex = (currentIndex + 1) % cards.length;
+
+                setTimeout(() => {
+                    isAnimating = false;
+                }, 1000); // transition 시간과 동일
+            }
+
+            cards.forEach((card, index) => {
+                card.addEventListener('click', () => {
+                    if (!isAnimating) {
+                        rotateCards();
+                    }
+                });
+            });
+        }
+
+        // 터치 리플 효과
+        function createTouchRipple(e) {
+            const ripple = document.createElement('div');
+            ripple.className = 'touch-ripple';
+
+            const x = e.touches ? e.touches[0].clientX : e.clientX;
+            const y = e.touches ? e.touches[0].clientY : e.clientY;
+
+            ripple.style.left = x - 50 + 'px';
+            ripple.style.top = y - 50 + 'px';
+
+            document.body.appendChild(ripple);
+
+            setTimeout(() => ripple.remove(), 1000);
+        }
+
+        // 네비게이션 도트 인터랙션
+        
+
+        // 액션 실행 함수
+        function executeAction(action) {
+            switch(action) {
+                // Organization Chart
+                case 'view-structure':
+                    window.location.href = 'organization.html';
+                    break;
+                case 'team-members':
+                    window.location.href = 'organization.html';
+                    break;
+                case 'departments':
+                    window.location.href = 'organization.html';
+                    break;
+
+                // Dashboard
+                case 'analytics':
+                    window.location.href = 'dashboard.html';
+                    break;
+                case 'reports':
+                    window.location.href = 'dashboard.html';
+                    break;
+                case 'statistics':
+                    window.location.href = 'dashboard.html';
+                    break;
+                case 'activity':
+                    window.location.href = 'dashboard.html';
+                    break;
+
+                // Product Guide
+                case 'features':
+                    window.location.href = 'products.html';
+                    break;
+                case 'pricing':
+                    window.location.href = 'products.html';
+                    break;
+                case 'specifications':
+                    window.location.href = 'products.html';
+                    break;
+                case 'demos':
+                    window.location.href = 'products.html';
+                    break;
+
+                // Guidebook
+                case 'quick-start':
+                    window.location.href = 'guide.html';
+                    break;
+                case 'tutorials':
+                    window.location.href = 'guide.html';
+                    break;
+                case 'faq':
+                    window.location.href = 'guide.html';
+                    break;
+                case 'support':
+                    window.location.href = 'guide.html';
+                    break;
+
+                // Terms of Service
+                case 'user-agreement':
+                    window.location.href = 'terms.html';
+                    break;
+                case 'privacy-policy':
+                    window.location.href = 'terms.html';
+                    break;
+                case 'cookies':
+                    window.location.href = 'terms.html';
+                    break;
+
+                // Dark Mode
+                case 'toggle-dark':
+                    alert('Dark mode toggle feature coming soon...');
+                    break;
+                case 'auto-mode':
+                    alert('Auto mode feature coming soon...');
+                    break;
+                case 'schedule':
+                    alert('Schedule feature coming soon...');
+                    break;
+
+                // Language
+                case 'lang-en':
+                    alert('Language changed to English');
+                    break;
+                case 'lang-ko':
+                    alert('언어가 한국어로 변경되었습니다');
+                    break;
+                case 'lang-ja':
+                    alert('言語が日本語に変更されました');
+                    break;
+                case 'lang-zh':
+                    alert('语言已更改为中文');
+                    break;
+
+                default:
+                    console.log(`Unknown action: ${action}`);
+            }
+        }
+
+        // 펄스 버튼 인터랙션 제거 (링크 이동을 위해)
+
+        // 초기화
+        window.addEventListener('DOMContentLoaded', () => {
+            createNeuralNodes();
+            setupCardStack();
+            // setupNavigation(); // popup-menu.js에서 처리
+
+            // 터치/클릭 이벤트
+            document.addEventListener('touchstart', createTouchRipple);
+            document.addEventListener('click', createTouchRipple);
+        });
+
+        // 자이로스코프 효과 (모바일)
+        if (window.DeviceOrientationEvent) {
+            window.addEventListener('deviceorientation', (e) => {
+                const cards = document.querySelectorAll('.neural-card');
+                const tiltX = e.gamma / 50; // -90 to 90
+                const tiltY = e.beta / 50;  // -180 to 180
+
+                cards.forEach(card => {
+                    card.style.transform += ` rotateY(${tiltX}deg) rotateX(${tiltY}deg)`;
+                });
+            });
+        }
+    </script>
+    <script src="popup-menu.js"></script>
+    <script>
+        // 관리자 페이지 진입 - 로고 5번 클릭
+        let logoClickCount = 0;
+        let logoClickTimer = null;
+
+        // 통합 팝업 메뉴 초기화 - 신경망 로고 클릭 시 메뉴 열림
+        document.addEventListener('DOMContentLoaded', () => {
+            const neuralLogo = document.querySelector('.neural-logo');
+            if (neuralLogo) {
+                // 관리자 페이지 진입 리스너 먼저 추가
+                neuralLogo.addEventListener('click', (e) => {
+                    logoClickCount++;
+
+                    // 2초 타이머 설정
+                    if (logoClickTimer) {
+                        clearTimeout(logoClickTimer);
+                    }
+
+                    logoClickTimer = setTimeout(() => {
+                        logoClickCount = 0;
+                    }, 2000);
+
+                    // 5번 클릭하면 관리자 페이지로 이동
+                    if (logoClickCount === 5) {
+                        e.stopPropagation();
+                        logoClickCount = 0;
+                        clearTimeout(logoClickTimer);
+
+                        // 비밀스러운 애니메이션 효과
+                        neuralLogo.style.transform = 'scale(1.2) rotate(360deg)';
+                        neuralLogo.style.transition = 'all 0.5s ease';
+
+                        setTimeout(() => {
+                            window.location.href = 'admin/admin-login.html';
+                        }, 500);
+
+                        return false;
+                    }
+                }, true); // capture phase에서 먼저 처리
+
+                // 기존 팝업 메뉴 초기화
+                NeuralPopupMenu.init(neuralLogo);
+            }
+        });
+
+    </script>
+    <script src="api-client.js"></script>
+</body>
+</html>

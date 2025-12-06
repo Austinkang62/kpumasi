@@ -1,0 +1,592 @@
+/**
+ * AiBB Cosmic Design System
+ * 우주의 Bit 조각들이 모여 하나의 Bit를 만드는 디자인
+ * Version: 1.0.0
+ */
+
+/* ============================================
+   1. CSS 변수 (우주 색상 팔레트)
+   ============================================ */
+:root {
+    /* Cosmic Colors */
+    --cosmic-void: #000000;
+    --cosmic-deep: #0a0015;
+    --cosmic-nebula: #1a0030;
+    --cosmic-purple: #8844ff;
+    --cosmic-blue: #00aaff;
+    --cosmic-white: #ffffff;
+    --cosmic-gold: #ffd700;
+    --cosmic-silver: #c0c0c0;
+
+    /* Bit Fragment Colors */
+    --bit-fragment-blue: rgba(0, 170, 255, 0.8);
+    --bit-fragment-purple: rgba(136, 68, 255, 0.8);
+    --bit-fragment-white: rgba(255, 255, 255, 0.9);
+    --bit-fragment-gold: rgba(255, 215, 0, 0.8);
+
+    /* Animation Durations */
+    --float-slow: 20s;
+    --float-medium: 15s;
+    --float-fast: 10s;
+    --gather-duration: 3s;
+    --twinkle-duration: 2s;
+
+    /* Spacing */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 32px;
+    --space-xl: 64px;
+}
+
+/* ============================================
+   2. 기본 스타일
+   ============================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body.aibb-cosmic {
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    background: var(--cosmic-void);
+    color: var(--cosmic-white);
+    overflow-x: hidden;
+    position: relative;
+    min-height: 100vh;
+}
+
+/* ============================================
+   3. 우주 배경
+   ============================================ */
+.cosmic-space {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    background: radial-gradient(ellipse at center, var(--cosmic-nebula) 0%, var(--cosmic-deep) 50%, var(--cosmic-void) 100%);
+}
+
+/* 별 배경 */
+.star-field {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: var(--cosmic-white);
+    border-radius: 50%;
+    opacity: 0.7;
+    animation: twinkle var(--twinkle-duration) ease-in-out infinite;
+}
+
+@keyframes twinkle {
+    0%, 100% {
+        opacity: 0.3;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+}
+
+/* ============================================
+   4. Bit 조각 (Bit Fragments)
+   ============================================ */
+.bit-fragments-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.bit-fragment {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background: var(--bit-fragment-blue);
+    border-radius: 50%;
+    box-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+    opacity: 0.8;
+    animation: floatFragment var(--float-medium) ease-in-out infinite;
+}
+
+.bit-fragment.type-blue {
+    background: var(--bit-fragment-blue);
+    color: var(--cosmic-blue);
+}
+
+.bit-fragment.type-purple {
+    background: var(--bit-fragment-purple);
+    color: var(--cosmic-purple);
+}
+
+.bit-fragment.type-white {
+    background: var(--bit-fragment-white);
+    color: var(--cosmic-white);
+}
+
+.bit-fragment.type-gold {
+    background: var(--bit-fragment-gold);
+    color: var(--cosmic-gold);
+}
+
+@keyframes floatFragment {
+    0%, 100% {
+        transform: translate(0, 0) scale(1);
+        opacity: 0.6;
+    }
+    25% {
+        transform: translate(20px, -30px) scale(1.1);
+        opacity: 0.9;
+    }
+    50% {
+        transform: translate(-15px, -60px) scale(0.9);
+        opacity: 1;
+    }
+    75% {
+        transform: translate(25px, -40px) scale(1.2);
+        opacity: 0.8;
+    }
+}
+
+/* Bit 조각들이 모이는 애니메이션 */
+.bit-fragment.gathering {
+    animation: gatherToBit var(--gather-duration) ease-in-out forwards;
+}
+
+@keyframes gatherToBit {
+    0% {
+        transform: translate(var(--start-x), var(--start-y)) scale(1);
+        opacity: 0.8;
+    }
+    50% {
+        opacity: 1;
+        transform: translate(calc(var(--start-x) / 2), calc(var(--start-y) / 2)) scale(1.5);
+    }
+    100% {
+        transform: translate(0, 0) scale(0.5);
+        opacity: 0;
+    }
+}
+
+/* ============================================
+   5. AiBB 로고
+   ============================================ */
+.aibb-logo-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    text-align: center;
+}
+
+.aibb-logo {
+    position: relative;
+    display: inline-block;
+}
+
+.aibb-text {
+    font-size: 120px;
+    font-weight: 800;
+    letter-spacing: 10px;
+    background: linear-gradient(135deg, var(--cosmic-blue), var(--cosmic-purple), var(--cosmic-gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 60px rgba(0, 170, 255, 0.5);
+    animation: logoGlow 4s ease-in-out infinite;
+    position: relative;
+}
+
+@keyframes logoGlow {
+    0%, 100% {
+        filter: brightness(1) drop-shadow(0 0 30px rgba(0, 170, 255, 0.6));
+    }
+    50% {
+        filter: brightness(1.3) drop-shadow(0 0 60px rgba(136, 68, 255, 0.8));
+    }
+}
+
+.aibb-subtitle {
+    font-size: 16px;
+    letter-spacing: 8px;
+    color: var(--cosmic-white);
+    opacity: 0.7;
+    margin-top: 20px;
+    animation: subtitleFade 3s ease-in-out infinite;
+}
+
+@keyframes subtitleFade {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+/* Bit 형성 원 */
+.bit-formation-circle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    height: 400px;
+    border: 2px solid rgba(0, 170, 255, 0.2);
+    border-radius: 50%;
+    animation: circleExpand 5s ease-in-out infinite;
+}
+
+@keyframes circleExpand {
+    0%, 100% {
+        transform: translate(-50%, -50%) scale(0.8);
+        opacity: 0.3;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 0.6;
+    }
+}
+
+/* 내부 원들 */
+.bit-formation-circle::before,
+.bit-formation-circle::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 2px solid rgba(136, 68, 255, 0.2);
+    border-radius: 50%;
+}
+
+.bit-formation-circle::before {
+    width: 70%;
+    height: 70%;
+    animation: circleExpand 5s ease-in-out 0.5s infinite;
+}
+
+.bit-formation-circle::after {
+    width: 40%;
+    height: 40%;
+    border-color: rgba(255, 215, 0, 0.3);
+    animation: circleExpand 5s ease-in-out 1s infinite;
+}
+
+/* ============================================
+   6. Bit 입자 트레일 (Particle Trail)
+   ============================================ */
+.particle-trail {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: var(--cosmic-blue);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: trailFade 1s ease-out forwards;
+}
+
+@keyframes trailFade {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0);
+    }
+}
+
+/* ============================================
+   7. 콘텐츠 컨테이너
+   ============================================ */
+.cosmic-container {
+    position: relative;
+    z-index: 5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: var(--space-lg);
+}
+
+/* ============================================
+   8. 카드 스타일 (Bit 수집 카드)
+   ============================================ */
+.bit-collection-card {
+    background: linear-gradient(135deg, rgba(10, 0, 21, 0.8), rgba(26, 0, 48, 0.6));
+    backdrop-filter: blur(20px);
+    border: 2px solid rgba(0, 170, 255, 0.3);
+    border-radius: 24px;
+    padding: var(--space-lg);
+    margin: var(--space-md);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5),
+                0 0 40px rgba(0, 170, 255, 0.2);
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.bit-collection-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(136, 68, 255, 0.1) 0%, transparent 70%);
+    animation: cardGlow 6s ease-in-out infinite;
+}
+
+@keyframes cardGlow {
+    0%, 100% {
+        transform: translate(0, 0);
+        opacity: 0.5;
+    }
+    50% {
+        transform: translate(10%, 10%);
+        opacity: 1;
+    }
+}
+
+.bit-collection-card:hover {
+    transform: translateY(-10px);
+    border-color: var(--cosmic-purple);
+    box-shadow: 0 30px 80px rgba(136, 68, 255, 0.4),
+                0 0 60px rgba(0, 170, 255, 0.3);
+}
+
+.card-title {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    background: linear-gradient(90deg, var(--cosmic-blue), var(--cosmic-purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: var(--space-md);
+}
+
+.card-content {
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.8;
+    font-size: 16px;
+}
+
+/* ============================================
+   9. 버튼 스타일
+   ============================================ */
+.cosmic-button {
+    position: relative;
+    padding: 16px 48px;
+    background: transparent;
+    border: 2px solid var(--cosmic-blue);
+    border-radius: 50px;
+    color: var(--cosmic-blue);
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+}
+
+.cosmic-button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: radial-gradient(circle, var(--cosmic-blue), var(--cosmic-purple));
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.6s ease, height 0.6s ease;
+    z-index: -1;
+}
+
+.cosmic-button:hover {
+    color: var(--cosmic-white);
+    border-color: var(--cosmic-purple);
+    box-shadow: 0 0 40px rgba(0, 170, 255, 0.6);
+}
+
+.cosmic-button:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+/* ============================================
+   10. Bit 수집 진행바
+   ============================================ */
+.bit-collection-progress {
+    width: 100%;
+    max-width: 600px;
+    margin: var(--space-lg) auto;
+    position: relative;
+}
+
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--space-sm);
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 8px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid rgba(0, 170, 255, 0.3);
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--cosmic-blue), var(--cosmic-purple), var(--cosmic-gold));
+    border-radius: 10px;
+    transition: width 1s ease;
+    box-shadow: 0 0 20px rgba(0, 170, 255, 0.8);
+    animation: progressGlow 2s ease-in-out infinite;
+}
+
+@keyframes progressGlow {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(0, 170, 255, 0.6);
+    }
+    50% {
+        box-shadow: 0 0 40px rgba(136, 68, 255, 0.9);
+    }
+}
+
+/* ============================================
+   11. 상호작용 영역 (Interactive Zone)
+   ============================================ */
+.interaction-zone {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    pointer-events: all;
+    cursor: crosshair;
+}
+
+/* 마우스 커서 효과 */
+.cosmic-cursor {
+    position: fixed;
+    width: 40px;
+    height: 40px;
+    border: 2px solid var(--cosmic-blue);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.1s ease;
+    mix-blend-mode: screen;
+}
+
+.cosmic-cursor::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    background: var(--cosmic-gold);
+    border-radius: 50%;
+    box-shadow: 0 0 20px var(--cosmic-gold);
+}
+
+/* ============================================
+   12. 반응형 디자인
+   ============================================ */
+@media (max-width: 768px) {
+    .aibb-text {
+        font-size: 80px;
+        letter-spacing: 6px;
+    }
+
+    .aibb-subtitle {
+        font-size: 12px;
+        letter-spacing: 4px;
+    }
+
+    .bit-formation-circle {
+        width: 300px;
+        height: 300px;
+    }
+
+    .bit-collection-card {
+        padding: var(--space-md);
+    }
+
+    .card-title {
+        font-size: 22px;
+    }
+}
+
+@media (max-width: 480px) {
+    .aibb-text {
+        font-size: 60px;
+        letter-spacing: 4px;
+    }
+
+    .bit-formation-circle {
+        width: 250px;
+        height: 250px;
+    }
+
+    .cosmic-button {
+        padding: 12px 32px;
+        font-size: 14px;
+    }
+}
+
+/* ============================================
+   13. 유틸리티 클래스
+   ============================================ */
+.text-cosmic-blue { color: var(--cosmic-blue); }
+.text-cosmic-purple { color: var(--cosmic-purple); }
+.text-cosmic-gold { color: var(--cosmic-gold); }
+
+.glow-blue {
+    box-shadow: 0 0 30px rgba(0, 170, 255, 0.6);
+}
+
+.glow-purple {
+    box-shadow: 0 0 30px rgba(136, 68, 255, 0.6);
+}
+
+.glow-gold {
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+}
+
+.fade-in {
+    animation: fadeIn 1s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
