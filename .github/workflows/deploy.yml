@@ -27,9 +27,10 @@ jobs:
         echo "Connecting to $FTP_SERVER:$FTP_PORT as $FTP_USERNAME"
         lftp -c "
         set ftp:ssl-allow no;
-        set net:timeout 30;
-        set net:max-retries 5;
+        set net:timeout 60;
+        set net:max-retries 10;
+        set net:reconnect-interval-base 5;
         set ftp:passive-mode on;
         open -u $FTP_USERNAME,$FTP_PASSWORD -p $FTP_PORT $FTP_SERVER || exit 1;
-        mirror --reverse --delete --verbose --parallel=2 --exclude-glob .git/ --exclude-glob .github/ --exclude-glob node_modules/ --exclude-glob .gitignore --exclude-glob config/database.php --exclude-glob '*.log' ./ ./;
+        mirror --reverse --verbose --only-newer --parallel=1 --exclude-glob .git/ --exclude-glob .github/ --exclude-glob node_modules/ --exclude-glob .gitignore --exclude-glob config/database.php --exclude-glob '*.log' ./ ./;
         " || exit 1
