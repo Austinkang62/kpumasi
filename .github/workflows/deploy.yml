@@ -31,7 +31,5 @@ jobs:
         set net:max-retries 5;
         set ftp:passive-mode on;
         open -u $FTP_USERNAME,$FTP_PASSWORD -p $FTP_PORT $FTP_SERVER || exit 1;
-        pwd;
-        ls -la;
-        mirror --reverse --delete --verbose --parallel=2 --exclude-glob .git/ --exclude-glob .github/ --exclude-glob node_modules/ --exclude-glob .gitignore --exclude-glob config/database.php --exclude-glob '*.log' ./ /www/;
+        mirror --reverse --delete --verbose --parallel=2 --exclude-glob .git/ --exclude-glob .github/ --exclude-glob node_modules/ --exclude-glob .gitignore --exclude-glob config/database.php --exclude-glob '*.log' ./ ./;
         " || exit 1
